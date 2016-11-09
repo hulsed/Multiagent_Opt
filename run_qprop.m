@@ -27,10 +27,15 @@ qpropinput=['qprop.exe examplepropfile.prop motorfile ', velstr, ' 0',' 0',',',m
 diary qpropoutput;
 system(qpropinput);
 diary OFF
+%disp('1')  
 scantext=fopen('qpropoutput');
+%disp('2')
 textscanoutput=textscan(scantext, '%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f','Headerlines', 17);
+%disp('3')
 fclose('all');
+%disp('4')
 delete('qpropoutput')
+%disp('5')
 
 velocity_qout=textscanoutput{1};
 rpm_qout=textscanoutput{2};
