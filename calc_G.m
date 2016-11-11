@@ -1,9 +1,28 @@
-function G = calc_G(battery, motor, prop, counterbattery,countermotor,counterprop)
+function G = calc_G(battery, motor, prop,foil, counterbattery,countermotor,counterprop)
     accGravity=9.81;
-
+    %creating motor input file
     fid = fopen('motorfile', 'w');
     fprintf(fid, '\n%s\n\n %d\n\n %f\n %f\n %f\n', 'derp', 1, motor.R0, motor.I0, motor.kv);
     fclose(fid);
+    %creating propeller input file
+    %generating propeller geometry
+    sects=20;
+    radius=prop.diameter/2;
+    root=0.02;
+    radiusvect=linspace(root,radius,sects);
+    anglevect=prop.angleRoot+radiusvect*(prop.angleTip-prop.angleRoot)/radius;
+    chordvect=prop.chordRoot+radiusvect*(prop.chordTip-prop.chordRoot)/radius;
+    %appending airfoil data
+    fid2 = fopen('propfile', 'w');
+    format2='%s\n%s\n\n%d\n\n%f %f\n%f %f\n\n%f %f %f\n%f %f\n\n%f %f %f\n%f %f %f\n\n\n';
+    fprintf(fid2, format2,'1,', '',2,foil.Cl0, foil.Cla, foil.Clmin, foil.Clmax, foil.Cd0, foil.Cd2, foil.Clcd0, foil.Reref, foil.Reexp, 1, 1,1,0,0,0);
+    fclose(fid2);
+    %appending prop geometry
+    fid3=fopen('propfile', 'a');
+    format3='%f %f %f\n';
+    printdata=[radiusvect',chordvect', anglevect'];
+    fprintf(fid3, format3, printdata(:,:)');
+    fclose(fid3);
     
     totMass = 4*motor.Mass + battery.Mass;
     thrustReq = totMass*accGravity;

@@ -17,7 +17,7 @@ end
 max_voltagestr=num2str(max_voltage);
 volt_incrstr=num2str(volt_incr);
 thruststr=num2str(thrust_req);
-qpropinput=['qprop.exe examplepropfile.prop motorfile ', velstr, ' 0',' 0',',',max_voltagestr,',',volt_incrstr, ' 0 ' thruststr, ' 0 0 0 ["]' ];
+qpropinput=['qprop.exe propfile motorfile ', velstr, ' 0',' 0',',',max_voltagestr,',',volt_incrstr, ' 0 ' thruststr, ' 0 0 0 ["]' ];
 
 %Note about qprop syntax:
 %The input looks like

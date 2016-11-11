@@ -1,6 +1,6 @@
 clear variables
 
-numGenerations = 100;
+numGenerations = 20;
 numRuns = 25;
 
 % Values for components below are arbitrary. Change as necessary.
@@ -23,8 +23,8 @@ accGravity=9.81;
 % Value for epsilon-greedy action selection
 epsilon = 0.1;
 
-[batteryData, motorData, propData] = load_data('batterytable.csv', ...
-    'motortable.csv', 'propranges.csv');
+[batteryData, motorData, propData, foilData] = load_data('batterytable.csv', ...
+    'motortable.csv', 'propranges.csv', 'airfoiltable.csv');
 
 % Create counterfactual components
 [counterfactbattery,counterfactmotor]=counter_calc(batteryAgents,batteryData,motorData);
@@ -73,18 +73,31 @@ for r = 1:numRuns
         motor.Imax = temp(4); motor.Pmax = temp(5); 
         motor.Mass = temp(6) / 1000; motor.Cost = temp(7); motor.Diam = temp(8);
 
-        % Disregarding prop for preliminary results
-    %     prop.airfoil = propData(actions(5), 1); % propeller prop.airfoil
-    %     prop.diameter = propData(actions(6), 2); % diameter
-    %     prop.angleRoot = propData(actions(7), 3); % blade angle at root
-    %     prop.angleTip = propData(actions(8), 4); % blade angle at tip
-    %     prop.chordRoot = propData(actions(9), 5); % chord at root
-    %     prop.chordTip = propData(actions(10), 6); % chord at tip
+        % Propeller Calculations
+         prop.airfoil = propData(actions(5), 1); % propeller prop.airfoil
+         prop.diameter = propData(actions(6), 2)*0.054; % diameter (inch->m)
+         prop.angleRoot = propData(actions(7), 3); % blade angle at root
+         prop.angleTip = propData(actions(8), 4); % blade angle at tip
+         prop.chordRoot = propData(actions(9), 5)*0.054; % chord at root (inch->m)
+         prop.chordTip = propData(actions(10), 6)*0.054; % chord at tip (inch->m)
+        
+         % Characterizing propeller.
+         foil.Cl0=foilData(actions(5),1);
+         foil.Cla=foilData(actions(5),2)*360/(2*pi); %converting to 1/deg to 1/rad
+         foil.Clmin=foilData(actions(5),3);
+         foil.Clmax=foilData(actions(5),4);
+         foil.Cd0=foilData(actions(5),5);
+         foil.Cd2=foilData(actions(5),6)*360/(2*pi); %converting to 1/deg to 1/rad
+         foil.Clcd0=foilData(actions(5),7);
+         foil.Reref=foilData(actions(5),8);
+         foil.Reexp=foilData(actions(5),9);
+         
 
         %rewards = compute_rewards(battery, motor, 0);
 
-        prop = 0; counterfactprop = 0; % temp
-        rewards = compute_rewards(battery, motor, prop, counterfactbattery, counterfactmotor, counterfactprop);
+        %prop = 0; 
+        counterfactprop1 = 0; % temp
+        rewards = compute_rewards(battery, motor, prop,foil, counterfactbattery, counterfactmotor, counterfactprop1);
         rewards_hist(:, g) = rewards;
 
         agents = update_values(agents, rewards, actions, 0.1);
