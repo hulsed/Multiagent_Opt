@@ -102,7 +102,7 @@ for r = 1:numRuns
         rewards_hist(:, g) = rewards;
 
         agents = update_values(agents, rewards, actions, 0.1);
-
+		pause(0.05); %fix mysterious bugs
         performance(r,g) = rewards(1);
         pause(0.05)
     end
