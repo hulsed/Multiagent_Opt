@@ -97,6 +97,7 @@ for r = 1:numRuns
 
         %prop = 0; 
         counterfactprop1 = 0; % temp
+        disp('computing rewards')
         rewards = compute_rewards(battery, motor, prop,foil, counterfactbattery, counterfactmotor, counterfactprop1);
         rewards_hist(:, g) = rewards;
 

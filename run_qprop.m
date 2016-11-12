@@ -25,11 +25,16 @@ qpropinput=['qprop.exe propfile motorfile ', velstr, ' 0',' 0',',',max_voltagest
 % 0 means unspecified
 % to iterate over values, replace a single value with min,max,incr
 diary qpropoutput;
+disp('call qprop')
 system(qpropinput);
 diary OFF
-%disp('1')  
-scantext=fopen('qpropoutput');
+%disp('1') 
+scantext = -1;
+while scantext < 3
+    scantext=fopen('qpropoutput');
+end
 %disp('2')
+disp('textscan')
 textscanoutput=textscan(scantext, '%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f','Headerlines', 17);
 %disp('3')
 fclose('all');
