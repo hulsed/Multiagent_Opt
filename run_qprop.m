@@ -31,15 +31,15 @@ diary OFF
 %disp('1') 
 scantext = -1;
 while scantext < 3
-    scantext=fopen('qpropoutput');
+    scantext=scantext+1;
+    qpropout=fopen('qpropoutput');
 end
 %disp('2')
 disp('textscan')
-textscanoutput=textscan(scantext, '%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f','Headerlines', 17);
+textscanoutput=textscan(qpropout, '%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f','Headerlines', 18);
 %disp('3')
 fclose('all');
 %disp('4')
-delete('qpropoutput')
 %disp('5')
 
 velocity_qout=textscanoutput{1};
@@ -80,3 +80,4 @@ if ~fail
 else
     elec_power_used=Inf;
 end
+delete('qpropoutput')

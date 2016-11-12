@@ -104,6 +104,7 @@ for r = 1:numRuns
         agents = update_values(agents, rewards, actions, 0.1);
 
         performance(r,g) = rewards(1);
+        pause(0.05)
     end
     
     finalConverge(r, :) = actions;
