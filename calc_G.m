@@ -1,4 +1,4 @@
-function G = calc_G(battery, motor, prop,foil, counterbattery,countermotor,counterprop)
+function G = calc_G(battery, motor, prop, foil)
     accGravity=9.81;
     %creating motor input file
     fid = -1;
@@ -8,6 +8,7 @@ function G = calc_G(battery, motor, prop,foil, counterbattery,countermotor,count
     disp('writing to motorfile')
     fprintf(fid, '\n%s\n\n %d\n\n %f\n %f\n %f\n', 'derp', 1, motor.R0, motor.I0, motor.kv);
     fclose(fid);
+    disp('wrote to motorfile')
     %creating propeller input file
     %generating propeller geometry
     sects=20;
@@ -22,6 +23,7 @@ function G = calc_G(battery, motor, prop,foil, counterbattery,countermotor,count
         fid2 = fopen([pwd '/propfile'], 'w');
     end
     format2='%s\n%s\n\n%d\n\n%f %f\n%f %f\n\n%f %f %f\n%f %f\n\n%f %f %f\n%f %f %f\n\n\n';
+    disp('writing to propfile')
     fprintf(fid2, format2,'1,', '',2,foil.Cl0, foil.Cla, foil.Clmin, foil.Clmax, foil.Cd0, foil.Cd2, foil.Clcd0, foil.Reref, foil.Reexp, 1, 1,1,0,0,0);
     %appending prop geometry
     % To Daniel: We can leave the propfile open and it will append
@@ -32,11 +34,13 @@ function G = calc_G(battery, motor, prop,foil, counterbattery,countermotor,count
     printdata=[radiusvect',chordvect', anglevect'];
     fprintf(fid2, format3, printdata(:,:)');
     fclose(fid2);
+    disp('wrote to propfile')
     
     totMass = 4*motor.Mass + battery.Mass;
     thrustReq = totMass*accGravity;
     totalCost = battery.Cost + motor.Cost*4; % + propCost*4
     % For now, we'll assume propeller is constant
+    disp('entering run_qprop')
     [failure, powerUse] = run_qprop(battery.Volt, thrustReq, battery.Imax, motor.Imax);
     
     flightTime = battery.Energy / powerUse;

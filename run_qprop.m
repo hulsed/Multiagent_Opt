@@ -14,29 +14,30 @@ velstr=num2str(vel);
 if velstr=='0'
     velstr='0.0';
 end
+disp('num2str')
 max_voltagestr=num2str(max_voltage);
 volt_incrstr=num2str(volt_incr);
 thruststr=num2str(thrust_req);
+disp('qpropinput')
 qpropinput=['qprop.exe propfile motorfile ', velstr, ' 0',' 0',',',max_voltagestr,',',volt_incrstr, ' 0 ' thruststr, ' 0 0 0 ["]' ];
-
+disp('got qpropinput')
 %Note about qprop syntax:
 %The input looks like
 %qprop propfile motorfile vel rpm volt dBeta Thrust Torque Amps Pele 
 % 0 means unspecified
 % to iterate over values, replace a single value with min,max,incr
-diary qpropoutput;
-disp('call qprop')
+pause(0.05)
+diary qpropoutput
 system(qpropinput);
 diary OFF
 %disp('1') 
 scantext = -1;
 while scantext < 3
-    scantext=scantext+1;
-    qpropout=fopen('qpropoutput');
+    scantext=fopen('qpropoutput');
 end
 %disp('2')
 disp('textscan')
-textscanoutput=textscan(qpropout, '%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f','Headerlines', 18);
+textscanoutput=textscan(scantext, '%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f','Headerlines', 18);
 %disp('3')
 fclose('all');
 %disp('4')

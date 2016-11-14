@@ -1,7 +1,7 @@
 clear variables
 
 numGenerations = 20;
-numRuns = 25;
+numRuns = 10;
 
 % Values for components below are arbitrary. Change as necessary.
 % See create_agents.m for details
@@ -27,7 +27,7 @@ epsilon = 0.1;
     'motortable.csv', 'propranges.csv', 'airfoiltable.csv');
 
 % Create counterfactual components
-[counterfactbattery,counterfactmotor]=counter_calc(batteryAgents,batteryData,motorData);
+[avgCell, avgMotor, avgProp, avgFoil] = counter_calc(batteryData, motorData, propData, foilData);
 
 performance = zeros(numRuns, numGenerations);
 finalConverge = uint8(zeros(numRuns, numel([batteryAgents motorAgents propAgents])));
@@ -49,22 +49,13 @@ for r = 1:numRuns
         % cell that was chosen, contains data (don't care about vars a b c for
         % now)
         temp = batteryData(actions(1), :);
-        cellCost = temp(1); cellCap = temp(2); 
-        cellC = temp(3); cellMass = temp(4) / 1000;
+        cell.Cost = temp(1); cell.Cap = temp(2) / 1000; 
+        cell.C = temp(3); cell.Mass = temp(4) / 1000;
         % C is C Rating
-        sConfigs = double(actions(2)); % number of serial configurations
-        pConfigs = double(actions(3)); % number of parallel configurations
+        battery.sConfigs = double(actions(2)); % number of serial configurations
+        battery.pConfigs = double(actions(3)); % number of parallel configurations
 
-        % Battery calculations
-        numCells = sConfigs * pConfigs;
-        % Make battery struct. Properties are accessible with .
-        battery.Cost = cellCost * numCells;
-        battery.Mass = cellMass * numCells;
-        battery.Volt = 3.7 * sConfigs; % 3.7V is nominal voltage 
-        battery.Cap = cellCap * pConfigs; % total capacity is cell cap times parallel configs
-        battery.C = cellC;
-        battery.Imax = battery.C.*battery.Cap ./ 1000; % convert to amps
-        battery.Energy = battery.Volt * battery.Cap / 1000 * 3600; % Amps * voltage
+        
 
         % temp is our motor choice
         temp =  motorData(actions(4), :);
@@ -74,37 +65,32 @@ for r = 1:numRuns
         motor.Mass = temp(6) / 1000; motor.Cost = temp(7); motor.Diam = temp(8);
 
         % Propeller Calculations
-         prop.airfoil = propData(actions(5), 1); % propeller prop.airfoil
-         prop.diameter = propData(actions(6), 2)*0.054; % diameter (inch->m)
-         prop.angleRoot = propData(actions(7), 3); % blade angle at root
-         prop.angleTip = propData(actions(8), 4); % blade angle at tip
-         prop.chordRoot = propData(actions(9), 5)*0.054; % chord at root (inch->m)
-         prop.chordTip = propData(actions(10), 6)*0.054; % chord at tip (inch->m)
-        
-         % Characterizing propeller.
-         foil.Cl0=foilData(actions(5),1);
-         foil.Cla=foilData(actions(5),2)*360/(2*pi); %converting to 1/deg to 1/rad
-         foil.Clmin=foilData(actions(5),3);
-         foil.Clmax=foilData(actions(5),4);
-         foil.Cd0=foilData(actions(5),5);
-         foil.Cd2=foilData(actions(5),6)*360/(2*pi); %converting to 1/deg to 1/rad
-         foil.Clcd0=foilData(actions(5),7);
-         foil.Reref=foilData(actions(5),8);
-         foil.Reexp=foilData(actions(5),9);
-         
+        %prop.airfoil = propData(actions(5), 1); % propeller prop.airfoil
+        prop.diameter = propData(actions(6), 2)*0.054; % diameter (inch->m)
+        prop.angleRoot = propData(actions(7), 3); % blade angle at root
+        prop.angleTip = propData(actions(8), 4); % blade angle at tip
+        prop.chordRoot = propData(actions(9), 5)*0.054; % chord at root (inch->m)
+        prop.chordTip = propData(actions(10), 6)*0.054; % chord at tip (inch->m)
 
-        %rewards = compute_rewards(battery, motor, 0);
+        % Characterizing propeller.
+        foil.Cl0=foilData(actions(5),1);
+        foil.Cla=foilData(actions(5),2)*360/(2*pi); %converting to 1/deg to 1/rad
+        foil.Clmin=foilData(actions(5),3);
+        foil.Clmax=foilData(actions(5),4);
+        foil.Cd0=foilData(actions(5),5);
+        foil.Cd2=foilData(actions(5),6)*360/(2*pi); %converting to 1/deg to 1/rad
+        foil.Clcd0=foilData(actions(5),7);
+        foil.Reref=foilData(actions(5),8);
+        foil.Reexp=foilData(actions(5),9);
 
-        %prop = 0; 
-        counterfactprop1 = 0; % temp
         disp('computing rewards')
-        rewards = compute_rewards(battery, motor, prop,foil, counterfactbattery, counterfactmotor, counterfactprop1);
+        [rewards, G] = compute_rewards(cell, battery, motor, prop, foil, avgCell, avgMotor, avgProp, avgFoil);
         rewards_hist(:, g) = rewards;
 
         agents = update_values(agents, rewards, actions, 0.1);
 
-        performance(r,g) = rewards(1);
-        pause(0.05)
+        performance(r,g) = G;
+        
     end
     
     finalConverge(r, :) = actions;
