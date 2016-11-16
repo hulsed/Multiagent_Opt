@@ -1,7 +1,9 @@
+tic % Begin measuring time of execution
+
 clear variables
 
-numGenerations = 20;
-numRuns = 10;
+numGenerations = 50;
+numRuns = 25;
 
 % Values for components below are arbitrary. Change as necessary.
 % See create_agents.m for details
@@ -83,7 +85,6 @@ for r = 1:numRuns
         foil.Reref=foilData(actions(5),8);
         foil.Reexp=foilData(actions(5),9);
 
-        disp('computing rewards')
         [rewards, G] = compute_rewards(cell, battery, motor, prop, foil, avgCell, avgMotor, avgProp, avgFoil);
         rewards_hist(:, g) = rewards;
 
@@ -98,5 +99,7 @@ for r = 1:numRuns
 end
 
 avgPerf = mean(performance, 1);
+
+toc % Spit out execution time
 
 % comment
