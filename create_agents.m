@@ -10,9 +10,9 @@
 %
 % OUTPUTS
 % agents - a cell array containing the Q-tables of the agents
-function agents = create_agents(battery, motor, prop)
+function agents = create_agents(battery, motor, prop,rod)
     % Join all component vectors into one vector
-    allComponents = [battery, motor, prop];
+    allComponents = [battery, motor, prop, rod];
     numAgents = size(allComponents, 2);
     % Our multiagent system, of sorts. This will hold all the Q-tables.
     agents = cell(numAgents, 1);

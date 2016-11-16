@@ -1,4 +1,4 @@
-function G = calc_G(battery, motor, prop,foil, counterbattery,countermotor,counterprop)
+function G = calc_G(battery, motor, prop,foil,rod, counterbattery,countermotor,counterprop)
     accGravity=9.81;
     %creating motor input file
     fid = -1;
@@ -33,9 +33,9 @@ function G = calc_G(battery, motor, prop,foil, counterbattery,countermotor,count
     fprintf(fid2, format3, printdata(:,:)');
     fclose(fid2);
     
-    totMass = 4*motor.Mass + battery.Mass;
+    totMass = 4*motor.Mass + battery.Mass+4*rod.Mass;
     thrustReq = totMass*accGravity;
-    totalCost = battery.Cost + motor.Cost*4; % + propCost*4
+    totalCost = battery.Cost + motor.Cost*4+4*rod.Mass; % + propCost*4
     % For now, we'll assume propeller is constant
     [failure, powerUse] = run_qprop(battery.Volt, thrustReq, battery.Imax, motor.Imax);
     

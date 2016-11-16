@@ -17,24 +17,26 @@ motorAgents = [24];
 % PROPELLER
 % 
 propAgents = [7, 12, 10, 10, 15, 15];
-%
+% ROD
+rodAgents=[4, 16,11,8];
+
 accGravity=9.81;
 
 % Value for epsilon-greedy action selection
 epsilon = 0.1;
 
-[batteryData, motorData, propData, foilData] = load_data('batterytable.csv', ...
-    'motortable.csv', 'propranges.csv', 'airfoiltable.csv');
+[batteryData, motorData, propData, foilData, rodData, matData] = load_data('batterytable.csv', ...
+    'motortable.csv', 'propranges.csv', 'airfoiltable.csv','rodtable.csv','materialtable.csv');
 
 % Create counterfactual components
 [counterfactbattery,counterfactmotor]=counter_calc(batteryAgents,batteryData,motorData);
 
 performance = zeros(numRuns, numGenerations);
-finalConverge = uint8(zeros(numRuns, numel([batteryAgents motorAgents propAgents])));
+finalConverge = uint8(zeros(numRuns, numel([batteryAgents motorAgents propAgents rodAgents])));
 
 for r = 1:numRuns
     % Create the agents
-    agents = create_agents(batteryAgents, motorAgents, propAgents);
+    agents = create_agents(batteryAgents, motorAgents, propAgents,rodAgents);
 
     rewards_hist = zeros(numel(agents), numGenerations);
     actions_hist = zeros(numel(agents), numGenerations);
@@ -92,13 +94,32 @@ for r = 1:numRuns
          foil.Reref=foilData(actions(5),8);
          foil.Reexp=foilData(actions(5),9);
          
-
+         %rod=0; %temp
+         mat.Type=actions(11);
+         mat.Ymod=matData(actions(11),1); %young's modulus in GPa
+         mat.Sut=matData(actions(11),2); %ultimate strength in MPa
+         mat.Sy=matData(actions(11),3); %yield strength in MPa
+         mat.Dens=matData(actions(11),4); %density in kg/m^3
+         mat.Cost=matData(actions(11),5)*(100/2.54)^3; %cost in $/m^3
+         
+         rod.mat=mat.Type;
+         rod.Ymod=mat.Ymod;
+         rod.Sut=mat.Sut;
+         rod.Length=rodData(actions(12),1)*2.54/100; %length converted to m
+         rod.Dia=rodData(actions(13),2)*2.54/100; %diamenter converted to m
+         rod.Thick=rodData(actions(14),3)*2.54/100; %thickness converted to m
+         rod.Area=.5*pi*(rod.Dia^2-(rod.Dia-rod.Thick)^2);
+         rod.Vol=rod.Length*rod.Area;
+         rod.Mass=rod.Vol*mat.Dens; % in kg
+         rod.Cost=mat.Cost*rod.Vol;
+         
+         
         %rewards = compute_rewards(battery, motor, 0);
 
         %prop = 0; 
         counterfactprop1 = 0; % temp
         disp('computing rewards')
-        rewards = compute_rewards(battery, motor, prop,foil, counterfactbattery, counterfactmotor, counterfactprop1);
+        rewards = compute_rewards(battery, motor, prop,foil,rod, counterfactbattery, counterfactmotor, counterfactprop1);
         rewards_hist(:, g) = rewards;
 
         agents = update_values(agents, rewards, actions, 0.1);
