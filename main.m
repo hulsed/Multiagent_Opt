@@ -2,8 +2,9 @@ tic % Begin measuring time of execution
 
 clear variables
 
-numGenerations = 50;
+numEpochs = 50; % NOTE: Changed generations to epochs because political correctness
 numRuns = 25;
+useD = 0; % 1 - use difference reward, 0 - use global reward
 
 % Values for components below are arbitrary. Change as necessary.
 % See create_agents.m for details
@@ -24,40 +25,43 @@ accGravity=9.81;
 
 % Value for epsilon-greedy action selection
 epsilon = 0.1;
+% Learning rate
+alpha = 0.1;
 
 [batteryData, motorData, propData, foilData] = load_data('batterytable.csv', ...
     'motortable.csv', 'propranges.csv', 'airfoiltable.csv');
 
 % Create counterfactual components
-[avgCell, avgMotor, avgProp, avgFoil] = counter_calc(batteryData, motorData, propData, foilData);
+[avgCell, avgMotor, avgProp, avgFoil] = counter_calc(batteryData, ...
+    motorData, propData, foilData);
 
-performance = zeros(numRuns, numGenerations);
-finalConverge = uint8(zeros(numRuns, numel([batteryAgents motorAgents propAgents])));
-
+performance = zeros(numRuns, numEpochs);
+numAgents = numel([batteryAgents motorAgents propAgents]);
+% The discrete action choices of the agents that give best performance
+bestActions = uint8(zeros(numRuns, numAgents));
+% The design parameters resulting from the agents' best actions
+bestParams = cell(numRuns);
 for r = 1:numRuns
     % Create the agents
     agents = create_agents(batteryAgents, motorAgents, propAgents);
 
-    rewards_hist = zeros(numel(agents), numGenerations);
-    actions_hist = zeros(numel(agents), numGenerations);
+    rewards_hist = zeros(numAgents, numRuns, numEpochs);
+    actions_hist = zeros(numAgents, numRuns, numEpochs);
 
-
-
-    for g = 1:numGenerations
+    % The best performance obtained by the team
+    maxG = 0;
+    for e = 1:numEpochs
         % Have agents choose actions
         actions = choose_actions(agents, epsilon);
-        actions_hist(:, g) = actions;
+        actions_hist(:, r, e) = actions;
 
-        % cell that was chosen, contains data (don't care about vars a b c for
-        % now)
+        % cell that was chosen, contains data
         temp = batteryData(actions(1), :);
         cell.Cost = temp(1); cell.Cap = temp(2) / 1000; 
         cell.C = temp(3); cell.Mass = temp(4) / 1000;
         % C is C Rating
         battery.sConfigs = double(actions(2)); % number of serial configurations
         battery.pConfigs = double(actions(3)); % number of parallel configurations
-
-        
 
         % temp is our motor choice
         temp =  motorData(actions(4), :);
@@ -85,17 +89,24 @@ for r = 1:numRuns
         foil.Reref=foilData(actions(5),8);
         foil.Reexp=foilData(actions(5),9);
 
-        [rewards, G] = compute_rewards(cell, battery, motor, prop, foil, avgCell, avgMotor, avgProp, avgFoil);
-        rewards_hist(:, g) = rewards;
+        % Get rewards for agents and system performance
+        [rewards, G] = compute_rewards(useD, cell, battery, motor, prop,...
+            foil, avgCell, avgMotor, avgProp, avgFoil);
+        rewards_hist(:, r, e) = rewards;
 
-        agents = update_values(agents, rewards, actions, 0.1);
+        agents = update_values(agents, rewards, actions, alpha);
 
-        performance(r,g) = G;
+        performance(r,e) = G / 60; % convert to seconds
         
+        % If this is the best performance encountered so far...
+        if G > maxG
+            maxG = G;
+            % Update record of actions that got us there
+            bestActions(r, :) = actions;
+            % As well as the parameters that describe the design
+            bestParams{r} = {battery, motor, prop, foil};            
+        end
     end
-    
-    finalConverge(r, :) = actions;
-    finalParams{r} = {battery, motor};
 end
 
 avgPerf = mean(performance, 1);
