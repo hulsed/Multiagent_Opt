@@ -6,6 +6,8 @@ numEpochs = 50; % NOTE: Changed generations to epochs because political correctn
 numRuns = 25;
 useD = 0; % 1 - use difference reward, 0 - use global reward
 
+penalty=100;  %temp. This penalty should ideally be increased over time to enforce feasiblity
+
 % Values for components below are arbitrary. Change as necessary.
 % See create_agents.m for details
 
@@ -37,7 +39,11 @@ alpha = 0.1;
 [avgCell, avgMotor, avgProp, avgFoil] = counter_calc(batteryData, ...
     motorData, propData, foilData);
 
-performance = zeros(numRuns, numEpochs);
+G_hist= zeros(numRuns, numEpochs);
+flightTime_hist= zeros(numRuns, numEpochs);
+
+
+
 numAgents = numel([batteryAgents motorAgents propAgents rodAgents]);
 % The discrete action choices of the agents that give best performance
 bestActions = uint8(zeros(numRuns, numAgents));
@@ -51,7 +57,7 @@ for r = 1:numRuns
     actions_hist = zeros(numAgents, numRuns, numEpochs);
 
     % The best performance obtained by the team
-    maxG = 0;
+    maxG(r) = 0;
     for e = 1:numEpochs
         % Have agents choose actions
         actions = choose_actions(agents, epsilon);
@@ -111,26 +117,29 @@ for r = 1:numRuns
         rod.Cost=mat.Cost*rod.Vol;
 
         % Get rewards for agents and system performance
-        [rewards, G] = compute_rewards(useD, cell, battery, motor, prop,...
+        [rewards, G, flightTime,constraints] = compute_rewards(useD, penalty,...
+            cell, battery, motor, prop,...
             foil, rod, avgCell, avgMotor, avgProp, avgFoil);
         rewards_hist(:, r, e) = rewards;
-
+        constraint_hist(:,r,e)=constraints;
+        G_hist(r,e)=G;
+        flightTime_hist(r,e)=flightTime;
+        
         agents = update_values(agents, rewards, actions, alpha);
-
-        performance(r,e) = G / 60; % convert to seconds
         
         % If this is the best performance encountered so far...
-        if G > maxG
-            maxG = G;
+        if G > maxG(r)
+            maxG(r) = G;
             % Update record of actions that got us there
             bestActions(r, :) = actions;
             % As well as the parameters that describe the design
-            bestParams{r} = {battery, motor, prop, foil};            
+            bestParams{r} = {battery, motor, prop, foil,rod};            
         end
     end
 end
 
-avgPerf = mean(performance, 1);
+avgflightTime = mean(flightTime_hist);
+avgG=mean(G_hist);
 
 toc % Spit out execution time
 

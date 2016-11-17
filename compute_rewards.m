@@ -1,4 +1,4 @@
- function [rewards, G] = compute_rewards(useD, cell, battery, motor, prop, foil, rod, avgCell, avgMotor, avgProp, avgFoil)
+ function [rewards, G,flightTime,constraints] = compute_rewards(useD, penalty, cell, battery, motor, prop, foil, rod, avgCell, avgMotor, avgProp, avgFoil)
     % Battery calculations
     numCells = battery.sConfigs * battery.pConfigs;
     % Make battery struct. Properties are accessible with .
@@ -11,7 +11,7 @@
     battery.Energy = battery.Volt * battery.Cap * 3600; % Amps * voltage
     
     % Global System Performance
-    G = calc_G(battery, motor, prop, foil, rod);
+    [G,flightTime,constraints] = calc_G(penalty, battery, motor, prop, foil, rod);
     
     %ostensibly this is also where we calculate constraint penalties.
     

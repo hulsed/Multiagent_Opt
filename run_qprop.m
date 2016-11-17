@@ -1,4 +1,4 @@
-function [fail,elec_power_used]=run_qprop(battery, motor, prop, foil, rod)
+function [fail,elec_power_used,perf,hoverindex]=run_qprop(battery, motor, prop, foil, rod)
 
     % I'm breaking my own convention for this variable
     % Instead of camelCase, I'm using an underscore. I confess my sins.
@@ -101,43 +101,44 @@ function [fail,elec_power_used]=run_qprop(battery, motor, prop, foil, rod)
         delete('qpropoutput')
     end
     % Whichever way we got the output of QProp, get our individual outputs
-    velocity_qout=qpropoutput{1};
-    rpm_qout=qpropoutput{2};
-    Dbeta_qout=qpropoutput{3};
-    thrust_qout=qpropoutput{4};
-    q_qout=qpropoutput{5};
-    pshaft_qout=qpropoutput{6};
-    volts_qout=qpropoutput{7};
-    amps_qout=qpropoutput{8};
-    effmotor_qout=qpropoutput{9};
-    effprop_qout=qpropoutput{10};
-    adv_qout=qpropoutput{11};
-    ct_qout=qpropoutput{12};
-    cp_qout=qpropoutput{13};
-    dv_qout=qpropoutput{14};
-    eff_qout=qpropoutput{15};
-    pelec_qout=qpropoutput{16};
-    pprop_qout=qpropoutput{17};
-    clavg_qout=qpropoutput{18};
-    cdavg_qout=qpropoutput{19};
+    perf.velocity=qpropoutput{1};
+    perf.rpm=qpropoutput{2};
+    perf.dbeta=qpropoutput{3};
+    perf.thrust=qpropoutput{4};
+    perf.q=qpropoutput{5};
+    perf.pshaft=qpropoutput{6};
+    perf.volts=qpropoutput{7};
+    perf.amps=qpropoutput{8};
+    perf.effmotor=qpropoutput{9};
+    perf.effprop=qpropoutput{10};
+    perf.adv=qpropoutput{11};
+    perf.ct=qpropoutput{12};
+    perf.cp=qpropoutput{13};
+    perf.dv=qpropoutput{14};
+    perf.eff=qpropoutput{15};
+    perf.pelec=qpropoutput{16};
+    perf.pprop=qpropoutput{17};
+    perf.clavg=qpropoutput{18};
+    perf.cdavg=qpropoutput{19};
 
     fail=0;
     
-    stoptime=length(velocity_qout);
+    stoptime=length(perf.velocity);
     failindex=0;
     for i=1:stoptime
-        if thrust_qout(i)>=thrust_req
+        if perf.thrust(i)>=thrust_req
             hoverindex=i;
             break
         end
         failindex=i;
+        hoverindex=0;
     end
-    if failindex==stoptime || battery.Imax <= amps_qout(hoverindex) || motor.Imax <= amps_qout(hoverindex)
+    if failindex==stoptime 
         fail=1;
     end
 
     if ~fail 
-        elec_power_used=pelec_qout(hoverindex);
+        elec_power_used=perf.pelec(hoverindex);
     else
         elec_power_used=Inf;
     end
