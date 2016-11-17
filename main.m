@@ -4,7 +4,7 @@ clear variables
 
 numEpochs = 50; % NOTE: Changed generations to epochs because political correctness
 numRuns = 25;
-useD = 0; % 1 - use difference reward, 0 - use global reward
+useD = 1; % 1 - use difference reward, 0 - use global reward
 
 penalty=100;  %temp. This penalty should ideally be increased over time to enforce feasiblity
 
@@ -36,25 +36,26 @@ alpha = 0.1;
     'motortable.csv', 'propranges.csv', 'airfoiltable.csv','rodtable.csv','materialtable.csv');
 
 % Create counterfactual components
-[avgCell, avgMotor, avgProp, avgFoil] = counter_calc(batteryData, ...
-    motorData, propData, foilData);
+[avgCell, avgMotor, avgProp, avgFoil, avgRod, avgMat] = counter_calc(batteryData, ...
+    motorData, propData, foilData, rodData, matData);
 
 G_hist= zeros(numRuns, numEpochs);
 flightTime_hist= zeros(numRuns, numEpochs);
-
-
 
 numAgents = numel([batteryAgents motorAgents propAgents rodAgents]);
 % The discrete action choices of the agents that give best performance
 bestActions = uint8(zeros(numRuns, numAgents));
 % The design parameters resulting from the agents' best actions
 bestParams = cell(numRuns);
+
+rewards_hist = zeros(numAgents, numRuns, numEpochs);
+actions_hist = zeros(numAgents, numRuns, numEpochs);
+%constraint_hist = zeros(numAgents, numRuns, numEpochs);
+
+maxG = zeros(numRuns, 1);
 for r = 1:numRuns
     % Create the agents
     agents = create_agents(batteryAgents, motorAgents, propAgents,rodAgents);
-
-    rewards_hist = zeros(numAgents, numRuns, numEpochs);
-    actions_hist = zeros(numAgents, numRuns, numEpochs);
 
     % The best performance obtained by the team
     maxG(r) = 0;
@@ -97,7 +98,9 @@ for r = 1:numRuns
         foil.Reref=foilData(actions(5),8);
         foil.Reexp=foilData(actions(5),9);
 
-        %rod=0; %temp
+        % NOTE FOR DANIEL: actions is an array of uint8
+        % Just be aware that if a uint8 is multiplied with a double
+        % the result is a uint8, so you lose precision
         mat.Type=actions(11);
         mat.Ymod=matData(actions(11),1); %young's modulus in GPa
         mat.Sut=matData(actions(11),2); %ultimate strength in MPa
@@ -117,11 +120,11 @@ for r = 1:numRuns
         rod.Cost=mat.Cost*rod.Vol;
 
         % Get rewards for agents and system performance
-        [rewards, G, flightTime,constraints] = compute_rewards(useD, penalty,...
-            cell, battery, motor, prop,...
-            foil, rod, avgCell, avgMotor, avgProp, avgFoil);
+        [rewards, G, flightTime,constraints] = compute_rewards(useD, penalty, ...
+            cell, battery, motor, prop, foil, rod, mat, avgCell, avgMotor, ...
+            avgProp, avgFoil, avgRod, avgMat);
         rewards_hist(:, r, e) = rewards;
-        constraint_hist(:,r,e)=constraints;
+        constraint_hist(:,r,e) = constraints;
         G_hist(r,e)=G;
         flightTime_hist(r,e)=flightTime;
         

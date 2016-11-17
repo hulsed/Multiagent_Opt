@@ -1,4 +1,9 @@
- function [rewards, G,flightTime,constraints] = compute_rewards(useD, penalty, cell, battery, motor, prop, foil, rod, avgCell, avgMotor, avgProp, avgFoil)
+ function [rewards, G, flightTime, constraints] = compute_rewards(useD, ...
+     penalty, cell, battery, motor, prop, foil, rod, mat, avgCell, avgMotor, ...
+     avgProp, avgFoil, avgRod, avgMat)
+    % I included the material in the inputs because I didn't know how to
+    % compute the counterfactual rod otherwise... -B
+ 
     % Battery calculations
     numCells = battery.sConfigs * battery.pConfigs;
     % Make battery struct. Properties are accessible with .
@@ -11,7 +16,7 @@
     battery.Energy = battery.Volt * battery.Cap * 3600; % Amps * voltage
     
     % Global System Performance
-    [G,flightTime,constraints] = calc_G(penalty, battery, motor, prop, foil, rod);
+    [G, flightTime, constraints] = calc_G(penalty, battery, motor, prop, foil, rod);
     
     %ostensibly this is also where we calculate constraint penalties.
     
@@ -26,7 +31,18 @@
         counterProp.chordRoot = prop.chordRoot; % chord at root (inch->m)
         counterProp.chordTip = prop.chordTip; % chord at tip (inch->m)
 
-        for ag = 1:10
+        counterRod.mat = mat.Type;
+        counterRod.Ymod = mat.Ymod;
+        counterRod.Sut = mat.Sut;
+        counterRod.Length = rod.Length;
+        counterRod.Dia = rod.Dia;
+        counterRod.Thick = rod.Thick;
+        counterRod.Area = rod.Area;
+        counterRod.Vol = rod.Vol;
+        counterRod.Mass = rod.Vol*mat.Dens;
+        counterRod.Cost = mat.Cost*rod.Vol;
+        
+        for ag = 1:14
             switch ag
                 case 1 % want to replace cell with avgCell
                     counterBattery.sConfigs = battery.sConfigs;
@@ -40,7 +56,7 @@
                     counterBattery.Imax = counterBattery.C.*counterBattery.Cap; % convert to amps
                     counterBattery.Energy = counterBattery.Volt * counterBattery.Cap * 3600; % Amps * voltage
 
-                    rewards(ag, 1) = G - calc_G(counterBattery, motor, prop, foil);
+                    rewards(ag, 1) = G - calc_G(penalty, counterBattery, motor, prop, foil, rod);
                 case 2 % replace sConfigs with 2
                     counterBattery.sConfigs = 2;
                     counterBattery.pConfigs = battery.pConfigs;
@@ -53,7 +69,7 @@
                     counterBattery.Imax = counterBattery.C.*counterBattery.Cap;
                     counterBattery.Energy = counterBattery.Volt * counterBattery.Cap * 3600; % Amps * voltage
 
-                    rewards(ag, 1) = G - calc_G(counterBattery, motor, prop, foil);
+                    rewards(ag, 1) = G - calc_G(penalty, counterBattery, motor, prop, foil, rod);
                 case 3 % replace pConfigs with 1
                     counterBattery.sConfigs = battery.sConfigs;
                     counterBattery.pConfigs = 1;
@@ -66,26 +82,56 @@
                     counterBattery.Imax = counterBattery.C.*counterBattery.Cap; % convert to amps
                     counterBattery.Energy = counterBattery.Volt * counterBattery.Cap * 3600; % Amps * voltage
 
-                    rewards(ag, 1) = G - calc_G(counterBattery, motor, prop, foil);
+                    rewards(ag, 1) = G - calc_G(penalty, counterBattery, motor, prop, foil, rod);
                 case 4
-                    rewards(ag, 1) = G - calc_G(battery, avgMotor, prop, foil);
+                    rewards(ag, 1) = G - calc_G(penalty, battery, avgMotor, prop, foil, rod);
                 case 5 % foil
-                    rewards(ag, 1) = G - calc_G(battery, motor, prop, avgFoil);
+                    rewards(ag, 1) = G - calc_G(penalty, battery, motor, prop, avgFoil, rod);
                 case 6
                     counterProp.diameter = avgProp.diameter; % diameter (inch->m)
-                    rewards(ag, 1) = G - calc_G(battery, motor, counterProp, foil);
+                    rewards(ag, 1) = G - calc_G(penalty, battery, motor, counterProp, foil, rod);
                 case 7
                     counterProp.angleRoot = avgProp.angleRoot; % blade angle at root
-                    rewards(ag, 1) = G - calc_G(battery, motor, counterProp, foil);
+                    rewards(ag, 1) = G - calc_G(penalty, battery, motor, counterProp, foil, rod);
                 case 8
                     counterProp.angleTip = avgProp.angleTip; % blade angle at tip
-                    rewards(ag, 1) = G - calc_G(battery, motor, counterProp, foil);
+                    rewards(ag, 1) = G - calc_G(penalty, battery, motor, counterProp, foil, rod);
                 case 9
                     counterProp.chordRoot = avgProp.chordRoot; % chord at root (inch->m)
-                    rewards(ag, 1) = G - calc_G(battery, motor, counterProp, foil);
+                    rewards(ag, 1) = G - calc_G(penalty, battery, motor, counterProp, foil, rod);
                 case 10
                     counterProp.chordTip = avgProp.chordTip; % chord at tip (inch->m)
-                    rewards(ag, 1) = G - calc_G(battery, motor, counterProp, foil);
+                    rewards(ag, 1) = G - calc_G(penalty, battery, motor, counterProp, foil, rod);
+                case 11 % material
+                    % Counterfact rod's material replaced with avg material
+                    counterRod.Ymod = avgMat.Ymod;
+                    counterRod.Sut = avgMat.Sut;
+                    counterRod.Mass = counterRod.Vol*avgMat.Dens;
+                    counterRod.Cost = avgMat.Cost*counterRod.Vol;
+                    rewards(ag, 1) = G - calc_G(penalty, battery, motor, prop, foil, counterRod);
+                case 12 % Rod length
+                    % Counterfact rod's length is replaced with avg rod length
+                    counterRod.Length = avgRod.Length;
+                    counterRod.Vol = counterRod.Length*counterRod.Area;
+                    counterRod.Mass = counterRod.Vol*mat.Dens;
+                    counterRod.Cost = mat.Cost*counterRod.Vol;
+                    rewards(ag, 1) = G - calc_G(penalty, battery, motor, prop, foil, counterRod);
+                case 13
+                    % Counterfact rod's dia replaced with avg rod's dia
+                    counterRod.Dia = avgRod.Dia;
+                    counterRod.Area = .5*pi*(counterRod.Dia^2-(counterRod.Dia-counterRod.Thick)^2);
+                    counterRod.Vol = counterRod.Length*counterRod.Area;
+                    counterRod.Mass = counterRod.Vol*mat.Dens; % in kg
+                    counterRod.Cost = mat.Cost*counterRod.Vol;
+                    rewards(ag, 1) = G - calc_G(penalty, battery, motor, prop, foil, counterRod);
+                case 14
+                    % thickness replaced by avg rod's thickness
+                    counterRod.Thick = avgRod.Thick;
+                    counterRod.Area = .5*pi*(counterRod.Dia^2-(counterRod.Dia-counterRod.Thick)^2);
+                    counterRod.Vol = counterRod.Length*counterRod.Area;
+                    counterRod.Mass = counterRod.Vol*mat.Dens; % in kg
+                    counterRod.Cost = mat.Cost*counterRod.Vol;
+                    rewards(ag, 1) = G - calc_G(penalty, battery, motor, prop, foil, counterRod);
             end
         end   
     end

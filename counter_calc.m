@@ -1,4 +1,5 @@
-function [avgCell, avgMotor, avgProp, avgFoil] = counter_calc(batteryData, motorData, propData, foilData)
+function [avgCell, avgMotor, avgProp, avgFoil, avgRod, avgMat] ...
+    = counter_calc(batteryData, motorData, propData, foilData, rodData, matData)
 
 % creating a counterfactual cell
 avgCell.Cost=mean(batteryData(:,1));
@@ -46,3 +47,18 @@ avgFoil.Cd2=mean(foilData(:,6)*360/(2*pi)); %converting to 1/deg to 1/rad
 avgFoil.Clcd0=mean(foilData(:,7));
 avgFoil.Reref=mean(foilData(:,8));
 avgFoil.Reexp=mean(foilData(:,9));
+
+% Average Rod Stewart
+avgMat.Ymod=mean(matData(:,1)); %young's modulus in GPa
+avgMat.Sut=mean(matData(:,2)); %ultimate strength in MPa
+avgMat.Sy=mean(matData(:,3)); %yield strength in MPa
+avgMat.Dens=mean(matData(:,4)); %density in kg/m^3
+avgMat.Cost=mean(matData(:,5))*(100/2.54)^3; %cost in $/m^3
+
+avgRod.Length=mean(rodData(:,1))*2.54/100; %length converted to m
+avgRod.Dia=mean(rodData(:,2))*2.54/100; %diamenter converted to m
+avgRod.Thick=mean(rodData(:,3))*2.54/100; %thickness converted to m
+% avgRod.Area=.5*pi*(avgRod.Dia^2-(avgRod.Dia-avgRod.Thick)^2);
+% avgRod.Vol=avgRod.Length*avgRod.Area;
+% avgRod.Mass=avgRod.Vol*avgMat.Dens; % in kg
+% avgRod.Cost=avgMat.Cost*avgRod.Vol;

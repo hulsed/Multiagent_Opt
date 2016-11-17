@@ -1,4 +1,4 @@
-function [constraints,conRewards]=calc_constraints(penalty,battery, motor, prop,foil,rod, perf,hoverindex)
+function [constraints,conRewards]=calc_constraints(penalty,battery, motor, prop, foil, rod, perf, hoverindex)
 
 
 
