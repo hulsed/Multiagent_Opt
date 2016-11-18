@@ -3,17 +3,6 @@
      avgProp, avgFoil, avgRod, avgMat)
     % I included the material in the inputs because I didn't know how to
     % compute the counterfactual rod otherwise... -B
- 
-    % Battery calculations
-    numCells = battery.sConfigs * battery.pConfigs;
-    % Make battery struct. Properties are accessible with .
-    battery.Cost = cell.Cost * numCells;
-    battery.Mass = cell.Mass * numCells;
-    battery.Volt = 3.7 * battery.sConfigs; % 3.7V is nominal voltage 
-    battery.Cap = cell.Cap * battery.pConfigs; % total capacity is cell cap times parallel configs
-    battery.C = cell.C;
-    battery.Imax = battery.C.*battery.Cap;
-    battery.Energy = battery.Volt * battery.Cap * 3600; % Amps * voltage
     
     % Global System Performance
     [G, flightTime, constraints] = calc_G(penalty, battery, motor, prop, foil, rod);
@@ -38,6 +27,8 @@
         counterRod.Dia = rod.Dia;
         counterRod.Thick = rod.Thick;
         counterRod.Area = rod.Area;
+        counterRod.Amoment=pi*(rod.Dia^2-(rod.Dia-rod.Thick)^2)/64; %area moment of inertia
+        counterRod.Stiffness=rod.Length^3/(3*rod.Amoment*1e9*mat.Ymod);
         counterRod.Vol = rod.Vol;
         counterRod.Mass = rod.Vol*mat.Dens;
         counterRod.Cost = mat.Cost*rod.Vol;
@@ -106,12 +97,14 @@
                     % Counterfact rod's material replaced with avg material
                     counterRod.Ymod = avgMat.Ymod;
                     counterRod.Sut = avgMat.Sut;
+                    counterRod.Stiffness=counterRod.Length^3/(3*counterRod.Amoment*1e9*avgMat.Ymod);
                     counterRod.Mass = counterRod.Vol*avgMat.Dens;
                     counterRod.Cost = avgMat.Cost*counterRod.Vol;
                     rewards(ag, 1) = G - calc_G(penalty, battery, motor, prop, foil, counterRod);
                 case 12 % Rod length
                     % Counterfact rod's length is replaced with avg rod length
                     counterRod.Length = avgRod.Length;
+                    counterRod.Stiffness=counterRod.Length^3/(3*counterRod.Amoment*1e9*mat.Ymod);
                     counterRod.Vol = counterRod.Length*counterRod.Area;
                     counterRod.Mass = counterRod.Vol*mat.Dens;
                     counterRod.Cost = mat.Cost*counterRod.Vol;
@@ -120,6 +113,8 @@
                     % Counterfact rod's dia replaced with avg rod's dia
                     counterRod.Dia = avgRod.Dia;
                     counterRod.Area = .5*pi*(counterRod.Dia^2-(counterRod.Dia-counterRod.Thick)^2);
+                    counterRod.Amoment=pi*(counterRod.Dia^2-(counterRod.Dia-counterRod.Thick)^2)/64; %area moment of inertia
+                    counterRod.Stiffness=counterRod.Length^3/(3*counterRod.Amoment*1e9*mat.Ymod);
                     counterRod.Vol = counterRod.Length*counterRod.Area;
                     counterRod.Mass = counterRod.Vol*mat.Dens; % in kg
                     counterRod.Cost = mat.Cost*counterRod.Vol;
@@ -128,6 +123,8 @@
                     % thickness replaced by avg rod's thickness
                     counterRod.Thick = avgRod.Thick;
                     counterRod.Area = .5*pi*(counterRod.Dia^2-(counterRod.Dia-counterRod.Thick)^2);
+                    counterRod.Amoment=pi*(counterRod.Dia^2-(counterRod.Dia-counterRod.Thick)^2)/64; %area moment of inertia
+                    counterRod.Stiffness=counterRod.Length^3/(3*counterRod.Amoment*1e9*mat.Ymod);
                     counterRod.Vol = counterRod.Length*counterRod.Area;
                     counterRod.Mass = counterRod.Vol*mat.Dens; % in kg
                     counterRod.Cost = mat.Cost*counterRod.Vol;

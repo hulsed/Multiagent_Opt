@@ -6,8 +6,8 @@ function [G,flightTime,constraints] = calc_G(penalty, battery, motor, prop, foil
     if ~failure
     [constraints,conRewards]=calc_constraints(penalty, battery,motor,prop,foil,rod,perf,hoverindex);
     else
-        conRewards=zeros(1,4);
-        constraints=zeros(1,4);
+        conRewards=zeros(1,7); %4 is the number of constraints used.
+        constraints=zeros(1,7);
     end
        
     % Calculation of Objectives

@@ -4,7 +4,7 @@ clear variables
 
 numEpochs = 50; % NOTE: Changed generations to epochs because political correctness
 numRuns = 25;
-useD = 0; % 1 - use difference reward, 0 - use global reward
+useD = 1; % 1 - use difference reward, 0 - use global reward
 
 penalty=100;  %temp. This penalty should ideally be increased over time to enforce feasiblity
 
@@ -36,25 +36,26 @@ alpha = 0.1;
     'motortable.csv', 'propranges.csv', 'airfoiltable.csv','rodtable.csv','materialtable.csv');
 
 % Create counterfactual components
-[avgCell, avgMotor, avgProp, avgFoil] = counter_calc(batteryData, ...
-    motorData, propData, foilData);
+[avgCell, avgMotor, avgProp, avgFoil, avgRod, avgMat] = counter_calc(batteryData, ...
+    motorData, propData, foilData, rodData, matData);
 
 G_hist= zeros(numRuns, numEpochs);
 flightTime_hist= zeros(numRuns, numEpochs);
-
-
 
 numAgents = numel([batteryAgents motorAgents propAgents rodAgents]);
 % The discrete action choices of the agents that give best performance
 bestActions = uint8(zeros(numRuns, numAgents));
 % The design parameters resulting from the agents' best actions
 bestParams = cell(numRuns);
+
+rewards_hist = zeros(numAgents, numRuns, numEpochs);
+actions_hist = zeros(numAgents, numRuns, numEpochs);
+%constraint_hist = zeros(numAgents, numRuns, numEpochs);
+
+maxG = zeros(numRuns, 1);
 for r = 1:numRuns
     % Create the agents
     agents = create_agents(batteryAgents, motorAgents, propAgents,rodAgents);
-
-    rewards_hist = zeros(numAgents, numRuns, numEpochs);
-    actions_hist = zeros(numAgents, numRuns, numEpochs);
 
     % The best performance obtained by the team
     maxG(r) = 0;
@@ -70,7 +71,19 @@ for r = 1:numRuns
         % C is C Rating
         battery.sConfigs = double(actions(2)); % number of serial configurations
         battery.pConfigs = double(actions(3)); % number of parallel configurations
-
+        
+        % Make battery struct. Properties are accessible with .
+        numCells = battery.sConfigs * battery.pConfigs;
+        battery.Cost = cell.Cost * numCells;
+        battery.Mass = cell.Mass * numCells;
+        battery.Volt = 3.7 * battery.sConfigs; % 3.7V is nominal voltage 
+        battery.Cap = cell.Cap * battery.pConfigs; % total capacity is cell cap times parallel configs
+        battery.C = cell.C;
+        battery.Imax = battery.C.*battery.Cap;
+        battery.Energy = battery.Volt * battery.Cap * 3600; % Amps * voltage
+              
+        
+        
         % temp is our motor choice
         temp =  motorData(actions(4), :);
         % For R0, convert to Ohms
@@ -85,7 +98,8 @@ for r = 1:numRuns
         prop.angleTip = propData(actions(8), 4); % blade angle at tip
         prop.chordRoot = propData(actions(9), 5)*0.054; % chord at root (inch->m)
         prop.chordTip = propData(actions(10), 6)*0.054; % chord at tip (inch->m)
-
+        %NOTE: Need prop mass!
+        
         % Characterizing propeller.
         foil.Cl0=foilData(actions(5),1);
         foil.Cla=foilData(actions(5),2)*360/(2*pi); %converting to 1/deg to 1/rad
@@ -97,7 +111,9 @@ for r = 1:numRuns
         foil.Reref=foilData(actions(5),8);
         foil.Reexp=foilData(actions(5),9);
 
-        %rod=0; %temp
+        % NOTE FOR DANIEL: actions is an array of uint8
+        % Just be aware that if a uint8 is multiplied with a double
+        % the result is a uint8, so you lose precision
         mat.Type=actions(11);
         mat.Ymod=matData(actions(11),1); %young's modulus in GPa
         mat.Sut=matData(actions(11),2); %ultimate strength in MPa
@@ -112,16 +128,19 @@ for r = 1:numRuns
         rod.Dia=rodData(actions(13),2)*2.54/100; %diamenter converted to m
         rod.Thick=rodData(actions(14),3)*2.54/100; %thickness converted to m
         rod.Area=.5*pi*(rod.Dia^2-(rod.Dia-rod.Thick)^2);
+        rod.Amoment=pi*(rod.Dia^2-(rod.Dia-rod.Thick)^2)/64; %area moment of inertia
+        rod.Stiffness=rod.Length^3/(3*rod.Amoment*1e9*mat.Ymod);
         rod.Vol=rod.Length*rod.Area;
         rod.Mass=rod.Vol*mat.Dens; % in kg
         rod.Cost=mat.Cost*rod.Vol;
+        
 
         % Get rewards for agents and system performance
-        [rewards, G, flightTime,constraints] = compute_rewards(useD, penalty,...
-            cell, battery, motor, prop,...
-            foil, rod, avgCell, avgMotor, avgProp, avgFoil);
+        [rewards, G, flightTime,constraints] = compute_rewards(useD, penalty, ...
+            cell, battery, motor, prop, foil, rod, mat, avgCell, avgMotor, ...
+            avgProp, avgFoil, avgRod, avgMat);
         rewards_hist(:, r, e) = rewards;
-        constraint_hist(:,r,e)=constraints;
+        constraint_hist(:,r,e) = constraints;
         G_hist(r,e)=G;
         flightTime_hist(r,e)=flightTime;
         
@@ -135,6 +154,7 @@ for r = 1:numRuns
             % As well as the parameters that describe the design
             bestParams{r} = {battery, motor, prop, foil,rod};            
         end
+        disp([num2str(r) ', ' num2str(e)])
     end
 end
 

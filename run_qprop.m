@@ -17,17 +17,20 @@ function [fail,elec_power_used,perf,hoverindex]=run_qprop(battery, motor, prop, 
     
     totMass = 4*motor.Mass + battery.Mass+4*rod.Mass;
     thrust_req = totMass*9.81; % Let's just always assume accel of gravity is 9.81
-
+    
     vel=0.0;
-
-    volt_incr=1;
+    numPts=8;
+    volt_max=round(battery.Volt+3.7);
+    volt_incr=volt_max/numPts;
 
 %     vel battery.Volt volt_incr thrust_req
 %     motor.R0, motor.I0, motor.kv
 %     foil.Cl0, foil.Cla, foil.Clmin, foil.Clmax, foil.Cd0, foil.Cd2, foil.Clcd0, foil.Reref, foil.Reexp,
     % Combine all inputs needed for qprop (including those from motorfile
     % and propfile)
-    qpropVars = [vel battery.Volt volt_incr thrust_req ...
+    %Note: we may not need thrust_req for this... I'm not sure it actually
+    %changes the result of qprop
+    qpropVars = [vel volt_max volt_incr ...
         motor.R0 motor.I0 motor.kv foil.Cl0, foil.Cla, foil.Clmin, ...
         foil.Clmax foil.Cd0 foil.Cd2 foil.Clcd0 foil.Reref foil.Reexp];
     qpropVars = num2str(qpropVars, '%.4f ');
@@ -74,12 +77,12 @@ function [fail,elec_power_used,perf,hoverindex]=run_qprop(battery, motor, prop, 
         if velstr=='0'
             velstr='0.0';
         end
-        max_voltagestr=num2str(battery.Volt);
+        max_voltagestr=num2str(volt_max);
         volt_incrstr=num2str(volt_incr);
-        thruststr=num2str(thrust_req);
+        %thruststr=num2str(thrust_req);
 
         qpropinput=['qprop.exe propfile motorfile ', velstr, ' 0',' 0',',', ...
-            max_voltagestr,',',volt_incrstr, ' 0 ' thruststr, ' 0 0 0 ["]' ];
+            max_voltagestr,',',volt_incrstr, ' 0 0 0 0 0 ["]' ];
 
         %Note about qprop syntax:
         %The input looks like

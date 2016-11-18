@@ -3,7 +3,7 @@ tic % Begin measuring time of execution
 clear variables
 
 numEpochs = 50; % NOTE: Changed generations to epochs because political correctness
-numRuns = 25;
+numRuns = 10 %25; %Note: D runs slow, so fewer runs is a better idea.
 useD = 1; % 1 - use difference reward, 0 - use global reward
 
 penalty=100;  %temp. This penalty should ideally be increased over time to enforce feasiblity
@@ -71,7 +71,19 @@ for r = 1:numRuns
         % C is C Rating
         battery.sConfigs = double(actions(2)); % number of serial configurations
         battery.pConfigs = double(actions(3)); % number of parallel configurations
-
+        
+        % Make battery struct. Properties are accessible with .
+        numCells = battery.sConfigs * battery.pConfigs;
+        battery.Cost = cell.Cost * numCells;
+        battery.Mass = cell.Mass * numCells;
+        battery.Volt = 3.7 * battery.sConfigs; % 3.7V is nominal voltage 
+        battery.Cap = cell.Cap * battery.pConfigs; % total capacity is cell cap times parallel configs
+        battery.C = cell.C;
+        battery.Imax = battery.C.*battery.Cap;
+        battery.Energy = battery.Volt * battery.Cap * 3600; % Amps * voltage
+              
+        
+        
         % temp is our motor choice
         temp =  motorData(actions(4), :);
         % For R0, convert to Ohms
@@ -86,7 +98,8 @@ for r = 1:numRuns
         prop.angleTip = propData(actions(8), 4); % blade angle at tip
         prop.chordRoot = propData(actions(9), 5)*0.054; % chord at root (inch->m)
         prop.chordTip = propData(actions(10), 6)*0.054; % chord at tip (inch->m)
-
+        %NOTE: Need prop mass!
+        
         % Characterizing propeller.
         foil.Cl0=foilData(actions(5),1);
         foil.Cla=foilData(actions(5),2)*360/(2*pi); %converting to 1/deg to 1/rad
@@ -115,9 +128,12 @@ for r = 1:numRuns
         rod.Dia=rodData(actions(13),2)*2.54/100; %diamenter converted to m
         rod.Thick=rodData(actions(14),3)*2.54/100; %thickness converted to m
         rod.Area=.5*pi*(rod.Dia^2-(rod.Dia-rod.Thick)^2);
+        rod.Amoment=pi*(rod.Dia^2-(rod.Dia-rod.Thick)^2)/64; %area moment of inertia
+        rod.Stiffness=rod.Length^3/(3*rod.Amoment*1e9*mat.Ymod);
         rod.Vol=rod.Length*rod.Area;
         rod.Mass=rod.Vol*mat.Dens; % in kg
         rod.Cost=mat.Cost*rod.Vol;
+        
 
         % Get rewards for agents and system performance
         [rewards, G, flightTime,constraints] = compute_rewards(useD, penalty, ...
@@ -138,6 +154,7 @@ for r = 1:numRuns
             % As well as the parameters that describe the design
             bestParams{r} = {battery, motor, prop, foil,rod};            
         end
+        disp([num2str(r) ', ' num2str(e)])
     end
 end
 
