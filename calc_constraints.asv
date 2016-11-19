@@ -34,7 +34,7 @@ function [constraints,conRewards]=calc_constraints(penalty,battery, motor, prop,
  
  %deflection (1% of length, max)
  maxDefl=0.01*rod.Length;
- defl=perf.thrust(hoverindex)/rod.Stiffness;
+ defl=perf.thrust(hoverindex)*rod.Stiffness;
  constraints(6)=defl/maxDefl-1;
  %impact
  
@@ -47,7 +47,7 @@ function [constraints,conRewards]=calc_constraints(penalty,battery, motor, prop,
  
  check=length(constraints);
  for i=1:check
-    if constraints(i)>0
+    if constraints(i)<0
         conRewards(i)=-penalty*constraints(i)^2;
     else
         conRewards(i)=0;
