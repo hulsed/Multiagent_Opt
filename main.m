@@ -122,14 +122,14 @@ for r = 1:numRuns
         mat.Cost=matData(actions(11),5)*(100/2.54)^3; %cost in $/m^3
 
         rod.mat=mat.Type;
-        rod.Ymod=mat.Ymod;
+        rod.Ymod=mat.Ymod; %Young's Modulus in GPa. 
         rod.Sut=mat.Sut;
         rod.Length=rodData(actions(12),1)*2.54/100; %length converted to m
         rod.Dia=rodData(actions(13),2)*2.54/100; %diamenter converted to m
         rod.Thick=rodData(actions(14),3)*2.54/100; %thickness converted to m
         rod.Area=.5*pi*(rod.Dia^2-(rod.Dia-rod.Thick)^2);
         rod.Amoment=pi*(rod.Dia^2-(rod.Dia-rod.Thick)^2)/64; %area moment of inertia
-        rod.Stiffness=rod.Length^3/(3*rod.Amoment*1e9*mat.Ymod);
+        rod.Stiffness=(rod.Length^3/(3*rod.Amoment*1e9*mat.Ymod))^-1; %stiffness k in f=kx
         rod.Vol=rod.Length*rod.Area;
         rod.Mass=rod.Vol*mat.Dens; % in kg
         rod.Cost=mat.Cost*rod.Vol;
@@ -149,6 +149,7 @@ for r = 1:numRuns
         % If this is the best performance encountered so far...
         if G > maxG(r)
             maxG(r) = G;
+            maxflightTime(r)=flightTime
             % Update record of actions that got us there
             bestActions(r, :) = actions;
             % As well as the parameters that describe the design

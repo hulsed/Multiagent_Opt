@@ -12,7 +12,7 @@ function [G,flightTime,constraints] = calc_G(penalty, battery, motor, prop, foil
        
     % Calculation of Objectives
     totalCost = battery.Cost + motor.Cost*4+4*rod.Cost;
-    flightTime = battery.Energy / powerUse;
+    flightTime = battery.Energy /(4*powerUse); %note: power use is for EACH motor.
 
     if failure
         G = 0;
