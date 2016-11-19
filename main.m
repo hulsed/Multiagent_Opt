@@ -68,6 +68,7 @@ for r = 1:numRuns
         % If this is the best performance encountered so far...
         if G > maxG(r)
             maxG(r) = G;
+            maxflightTime(r)=flightTime
             % Update record of actions that got us there
             bestActions(r, :) = actions;
             % As well as the parameters that describe the design

@@ -13,10 +13,12 @@ function [fail,elec_power_used,perf,hoverindex]=run_qprop(battery, motor, prop, 
     end
 
     
-        
-    
-    totMass = 4*motor.Mass + battery.Mass+4*rod.Mass;
-    thrust_req = totMass*9.81; % Let's just always assume accel of gravity is 9.81
+
+    resMass=0.3; %TEMP: Defines the mass of the rest of the quadrotor not designed.
+       
+    totMass = 4*motor.Mass + battery.Mass+4*rod.Mass+resMass;
+    %Note: thrust required from each motor is one-fourth the total mass.
+    thrust_req = totMass*9.81/4; % Let's just always assume accel of gravity is 9.81
     
     vel=0.0;
     numPts=8;
