@@ -1,4 +1,4 @@
-function [avgCell, avgMotor, avgProp, avgFoil, avgRod, avgMat] ...
+function [avgCell, avgMotor, avgProp, avgFoil, avgRod] ...
     = counter_calc(batteryData, motorData, propData, foilData, rodData, matData)
 
 % creating a counterfactual cell
@@ -55,6 +55,7 @@ avgMat.Sy=mean(matData(:,3)); %yield strength in MPa
 avgMat.Dens=mean(matData(:,4)); %density in kg/m^3
 avgMat.Cost=mean(matData(:,5))*(100/2.54)^3; %cost in $/m^3
 
+avgRod.mat = avgMat; % Struct avgRod has property mat containing struct
 avgRod.Length=mean(rodData(:,1))*2.54/100; %length converted to m
 avgRod.Dia=mean(rodData(:,2))*2.54/100; %diamenter converted to m
 avgRod.Thick=mean(rodData(:,3))*2.54/100; %thickness converted to m
