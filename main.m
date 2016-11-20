@@ -3,7 +3,7 @@ tic % Begin measuring time of execution
 clear variables
 
 numEpochs = 1000; % NOTE: Changed generations to epochs because political correctness
-numRuns = 100; %25; %Note: D runs slow, so fewer runs is a better idea.
+numRuns = 10; %25; %Note: D runs slow, so fewer runs is a better idea.
 useD = 0; % 1 - use difference reward, 0 - use global reward
 
 modes = {'const', 'decay', 'softmax'};
@@ -113,11 +113,20 @@ for r = 1:numRuns
             bestParams{r} = {battery, motor, prop, foil,rod};            
         end
         disp([num2str(r) ', ' num2str(e)])
+        if useD
+            disp([num2str(r) ', ' num2str(e)])
+        end
     end
 end
 
 avgflightTime = mean(flightTime_hist);
 avgG=mean(G_hist);
+
+if ~exist('Saved Workspaces', 'dir')
+    mkdir('Saved Workspaces');
+end
+% save workspace
+save(['Saved Workspaces\\' AS.mode '_' num2str(AS.param1, '%.2f') '_' 'useD=' num2str(useD, '%d') '_' datestr(now,'mm-dd-yy_HH.MM.SS') '.mat'])
 
 toc % Spit out execution time
 
