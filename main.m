@@ -11,7 +11,7 @@ params = [0.1, 0.5, 250];
 
 % USE THIS TO SELECT WHICH SELECTION POLICY YOU WANT
 % Adjust params as necessary, see below for description of each
-myMode = 2;
+myMode = 3;
 
 % AS stands for action selector. It's a struct that describes how agents
 % will select actions
@@ -54,6 +54,10 @@ alpha = 0.1; % Learning rate
 [batteryData, motorData, propData, foilData, rodData, matData] = load_data('batterytable.csv', ...
     'motortable.csv', 'propranges.csv', 'airfoiltable.csv','rodtable.csv','materialtable.csv');
 
+data.batteryData = batteryData; data.motorData = motorData;
+data.propData = propData; data.foilData = foilData; data.rodData = rodData;
+data.matData = matData;
+
 G_hist= zeros(numRuns, numEpochs);
 flightTime_hist= zeros(numRuns, numEpochs);
 
@@ -91,7 +95,7 @@ for r = 1:numRuns
 
         % Get rewards for agents and system performance
         [rewards, G, flightTime,constraints] = compute_rewards(useD, penalty, ...
-            battery, motor, prop, foil, rod);
+            battery, motor, prop, foil, rod, data);
         rewards_hist(:, r, e) = rewards;
         constraint_hist(:,r,e) = constraints;
         G_hist(r,e)=G;

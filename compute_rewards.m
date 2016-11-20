@@ -1,5 +1,5 @@
  function [rewards, G, flightTime, constraints] = compute_rewards(useD, ...
-     penalty, battery, motor, prop, foil, rod)
+     penalty, battery, motor, prop, foil, rod, data)
     % I included the material in the inputs because I didn't know how to
     % compute the counterfactual rod otherwise... -B
     
@@ -14,8 +14,8 @@
         rewards = zeros(14, 1);
         
         % Create "average" components (moved this from main)
-        [avgCell, avgMotor, avgProp, avgFoil, avgRod] = counter_calc(batteryData, ...
-            motorData, propData, foilData, rodData, matData);s
+        [avgCell, avgMotor, avgProp, avgFoil, avgRod] = counter_calc(data.batteryData, ...
+            data.motorData, data.propData, data.foilData, data.rodData, data.matData);
         
         for ag = 1:14
             switch ag
