@@ -3,15 +3,15 @@ tic % Begin measuring time of execution
 clear variables
 
 numEpochs = 1000; % NOTE: Changed generations to epochs because political correctness
-numRuns = 10; %25; %Note: D runs slow, so fewer runs is a better idea.
-useD = 0; % 1 - use difference reward, 0 - use global reward
+numRuns = 100; %25; %Note: D runs slow, so fewer runs is a better idea.
+useD = 0; % 1 - use difference reward, 0 - use global reward, 2 - 
 
 modes = {'const', 'decay', 'softmax'};
 params = [0.1, 0.5, 250];
 
 % USE THIS TO SELECT WHICH SELECTION POLICY YOU WANT
 % Adjust params as necessary, see below for description of each
-myMode = 3;
+myMode = 2;
 
 % AS stands for action selector. It's a struct that describes how agents
 % will select actions
@@ -127,6 +127,8 @@ if ~exist('Saved Workspaces', 'dir')
 end
 % save workspace
 save(['Saved Workspaces\\' AS.mode '_' num2str(AS.param1, '%.2f') '_' 'useD=' num2str(useD, '%d') '_' datestr(now,'mm-dd-yy_HH.MM.SS') '.mat'])
+
+uav_plots(maxflightTime, flightTime_hist, maxG, G_hist, useD, AS);
 
 toc % Spit out execution time
 

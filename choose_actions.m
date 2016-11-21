@@ -18,7 +18,7 @@ function actions = choose_actions(agents, AS)
     elseif strcmp(AS.mode, 'decay')
         % Calculate epsilon. Note that the constant in the
         % exponential is arbitrary and can be adjusted to taste
-        epsilon = AS.param1 * exp(-10 * AS.param2);
+        epsilon = AS.param1 * exp(-5 * AS.param2);
     end
 
     numAgents = numel(agents);
