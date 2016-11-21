@@ -9,3 +9,5 @@ motorfile
 
 # MATLAB crap
 *.asv
+propfile
+*.mat

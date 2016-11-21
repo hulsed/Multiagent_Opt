@@ -3,8 +3,9 @@ tic % Begin measuring time of execution
 clear variables
 
 numEpochs = 1000; % NOTE: Changed generations to epochs because political correctness
-numRuns = 100; %25; %Note: D runs slow, so fewer runs is a better idea.
-useD = 0; % 1 - use difference reward, 0 - use global reward, 2 - 
+numRuns = 10; %25; %Note: D runs slow, so fewer runs is a better idea.
+useD = 0; % 1 - use difference reward, 0 - use global reward
+Qinit= 1800;
 
 modes = {'const', 'decay', 'softmax'};
 params = [0.1, 0.5, 250];
@@ -72,7 +73,7 @@ actions_hist = zeros(numAgents, numRuns, numEpochs);
 maxG = zeros(numRuns, 1);
 for r = 1:numRuns
     % Create the agents
-    agents = create_agents(batteryAgents, motorAgents, propAgents,rodAgents);
+    agents = create_agents(batteryAgents, motorAgents, propAgents,rodAgents,Qinit);
 
     % The best performance obtained by the team
     maxG(r) = 0;
