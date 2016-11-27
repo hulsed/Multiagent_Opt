@@ -5,14 +5,14 @@ clear variables
 numEpochs = 1000; % NOTE: Changed generations to epochs because political correctness
 numRuns = 10; %25; %Note: D runs slow, so fewer runs is a better idea.
 useD = 0; % 1 - use difference reward, 0 - use global reward
-Qinit= 1800;
+Qinit= 100;
 
 modes = {'const', 'decay', 'softmax'};
 params = [0.1, 0.5, 250];
 
 % USE THIS TO SELECT WHICH SELECTION POLICY YOU WANT
 % Adjust params as necessary, see below for description of each
-myMode = 2;
+myMode = 3;
 
 % AS stands for action selector. It's a struct that describes how agents
 % will select actions
@@ -71,12 +71,14 @@ actions_hist = zeros(numAgents, numRuns, numEpochs);
 %constraint_hist = zeros(numAgents, numRuns, numEpochs);
 
 maxG = zeros(numRuns, 1);
+epochOfMax = zeros(numRuns, 1);
 for r = 1:numRuns
     % Create the agents
     agents = create_agents(batteryAgents, motorAgents, propAgents,rodAgents,Qinit);
 
     % The best performance obtained by the team
     maxG(r) = 0;
+    epochOfMax(r) = 0;
     for e = 1:numEpochs
         if e == numEpochs
             disp('aeaas');
@@ -107,6 +109,7 @@ for r = 1:numRuns
         % If this is the best performance encountered so far...
         if G > maxG(r)
             maxG(r) = G;
+            epochOfMax(r) = e;
             maxflightTime(r)=flightTime;
             % Update record of actions that got us there
             bestActions(r, :) = actions;
@@ -114,9 +117,6 @@ for r = 1:numRuns
             bestParams{r} = {battery, motor, prop, foil,rod};            
         end
         disp([num2str(r) ', ' num2str(e)])
-        if useD
-            disp([num2str(r) ', ' num2str(e)])
-        end
     end
 end
 
@@ -129,7 +129,9 @@ end
 % save workspace
 save(['Saved Workspaces\\' AS.mode '_' num2str(AS.param1, '%.2f') '_' 'useD=' num2str(useD, '%d') '_' datestr(now,'mm-dd-yy_HH.MM.SS') '.mat'])
 
-uav_plots(maxflightTime, flightTime_hist, maxG, G_hist, useD, AS);
+uav_plots(maxflightTime, flightTime_hist, maxG, G_hist, useD, AS, epochOfMax, Qinit);
+
+run_qprop(0, 0, 0, 0, 0, 1); % Save our qprop_map to a file
 
 toc % Spit out execution time
 

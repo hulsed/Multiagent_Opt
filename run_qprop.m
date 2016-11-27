@@ -1,4 +1,4 @@
-function [fail,elec_power_used,perf,hoverindex]=run_qprop(battery, motor, prop, foil, rod)
+function [fail,elec_power_used,perf,hoverindex]=run_qprop(battery, motor, prop, foil, rod, SAVE)
 
     % I'm breaking my own convention for this variable
     % Instead of camelCase, I'm using an underscore. I confess my sins.
@@ -6,13 +6,23 @@ function [fail,elec_power_used,perf,hoverindex]=run_qprop(battery, motor, prop, 
     % Although in my defense, this variable KINDA acts like a function
     % (it's a mapping, after all)
     persistent qprop_map % persistent keyword means variable is not "forgotten"
-    if isempty(qprop_map)
-        qprop_map = containers.Map; % Initialize as a map
+    if isempty(qprop_map) % True if it's the first time running this func
+        % If we already have a saved mapping, use that.
+        if exist('qprop_map.mat', 'file')
+            load('qprop_map.mat', 'qprop_map');
+        else
+            qprop_map = containers.Map; % Otherwise, initialize a map
+        end
         % IN CASE THIS NEEDS TO BE CLEARED:
         % >> clear run_qprop
     end
 
-    
+    % Check if SAVE input is provided and is 1
+    % If so, DO NOT RUN QPROP, but just save the mappings
+    if exist('SAVE', 'var') && SAVE == 1
+        save('qprop_map.mat', 'qprop_map');
+        return
+    end
 
     resMass=0.3; %TEMP: Defines the mass of the rest of the quadrotor not designed.
        
@@ -39,11 +49,11 @@ function [fail,elec_power_used,perf,hoverindex]=run_qprop(battery, motor, prop, 
     % Check if the input is already in our map
     if ismember(qpropVars, keys(qprop_map))
         % If it is, GIMME!
-        disp('Found output!')
+%         disp('Found output!')
         qpropoutput = qprop_map(qpropVars);
     else
         % If not, we'll need to consult with QProp
-        disp('Didn''t find output')
+        disp('Didn''t find output in mapping, running qprop.exe')
         %creating motor input file
         fid = -1;
         while fid < 3
