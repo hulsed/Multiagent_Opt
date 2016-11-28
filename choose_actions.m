@@ -43,8 +43,7 @@ function actions = choose_actions(agents, AS)
             end
         else % if softmax
             p = zeros(1, numel(agent));
-            T = AS.param1; % Temperature
-            s = 0; % Sum of p's
+            T = AS.param1 * exp(-2.5 * AS.param2); % Temperature
             
             % iterate through possible actions for agent
             for a = 1:numel(agent)
@@ -54,8 +53,13 @@ function actions = choose_actions(agents, AS)
             for a = 1:numel(agent)
                 p(a) = p(a) / s;
             end
-            % Pick an action according to the probabilities in p
-            actionToTake = randsample(1:numel(agent), 1, true, p);
+            if min(p) < 0 || max(p) <= 0
+                disp('BAD');
+                actionToTake = randi([1, numActions]);
+            else
+                % Pick an action according to the probabilities in p
+                actionToTake = randsample(1:numel(agent), 1, true, p);
+            end
             actions(ag) = actionToTake;   
         end
     end

@@ -3,7 +3,7 @@ tic % Begin measuring time of execution
 clear variables
 
 numEpochs = 1000; % NOTE: Changed generations to epochs because political correctness
-numRuns = 10; %25; %Note: D runs slow, so fewer runs is a better idea.
+numRuns = 50; %25; %Note: D runs slow, so fewer runs is a better idea.
 useD = 0; % 1 - use difference reward, 0 - use global reward
 Qinit= 100;
 
@@ -68,6 +68,7 @@ bestParams = cell(numRuns, 1); % The design parameters resulting from the agents
 
 rewards_hist = zeros(numAgents, numRuns, numEpochs);
 actions_hist = zeros(numAgents, numRuns, numEpochs);
+agents_hist = cell(numRuns, numEpochs);
 %constraint_hist = zeros(numAgents, numRuns, numEpochs);
 
 maxG = zeros(numRuns, 1);
@@ -80,10 +81,6 @@ for r = 1:numRuns
     maxG(r) = 0;
     epochOfMax(r) = 0;
     for e = 1:numEpochs
-        if e == numEpochs
-            disp('aeaas');
-        end
-        
         AS.param2 = e/numEpochs;
         
         % Have agents choose actions
@@ -105,6 +102,7 @@ for r = 1:numRuns
         flightTime_hist(r,e)=flightTime;
         
         agents = update_values(agents, rewards, actions, alpha);
+        agents_hist{r, e} = agents;
         
         % If this is the best performance encountered so far...
         if G > maxG(r)
@@ -114,7 +112,7 @@ for r = 1:numRuns
             % Update record of actions that got us there
             bestActions(r, :) = actions;
             % As well as the parameters that describe the design
-            bestParams{r} = {battery, motor, prop, foil,rod};            
+            bestParams{r} = {battery, motor, prop, foil, rod};            
         end
         disp([num2str(r) ', ' num2str(e)])
     end
