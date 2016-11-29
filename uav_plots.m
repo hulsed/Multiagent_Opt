@@ -19,10 +19,12 @@ function uav_plots(maxflightTime, flightTime_hist, maxG, G_hist, useD, AS, epoch
             mode = 'Decaying Epsilon';
         case 'softmax'
             mode = 'Softmax';
+        case 'softmaxDecay'
+            mode = 'Softmax with Decaying Temp';
     end
             
     
-    
+%% Max Flight Time/Max G
     figure;
     plot(maxflightTime, 'r');
     hold on
@@ -32,29 +34,35 @@ function uav_plots(maxflightTime, flightTime_hist, maxG, G_hist, useD, AS, epoch
     title(Title)
     xlabel('Run')
     
+    
+%% Avg Flight Time/Avg G + Max G Achieved (1 per run)
     figure;
-    avgflightTime = mean(flightTime_hist);
-%     plot(avgflightTime, 'r');
-%     hold on
-    temp = flightTime_hist(:, 1:10:size(flightTime_hist,2));
-    avgTemp = mean(temp);
-    error = std(temp,0,1) / sqrt(numel(avgTemp));
-    errorbar(1:10:size(flightTime_hist,2), avgTemp, error, 'r');
-    Title = [mode ' (' num2str(AS.param1, '%.1f') '), ' reward ', ' num2str(Qinit, '%.1f')];
-    title(Title)
+    plot(mean(G_hist), 'LineWidth', 1.25);
+%     Title = ['Average G using ' mode ' (' num2str(AS.param1, '%.1f') '), ' reward];
+%     title(Title)
+
+    hold on
+    plot(epochOfMax, maxG, 'o')
+
     
 %     Ymax = max(avgflightTime);
 %     axis([0, numel(avgflightTime), 0, Ymax])
-    
-    
-    hold on
-    plot(mean(G_hist));
-%     Title = ['Average G using ' mode ' (' num2str(AS.param1, '%.1f') '), ' reward];
-%     title(Title)
+    avgflightTime = mean(flightTime_hist);
+    error = std(flightTime_hist,1,1);% / sqrt(size(flightTime_hist,1));
+    L = size(flightTime_hist, 2);
+    errorbar(1:10:L, avgflightTime(1:10:L), error(1:10:L), 'r', 'LineWidth', 1);
+    Title = [mode ' (' num2str(AS.param1, '%.1f') '), ' reward ', Optimism=' num2str(Qinit, '%.1f')];
+    title(Title)
     xlabel('Epoch')
-
-    plot(epochOfMax, maxG, 'o')
-    legend('Average Flight Time (minutes)', 'Average G', 'Max G Achieved', 'Location', 'southeast')
+    legend('Max G Achieved', 'Average G', 'Average Flight Time (minutes)', 'Location', 'southeast')
     Ymax = max(maxG) * 1.01;
-    axis([0, numel(avgflightTime), 0, Ymax])
+    axis([1, numel(avgflightTime), 0, Ymax])
+    %%
+    figure; % Plot just average flight time
+    errorbar(1:10:L, avgflightTime(1:10:L), error(1:10:L), 'r', 'LineWidth', 1);
+    axis([1, numel(avgflightTime), 0, Ymax])
+    Title = ['Time in the Air - ' mode ' (' num2str(AS.param1, '%.1f') '), ' reward ', Optimism=' num2str(Qinit, '%.1f')];
+    title(Title)
+    xlabel('Epoch')
+    ylabel('Average Flight Time (minutes)')
 end

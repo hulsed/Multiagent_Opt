@@ -71,4 +71,10 @@
             end
         end   
     end
+    
+    for i = 1:14
+        if rewards(i) > 1000
+            rewards(i) = 1000;
+        end
+    end
 end

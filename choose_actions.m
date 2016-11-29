@@ -30,7 +30,7 @@ function actions = choose_actions(agents, AS)
         agent = agents{ag};
         % Get number of actions that agent ag can make
         numActions = numel(agent);
-        if strcmp(AS.mode, 'softmax') == 0 % if NOT softmax
+        if strcmp(AS.mode, 'const') || strcmp(AS.mode, 'decay') % if NOT softmax
             % Will the agent choose a random action?
             if rand < epsilon
                 % Yes, pick random action for the agent
@@ -43,8 +43,11 @@ function actions = choose_actions(agents, AS)
             end
         else % if softmax
             p = zeros(1, numel(agent));
-            T = AS.param1 * exp(-2.5 * AS.param2); % Temperature
-            
+            if strcmp(AS.mode, 'softmaxDecay')
+                T = AS.param1 * exp(-2.5 * AS.param2); % Temperature
+            else
+                T = AS.param1; % Temperature
+            end
             % iterate through possible actions for agent
             for a = 1:numel(agent)
                 p(a) = exp(agent(a)/T);
