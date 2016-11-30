@@ -3,12 +3,16 @@ tic % Begin measuring time of execution
 clear variables
 
 numEpochs = 1001; % NOTE: Changed generations to epochs because political correctness
-numRuns = 100; %25; %Note: D runs slow, so fewer runs is a better idea.
+numRuns = 10; %Note: D runs slow, so fewer runs is a better idea.
 % useD = 0; % 1 - use difference reward, 0 - use global reward
 Qinit= 100;
 
 modes = {'const', 'decay', 'softmax', 'softmaxDecay'};
 params = [0.1, 0.5, 250, 250];
+% [epsilon, starting epsilon, temp, starting temp ]
+%
+%good values of t
+
 
 % USE THIS TO SELECT WHICH SELECTION POLICY YOU WANT
 % Adjust params as necessary, see below for description of each
@@ -37,8 +41,8 @@ data.batteryData = batteryData; data.motorData = motorData;
 data.propData = propData; data.foilData = foilData; data.rodData = rodData;
 data.matData = matData;
 
-for myMode = 1:4
-    for useD = 0:1
+for myMode = 4
+    for useD = 1
         run_experiment;
     end
 end
