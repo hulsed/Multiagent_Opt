@@ -2,8 +2,6 @@
 % parameters, then use this to see what was going on when the agents picked
 % their best combined design.
 
-runToAnalyze=1
-
 if exist('runToAnalyze', 'var')
     if runToAnalyze == 0
         [~, b] = max(maxG); % b is the run with the overall best design
@@ -101,14 +99,3 @@ legend('Motor 14', 'Motor 15');
 xlabel('Epoch')
 ylabel('Q value')
 title('Value of Agent Actions - Choice of Motor')
-
-figure
-subplot(2,1,1);
-plot(ftHist(r, :), 'r', 'LineWidth', 3);
-title('Effect of Rewards')
-ylabel('Flight Time (mins)')
-grid on
-axis([EB, EE, min(ftHist(r, EB:EE)), max(ftHist(r, EB:EE))])
-subplot(2,1,2);
-plot(rHist(:,EB:EE)')
-ylabel('Reward Value for each Component')

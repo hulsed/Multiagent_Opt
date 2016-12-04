@@ -38,22 +38,18 @@ function [fail,elec_power_used,perf,hoverindex]=run_qprop(battery, motor, prop, 
 %     vel battery.Volt volt_incr thrust_req
 %     motor.R0, motor.I0, motor.kv
 %     foil.Cl0, foil.Cla, foil.Clmin, foil.Clmax, foil.Cd0, foil.Cd2, foil.Clcd0, foil.Reref, foil.Reexp,
-%     prop.diameter, prop.angleRoot, prop.angleTip, prop.chordRoot,
-%     prop.chordTip
     % Combine all inputs needed for qprop (including those from motorfile
     % and propfile)
     %Note: we may not need thrust_req for this... I'm not sure it actually
     %changes the result of qprop
     qpropVars = [vel volt_max volt_incr ...
         motor.R0 motor.I0 motor.kv foil.Cl0, foil.Cla, foil.Clmin, ...
-        foil.Clmax foil.Cd0 foil.Cd2 foil.Clcd0 foil.Reref foil.Reexp ...
-        prop.diameter, prop.angleRoot, prop.angleTip, prop.chordRoot, ...
-        prop.chordTip];
+        foil.Clmax foil.Cd0 foil.Cd2 foil.Clcd0 foil.Reref foil.Reexp];
     qpropVars = num2str(qpropVars, '%.4f ');
     % Check if the input is already in our map
     if ismember(qpropVars, keys(qprop_map))
         % If it is, GIMME!
-         disp('Found output!')
+%         disp('Found output!')
         qpropoutput = qprop_map(qpropVars);
     else
         % If not, we'll need to consult with QProp
