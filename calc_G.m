@@ -1,4 +1,4 @@
-function [G,flightTime,constraints, perf] = calc_G(penalty, battery, motor, prop, foil, rod)
+function [G,flightTime,constraints, perf, hoverindex] = calc_G(penalty, battery, motor, prop, foil, rod)
     
     [failure, powerUse,perf,hoverindex] = run_qprop(battery, motor, prop, foil, rod);   
     
