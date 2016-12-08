@@ -5,7 +5,7 @@ function [G,flightTime,constraints, perf, hover] = calc_G(penalty, battery, moto
     
     % Calculation of Constraints (only possible with performance data) 
     if ~failure
-        [constraints,conRewards]=calc_constraints(penalty, battery,motor,prop,foil,rod,perf,hover.index);
+        [constraints,conRewards]=calc_constraints(penalty, battery,motor,prop,foil,rod,hover);
     else
         conRewards=zeros(1,7); %7 is the number of constraints used.
         constraints=zeros(1,7);

@@ -30,8 +30,13 @@ rewards_hist = zeros(numAgents, numRuns, numEpochs);
 actions_hist = zeros(numAgents, numRuns, numEpochs);
 agents_hist = cell(numRuns, numEpochs);
 constraint_hist = zeros(7, numRuns, numEpochs);
-perf_hist(numRuns,numEpochs)=perf_init();
-%hover_hist=???; %TEMP. may require its own initialization
+perf_hist(numRuns,numEpochs)=init_perf();
+hover=init_perf(); %TEMP. may require its own initialization
+hover.index=[];
+hover_hist=init_perf(); %TEMP. may require its own initialization
+hover_hist.index=[];
+bestHover=init_perf();
+bestHover.index=[];
 maxG = zeros(numRuns, 1);
 epochOfMax = zeros(numRuns, 1);
 
@@ -78,7 +83,7 @@ for r = 1:numRuns
             % As well as the parameters that describe the design
             bestParams{r} = {battery, motor, prop, foil, rod};
             bestPerf(r)=perf;
-            bestHover(r)=hover.index;
+            bestHover(r)=hover;
         end
         disp([num2str(r) ', ' num2str(e)])
     end
@@ -95,4 +100,4 @@ save(['Saved Workspaces\\' AS.mode '_' num2str(AS.param1, '%.2f') '_' 'useD=' nu
 
 uav_plots(maxflightTime, flightTime_hist, maxG, G_hist, useD, AS, epochOfMax, Qinit);
 
-run_qprop(0, 0, 0, 0, 0, 1); % Save our qprop_map to a file
+run_qprop(0, 0, 0, 0, 1); % Save our qprop_map to a file

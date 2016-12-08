@@ -1,4 +1,4 @@
-function [constraints,conRewards]=calc_constraints(penalty,battery, motor, prop, foil, rod, perf, hoverindex)
+function [constraints,conRewards]=calc_constraints(penalty,battery, motor, prop, foil, rod, hover)
 % Constraints in a normalized form g=val/valmax-1 or g=1-val/valmin
 % This means when g<0, constraint is satisfied and when g>0, constraint 
 % is violated. When constraints are violated, they are multiplied by the
@@ -7,15 +7,15 @@ function [constraints,conRewards]=calc_constraints(penalty,battery, motor, prop,
 
 %Battery 
  %max current
- constraints(1)=(4*perf.amps(hoverindex))/battery.Imax-1; %Note: perf is from EACH motor.
+ constraints(1)=(4*hover.amps)/battery.Imax-1; %Note: perf is from EACH motor.
  %max voltage 
- constraints(2)=perf.volts(hoverindex)/battery.Volt-1;
+ constraints(2)=hover.volts/battery.Volt-1;
  %max power 
 %Motor Constraint
  %max current
- constraints(3)=(perf.amps(hoverindex))/motor.Imax-1;
+ constraints(3)=hover.amps/motor.Imax-1;
  %max power
- constraints(4)=(perf.pelec(hoverindex))/motor.Pmax-1;
+ constraints(4)=hover.pelec/motor.Pmax-1;
  %max voltage???
 %Propeller Constraint
  %Stress under bending
@@ -26,7 +26,7 @@ function [constraints,conRewards]=calc_constraints(penalty,battery, motor, prop,
  %Stress
  
  %stiffness/natural freq (cantilever beam) (strouhal no=0.2)
- forcedFreq=perf.rpm(hoverindex)/60; %converting to hz
+ forcedFreq=hover.rpm/60; %converting to hz
  natFreq=sqrt(rod.Stiffness./(0.5*rod.Mass+motor.Mass))/(2*pi);
  minnatFreq=3*forcedFreq; %natural frequency must be three times the forced frequency.
  % There should be more technical justification for this.
@@ -34,7 +34,7 @@ function [constraints,conRewards]=calc_constraints(penalty,battery, motor, prop,
  
  %deflection (1% of length, max)
  maxDefl=0.01*rod.Length;
- defl=perf.thrust(hoverindex)/rod.Stiffness;
+ defl=hover.thrust/rod.Stiffness;
  constraints(6)=defl/maxDefl-1;
  %impact
  

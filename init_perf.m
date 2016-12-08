@@ -1,4 +1,4 @@
-function perf=perf_init()
+function perf=init_perf()
 
     perf.velocity=[];
     perf.rpm=[];
