@@ -2,13 +2,13 @@ tic % Begin measuring time of execution
 
 clear variables
 
-numEpochs = 1001; % NOTE: Changed generations to epochs because political correctness
-numRuns = 10; %Note: D runs slow, so fewer runs is a better idea.
+numEpochs = 400; % NOTE: Changed generations to epochs because political correctness
+numRuns = 20; %Note: D runs slow, so fewer runs is a better idea.
 % useD = 0; % 1 - use difference reward, 0 - use global reward
 Qinit= 100;
 
 modes = {'const', 'decay', 'softmax', 'softmaxDecay'};
-params = [0.1, 0.5, 250, 250];
+params = [0.1, 0.5, 100, 100];
 % [epsilon, starting epsilon, temp, starting temp ]
 %
 %good values of t
@@ -49,6 +49,7 @@ end
 
 % WARNING!!!!!!!!!!!!
 % After doing the experiments, ALL the figures will come spewing forth
+% (maybe)
 
 toc % Spit out execution time
 

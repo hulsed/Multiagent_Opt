@@ -56,10 +56,8 @@ function actions = choose_actions(agents, AS)
             for a = 1:numel(agent)
                 p(a) = p(a) / s;
             end
-            if min(p) < 0 || max(p) <= 0
-                disp('BAD');
-                actionToTake = randi([1, numActions]);
-            else
+            actionToTake = find(isnan(p));
+            if isempty(actionToTake)
                 % Pick an action according to the probabilities in p
                 actionToTake = randsample(1:numel(agent), 1, true, p);
             end
