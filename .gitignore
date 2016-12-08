@@ -11,3 +11,6 @@ motorfile
 *.asv
 propfile
 *.mat
+*.fig
+*.png
+propfile
