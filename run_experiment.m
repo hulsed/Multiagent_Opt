@@ -31,7 +31,7 @@ actions_hist = zeros(numAgents, numRuns, numEpochs);
 agents_hist = cell(numRuns, numEpochs);
 constraint_hist = zeros(7, numRuns, numEpochs);
 perf_hist(numRuns,numEpochs)=perf_init();
-hover_hist=  zeros(numRuns,numEpochs);
+%hover_hist=???; %TEMP. may require its own initialization
 maxG = zeros(numRuns, 1);
 epochOfMax = zeros(numRuns, 1);
 
@@ -56,10 +56,10 @@ for r = 1:numRuns
         rod = design_rod(actions, rodData, matData);
 
         % Get rewards for agents and system performance
-        [rewards, G, flightTime,constraints, perf,hoverindex] = compute_rewards(useD, penalty, ...
+        [rewards, G, flightTime,constraints, perf,hover] = compute_rewards(useD, penalty, ...
             battery, motor, prop, foil, rod, data);
         perf_hist(r,e)=perf;
-        hover_hist(r,e)=hoverindex;
+        hover_hist(r,e)=hover;
         rewards_hist(:, r, e) = rewards;
         constraint_hist(:,r,e) = constraints;
         G_hist(r,e)=G;
@@ -78,7 +78,7 @@ for r = 1:numRuns
             % As well as the parameters that describe the design
             bestParams{r} = {battery, motor, prop, foil, rod};
             bestPerf(r)=perf;
-            bestHover(r)=hoverindex;
+            bestHover(r)=hover.index;
         end
         disp([num2str(r) ', ' num2str(e)])
     end

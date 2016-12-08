@@ -1,4 +1,4 @@
-function [fail,elec_power_used,perf,hoverindex]=run_qprop(battery, motor, prop, foil, rod, SAVE)
+function [perf]=run_qprop(battery, motor, prop, foil, SAVE)
 
     % I'm breaking my own convention for this variable
     % Instead of camelCase, I'm using an underscore. I confess my sins.
@@ -24,12 +24,6 @@ function [fail,elec_power_used,perf,hoverindex]=run_qprop(battery, motor, prop, 
         return
     end
 
-    resMass=0.3; %TEMP: Defines the mass of the rest of the quadrotor not designed.
-       
-    totMass = 4*motor.Mass + battery.Mass+4*rod.Mass+resMass;
-    %Note: thrust required from each motor is one-fourth the total mass.
-    thrust_req = totMass*9.81/4; % Let's just always assume accel of gravity is 9.81
-    
     vel=0.0;
     numPts=8;
     volt_max=round(battery.Volt+3.7);
@@ -139,27 +133,4 @@ function [fail,elec_power_used,perf,hoverindex]=run_qprop(battery, motor, prop, 
     perf.pprop=qpropoutput{17};
     perf.clavg=qpropoutput{18};
     perf.cdavg=qpropoutput{19};
-
-    fail=0;
-    
-    stoptime=length(perf.velocity);
-    failindex=0;
-    for i=1:stoptime
-        if perf.thrust(i)>=thrust_req
-            hoverindex=i;
-            break
-        end
-        failindex=i;
-        hoverindex=0;
-    end
-    if failindex==stoptime 
-        fail=1;
-    end
-
-    if ~fail 
-        elec_power_used=perf.pelec(hoverindex);
-    else
-        elec_power_used=Inf;
-    end
-
 end

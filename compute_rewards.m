@@ -1,10 +1,10 @@
- function [rewards, G, flightTime, constraints, perf,hoverindex] = compute_rewards(useD, ...
+ function [rewards, G, flightTime, constraints, perf,hover] = compute_rewards(useD, ...
      penalty, battery, motor, prop, foil, rod, data)
     % I included the material in the inputs because I didn't know how to
     % compute the counterfactual rod otherwise... -B
     
     % Global System Performance
-    [G, flightTime, constraints, perf,hoverindex] = calc_G(penalty, battery, motor, prop, foil, rod);
+    [G, flightTime, constraints, perf,hover] = calc_G(penalty, battery, motor, prop, foil, rod);
     
     %ostensibly this is also where we calculate constraint penalties.
     
