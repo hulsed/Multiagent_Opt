@@ -104,6 +104,6 @@ end
 % save workspace
 save(['Saved Workspaces\\' AS.mode '_' num2str(AS.param1, '%.2f') '_' 'useD=' num2str(useD, '%d') '_' datestr(now,'mm-dd-yy_HH.MM.SS') '.mat'])
 
-uav_plots(maxflightTime, flightTime_hist, maxG, G_hist, useD, AS, epochOfMax, Qinit);
+uav_plots(maxflightTime, flightTime_hist,constraint_hist,numEpochs,penaltyMin,penaltyMax, maxG, G_hist, useD, AS, epochOfMax, Qinit);
 
 run_qprop(0, 0, 0, 0, 1); % Save our qprop_map to a file

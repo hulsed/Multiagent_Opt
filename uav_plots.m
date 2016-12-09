@@ -1,4 +1,4 @@
-function uav_plots(maxflightTime, flightTime_hist, maxG, G_hist, useD, AS, epochOfMax, Qinit)
+function uav_plots(maxflightTime, flightTime_hist,constraint_hist,numEpochs,penaltyMin,penaltyMax, maxG, G_hist, useD, AS, epochOfMax, Qinit)
     % I'm sorry this is really messy.
 
     maxflightTime = maxflightTime/60;

@@ -18,6 +18,7 @@ function [G,flightTime,constraints, perf, hover] = calc_G(penalty, battery, moto
     if failure
         G = 0;
     else
-        G = flightTime+sum(conRewards);
-    end
+        G = max(-100,flightTime+sum(conRewards)); 
+        %Note: Truncating possible negative performance to just below zero.
+        %This should help with overly high rewards.
 end
