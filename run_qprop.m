@@ -44,6 +44,7 @@ function [perf]=run_qprop(battery, motor, prop, foil, SAVE)
         prop.diameter, prop.angleRoot, prop.angleTip, prop.chordRoot, ...
         prop.chordTip];
     qpropVars = num2str(qpropVars, '%.4f ');
+    qpropVars = regexprep(qpropVars, ' +', ' '); % remove unnecessary space
     % Check if the input is already in our map
     if ismember(qpropVars, keys(qprop_map))
         % If it is, GIMME!
