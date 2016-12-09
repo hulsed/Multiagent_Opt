@@ -19,6 +19,11 @@ AS.param1 = params(myMode);
 % For mode "softmax", [to be determined]
 AS.param2 = 0;
 
+penFxnB=log(penaltyMin/penaltyMax)/(1-numEpochs);
+penFxnA=penaltyMin/exp(penFxnB);
+%penFxnA=penaltyMin/exp(1);
+%penFxnB=(log(penaltyMax)-log(penFxnA))/numEpochs; %note: log is natural log, not log base 10.
+
 G_hist= zeros(numRuns, numEpochs);
 flightTime_hist= zeros(numRuns, numEpochs);
 
@@ -48,6 +53,7 @@ for r = 1:numRuns
     maxG(r) = 0;
     epochOfMax(r) = 0;
     for e = 1:numEpochs
+        penalty=penFxnA*exp(penFxnB*e);
         AS.param2 = e/numEpochs;
         
         % Have agents choose actions

@@ -65,4 +65,14 @@ function uav_plots(maxflightTime, flightTime_hist, maxG, G_hist, useD, AS, epoch
     title(Title)
     xlabel('Epoch')
     ylabel('Average Flight Time (minutes)')
+    
+    %%
+    figure; %Plot constraint violation at final epoch       
+    bar(mean(constraint_hist(:,:,numEpochs)'))
+    hold on
+    errorbar(mean(constraint_hist(:,:,numEpochs)'),std(constraint_hist(:,:,numEpochs)'), '.')
+    Title=['Final Constraint Values, Start Penalty=' num2str(penaltyMin) ' End Penalty=' num2str(penaltyMax)]
+    title(Title)
+    
+    
 end

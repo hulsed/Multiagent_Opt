@@ -3,7 +3,7 @@ tic % Begin measuring time of execution
 clear variables
 
 numEpochs = 400; % NOTE: Changed generations to epochs because political correctness
-numRuns = 20; %Note: D runs slow, so fewer runs is a better idea.
+numRuns = 5; %Note: D runs slow, so fewer runs is a better idea.
 % useD = 0; % 1 - use difference reward, 0 - use global reward
 Qinit= 100;
 
@@ -18,7 +18,8 @@ params = [0.1, 0.5, 100, 100];
 % Adjust params as necessary, see below for description of each
 % myMode = 4;
 
-penalty=100;  %temp. This penalty should ideally be increased over time to enforce feasiblity
+penaltyMin=10;  %Note: penalty is exponentially increased from penaltyMin to penaltyMax
+penaltyMax=10000;  %
 
 % Values for components below are arbitrary. Change as necessary.
 % See create_agents.m for details
