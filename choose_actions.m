@@ -60,6 +60,8 @@ function actions = choose_actions(agents, AS)
             if isempty(actionToTake)
                 % Pick an action according to the probabilities in p
                 actionToTake = randsample(1:numel(agent), 1, true, p);
+            else
+                disp('Softmax broke due to infinite exponential!')
             end
             actions(ag) = actionToTake;   
         end

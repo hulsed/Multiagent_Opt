@@ -68,7 +68,8 @@ for r = 1:numRuns
 
         % Get rewards for agents and system performance
         [rewards, G, flightTime,constraints, perf,hover] = compute_rewards(useD, penalty, ...
-            battery, motor, prop, foil, rod, data);
+            scaleFactor, battery, motor, prop, foil, rod, data);
+        G=G*scaleFactor;
         perf_hist(r,e)=perf;
         hover_hist(r,e)=hover;
         rewards_hist(:, r, e) = rewards;

@@ -1,4 +1,4 @@
-function [G,flightTime,constraints, perf, hover] = calc_G(penalty, battery, motor, prop, foil, rod)
+function [G,flightTime,constraints, perf, hover] = calc_G(penalty,scaleFactor, battery, motor, prop, foil, rod)
     
     [perf] = run_qprop(battery, motor, prop, foil);   
     [hover,failure]=find_oper(battery, motor, prop, foil, rod,perf);
@@ -18,7 +18,7 @@ function [G,flightTime,constraints, perf, hover] = calc_G(penalty, battery, moto
     if failure
         G = 0;
     else
-        G = max(-100,flightTime+sum(conRewards)); 
+        G = max(-100,(flightTime+sum(conRewards))/scaleFactor); 
         %Note: Truncating possible negative performance to just below zero.
         %This should help with overly high rewards.
 end
