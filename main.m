@@ -3,7 +3,7 @@ tic % Begin measuring time of execution
 clear variables
 
 numEpochs = 400; % NOTE: Changed generations to epochs because political correctness
-numRuns = 5; %Note: D runs slow, so fewer runs is a better idea.
+numRuns = 1; %Note: D runs slow, so fewer runs is a better idea.
 % useD = 0; % 1 - use difference reward, 0 - use global reward
 Qinit= 100;
 
@@ -18,8 +18,16 @@ params = [0.1, 0.5, 100, 100];
 % Adjust params as necessary, see below for description of each
 % myMode = 4;
 
-penaltyMin=10;  %Note: penalty is exponentially increased from penaltyMin to penaltyMax
-penaltyMax=10000;  %
+penaltyMin=100;  %Note: penalty is exponentially increased from penaltyMin to penaltyMax
+penaltyMax=100;  %
+
+scaleFactor=1;      %Note: DO NOT USE
+                    %scales reward to not create an infinite probability in
+                    %the exponential function of G is on the order of 1000,
+                    %increase this to get
+                    %Note: for every change to the scale factor, you will
+                    %need to change temperature to adjust for the different
+                    %reward magnitudes.
 
 % Values for components below are arbitrary. Change as necessary.
 % See create_agents.m for details
