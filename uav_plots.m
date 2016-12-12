@@ -1,4 +1,4 @@
-function uav_plots(maxflightTime, flightTime_hist,constraint_hist,numEpochs,penaltyMin,penaltyMax, maxG, G_hist, useD, AS, epochOfMax, Qinit)
+function uav_plots(maxflightTime, flightTime_hist,constraint_hist,numEpochs,penalty, maxG, G_hist, useD, AS, epochOfMax, Qinit)
     % I'm sorry this is really messy.
 
     maxflightTime = maxflightTime/60;
@@ -22,7 +22,18 @@ function uav_plots(maxflightTime, flightTime_hist,constraint_hist,numEpochs,pena
         case 'softmaxDecay'
             mode = 'Softmax with Decaying Temp';
     end
-            
+    switch penalty.Mode
+        case 'death'
+            penmode = 'Constant Epsilon';
+        case 'quad'
+            penmode = 'Quadratic Penalty';
+        case 'const'
+            penmode = 'Constant Penalty';
+        case 'div'
+            penmode = 'Divisive Penalty';
+        case 'divconst'
+            penmode = 'Divisive Penalty with Constant';
+    end     
     
 %% Max Flight Time/Max G
     figure;
@@ -71,7 +82,7 @@ function uav_plots(maxflightTime, flightTime_hist,constraint_hist,numEpochs,pena
     bar(mean(constraint_hist(:,:,numEpochs)'))
     hold on
     errorbar(mean(constraint_hist(:,:,numEpochs)'),std(constraint_hist(:,:,numEpochs)'), '.')
-    Title=['Final Constraint Values, Start Penalty=' num2str(penaltyMin) ' End Penalty=' num2str(penaltyMax)]
+    Title=['Final Constraint Values, ' penmode];
     title(Title)
     
     

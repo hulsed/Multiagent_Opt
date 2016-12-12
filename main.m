@@ -3,7 +3,7 @@ tic % Begin measuring time of execution
 clear variables
 
 numEpochs = 400; % NOTE: Changed generations to epochs because political correctness
-numRuns = 1; %Note: D runs slow, so fewer runs is a better idea.
+numRuns = 5; %Note: D runs slow, so fewer runs is a better idea.
 % useD = 0; % 1 - use difference reward, 0 - use global reward
 Qinit= 100;
 
@@ -16,10 +16,14 @@ params = [0.1, 0.5, 100, 100];
 
 % USE THIS TO SELECT WHICH SELECTION POLICY YOU WANT
 % Adjust params as necessary, see below for description of each
-% myMode = 4;
-
-penaltyMin=100;  %Note: penalty is exponentially increased from penaltyMin to penaltyMax
-penaltyMax=100;  %
+% myMode = 4;r
+penModes={'const', 'quad', 'div','divconst','death'}
+%choose mode with penMode
+penalty.quadMin=100;  %Note: for exponentially decaying penalty, use these to select
+penalty.quadMax=100;  %max and min penalty.
+penalty.quadtrunc=-100;    % truncated minimum G for the exponential penalty
+penalty.const=100;    %Defines constant portion of penalty
+penalty.div=3;        %Scale term of penalty for divisive penalty
 
 scaleFactor=1;      %Note: DO NOT USE
                     %scales reward to not create an infinite probability in
@@ -50,6 +54,7 @@ data.batteryData = batteryData; data.motorData = motorData;
 data.propData = propData; data.foilData = foilData; data.rodData = rodData;
 data.matData = matData;
 
+penMode=3
 for myMode = 4
     for useD = 1
         run_experiment;

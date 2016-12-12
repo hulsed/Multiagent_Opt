@@ -1,4 +1,4 @@
-function [constraints,conRewards]=calc_constraints(penalty,battery, motor, prop, foil, rod, hover)
+function [constraints]=calc_constraints(battery, motor, prop, foil, rod, hover)
 % Constraints in a normalized form g=val/valmax-1 or g=1-val/valmin
 % This means when g<0, constraint is satisfied and when g>0, constraint 
 % is violated. When constraints are violated, they are multiplied by the
@@ -45,13 +45,6 @@ function [constraints,conRewards]=calc_constraints(penalty,battery, motor, prop,
  minRodLength=motorDist-framewidth/2;
  constraints(7)=1-rod.Length/minRodLength;
  
- check=length(constraints);
- for i=1:check
-    if constraints(i)>0
-        conRewards(i)=-penalty*constraints(i)^2;
-    else
-        conRewards(i)=0;
-    end     
- end
+
  
  
