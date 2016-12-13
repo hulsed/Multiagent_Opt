@@ -2,7 +2,7 @@
 
 % INPUTS
 % agents - the cell array of agents, each cell containing a Q-table
-% AS - struct with two properties, mode and two params
+% exploration - struct with two properties, mode and two params
 %   modes are "const", "decay", and "softmax"
 %   param1 is epsilon value, starting epsilon value, or temperature,
 %       repsectively
@@ -11,14 +11,15 @@
 % OUTPUTS
 % actions - column vector of integers, element i corresponds to action
 %   taken by ith agent
-function actions = choose_actions(agents, AS)
+function actions = choose_actions(agents, exploration)
 
-    if strcmp(AS.mode, 'const') % if constant epsilon
-        epsilon = AS.param1;
-    elseif strcmp(AS.mode, 'decay')
+    if strcmp(exploration.mode, 'const') % if constant epsilon
+        epsilon = exploration.epsConst;
+    elseif strcmp(exploration.mode, 'decay')
         % Calculate epsilon. Note that the constant in the
         % exponential is arbitrary and can be adjusted to taste
-        epsilon = AS.param1 * exp(-5 * AS.param2);
+        b=log(exploration.decayepsMin/exploration.decayepsMax)
+        epsilon = exploration.decayepsMax * exp(b * exploration.completion);
     end
 
     numAgents = numel(agents);
@@ -30,7 +31,7 @@ function actions = choose_actions(agents, AS)
         agent = agents{ag};
         % Get number of actions that agent ag can make
         numActions = numel(agent);
-        if strcmp(AS.mode, 'const') || strcmp(AS.mode, 'decay') % if NOT softmax
+        if strcmp(exploration.mode, 'const') || strcmp(exploration.mode, 'decay') % if NOT softmax
             % Will the agent choose a random action?
             if rand < epsilon
                 % Yes, pick random action for the agent
@@ -43,10 +44,11 @@ function actions = choose_actions(agents, AS)
             end
         else % if softmax
             p = zeros(1, numel(agent));
-            if strcmp(AS.mode, 'softmaxDecay')
-                T = AS.param1 * exp(-2.5 * AS.param2); % Temperature
+            if strcmp(exploration.mode, 'softmaxDecay')
+                b=log(exploration.tempMin/exploration.tempMax);
+                T = exploration.tempMax * exp(b * exploration.completion); % Temperature
             else
-                T = AS.param1; % Temperature
+                T = exploration.tempConst; % Temperature
             end
             % iterate through possible actions for agent
             for a = 1:numel(agent)
@@ -62,6 +64,20 @@ function actions = choose_actions(agents, AS)
                 actionToTake = randsample(1:numel(agent), 1, true, p);
             else
                 disp('Softmax broke due to infinite exponential!')
+                disp('Picking between three best')
+                [sorting,ranking]=sort(agent,'descend');
+                dice=randi(20,1);
+                if dice<=16
+                    actionToTake=ranking(1);
+                elseif 16<dice<=19
+                    actionToTake=ranking(2);
+                else 
+                    actionToTake=ranking(3);
+                end
+                    
+            end
+            if exploration.completion==1
+                [~,actionToTake]=max(agent);
             end
             actions(ag) = actionToTake;   
         end

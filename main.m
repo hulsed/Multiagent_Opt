@@ -7,7 +7,16 @@ numRuns = 5; %Note: D runs slow, so fewer runs is a better idea.
 % useD = 0; % 1 - use difference reward, 0 - use global reward
 Qinit= 100;
 
-modes = {'const', 'decay', 'softmax', 'softmaxDecay'};
+expModes = {'const', 'decay', 'softmax', 'softmaxDecay'};
+exploration.epsConst=0.1;
+exploration.epsMax=0.5;
+exploration.epsMin=0.5;
+exploration.tempConst=100;
+exploration.tempMin=10;
+exploration.tempMax=100;
+
+
+
 params = [0.1, 0.5, 100, 100];
 % [epsilon, starting epsilon, temp, starting temp ]
 %
@@ -17,13 +26,13 @@ params = [0.1, 0.5, 100, 100];
 % USE THIS TO SELECT WHICH SELECTION POLICY YOU WANT
 % Adjust params as necessary, see below for description of each
 % myMode = 4;r
-penModes={'const', 'quad', 'div','divconst','death'}
+penModes={'const', 'quad', 'div','divconst','death'};
 %choose mode with penMode
 penalty.quadMin=100;  %Note: for exponentially decaying penalty, use these to select
 penalty.quadMax=100;  %max and min penalty.
 penalty.quadtrunc=-100;    % truncated minimum G for the exponential penalty
 penalty.const=100;    %Defines constant portion of penalty
-penalty.div=3;        %Scale term of penalty for divisive penalty
+penalty.div=10;        %Scale term of penalty for divisive penalty
 
 scaleFactor=1;      %Note: DO NOT USE
                     %scales reward to not create an infinite probability in
@@ -54,7 +63,7 @@ data.batteryData = batteryData; data.motorData = motorData;
 data.propData = propData; data.foilData = foilData; data.rodData = rodData;
 data.matData = matData;
 
-penMode=3
+penMode=4;
 for myMode = 4
     for useD = 1
         run_experiment;

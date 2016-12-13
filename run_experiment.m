@@ -1,23 +1,23 @@
-% AS stands for action selector. It's a struct that describes how agents
+% exploration stands for action selector. It's a struct that describes how agents
 % will select actions
-% The mode tells the program which type of policy to use for exploration
+% The mode tells the program which type of policy to use for scaleFactor
 % "const" means eps-greedy with constant epsilon
 % "decay" means eps-greedy with exponentially decaying epsilon
 % "softmax" means softmax (duh), so pick actions with certain probability
-AS.mode = modes{myMode};
+exploration.mode = expModes{myMode};
 
-% param1 is the first parameter which affects exploration
+% param1 is the first parameter which affects scaleFactor
 % For mode "const", this gives the constant value of epsilon
 % For mode "decay", this gives the starting value of epsilon that decays
 % For mode "softmax", this gives the temperature for choosing actions 
 % (good temp is 250)
-AS.param1 = params(myMode);
+%exploration.param1 = params(myMode);
 
-% param2 is the second parameter which affects exploration
+% param2 is the second parameter which affects scaleFactor
 % For mode "const", does nothing
 % For mode "decay", represents percent completion of design (ex: e/numEpochs)
 % For mode "softmax", [to be determined]
-AS.param2 = 0;
+exploration.completion = 0;
 
 penalty.Mode=penModes{penMode};
 penFxnB=log(penalty.quadMin/penalty.quadMax)/(1-numEpochs);
@@ -55,10 +55,10 @@ for r = 1:numRuns
     epochOfMax(r) = 0;
     for e = 1:numEpochs
         penalty.R=penFxnA*exp(penFxnB*e);
-        AS.param2 = e/numEpochs;
+        exploration.completion = e/numEpochs;
         
         % Have agents choose actions
-        actions = choose_actions(agents, AS);
+        actions = choose_actions(agents, exploration);
         actions_hist(:, r, e) = actions;
 
         battery = design_battery(actions, batteryData);
@@ -104,8 +104,19 @@ if ~exist('Saved Workspaces', 'dir')
     mkdir('Saved Workspaces');
 end
 % save workspace
-save(['Saved Workspaces\\' AS.mode '_' num2str(AS.param1, '%.2f') '_' 'useD=' num2str(useD, '%d') '_' datestr(now,'mm-dd-yy_HH.MM.SS') '.mat'])
+[rewardnum,pennum]=label_parameters(exploration, penalty);
+uav_plots(maxflightTime, flightTime_hist,constraint_hist,numEpochs,penalty,pennum, maxG, G_hist, useD, exploration,rewardnum, epochOfMax, Qinit);
+save(['Saved Workspaces\\' exploration.mode '_' num2str(rewardnum, '%.2f') '_' 'useD=' num2str(useD, '%d') '_' penalty.Mode '_' num2str(pennum) '_' datestr(now,'mm-dd-yy_HH.MM.SS') '.mat'])
 
-uav_plots(maxflightTime, flightTime_hist,constraint_hist,numEpochs,penalty, maxG, G_hist, useD, AS, epochOfMax, Qinit);
-
+%converged_designs
+converged.flighttimes_mins=flightTime_hist(:,400)/60;
+converged.g1=constraint_hist(1,:,400)';
+converged.g2=constraint_hist(2,:,400)';
+converged.g3=constraint_hist(3,:,400)';
+converged.g4=constraint_hist(4,:,400)';
+converged.g5=constraint_hist(5,:,400)';
+converged.g6=constraint_hist(6,:,400)';
+converged.g7=constraint_hist(7,:,400)';
+disp('at final iteration, the converged designs have values:')
+struct2table(converged)
 run_qprop(0, 0, 0, 0, 1); % Save our qprop_map to a file
