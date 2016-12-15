@@ -7,13 +7,15 @@ numRuns = 5; %Note: D runs slow, so fewer runs is a better idea.
 % useD = 0; % 1 - use difference reward, 0 - use global reward
 Qinit= 100;
 
-expModes = {'const', 'decay', 'softmax', 'softmaxDecay'};
+expModes = {'const', 'decay', 'softmax', 'softmaxDecay', 'softmaxAdaptiveExp', 'softmaxAdaptiveLin'};
 exploration.epsConst=0.1;
-exploration.epsMax=0.5;
-exploration.epsMin=0.5;
+exploration.decayepsMax=0.5;
+exploration.decayepsMin=0.5;
 exploration.tempConst=100;
 exploration.tempMin=10;
 exploration.tempMax=100;
+exploration.biasMin=0.05;
+exploration.biasMax=1;
 
 
 
@@ -64,7 +66,7 @@ data.propData = propData; data.foilData = foilData; data.rodData = rodData;
 data.matData = matData;
 
 penMode=4;
-for myMode = 4
+for myMode = 6
     for useD = 1
         run_experiment;
     end

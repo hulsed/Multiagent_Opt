@@ -104,8 +104,8 @@ if ~exist('Saved Workspaces', 'dir')
     mkdir('Saved Workspaces');
 end
 % save workspace
-[rewardnum,pennum]=label_parameters(exploration, penalty);
-uav_plots(maxflightTime, flightTime_hist,constraint_hist,numEpochs,penalty,pennum, maxG, G_hist, useD, exploration,rewardnum, epochOfMax, Qinit);
+[rewardnum,mode,pennum,penmode]=label_parameters(exploration, penalty);
+uav_plots(maxflightTime, flightTime_hist,constraint_hist,numEpochs,penalty,pennum,penmode, maxG, G_hist, useD, exploration,rewardnum,mode, epochOfMax, Qinit);
 save(['Saved Workspaces\\' exploration.mode '_' num2str(rewardnum, '%.2f') '_' 'useD=' num2str(useD, '%d') '_' penalty.Mode '_' num2str(pennum) '_' datestr(now,'mm-dd-yy_HH.MM.SS') '.mat'])
 
 %converged_designs

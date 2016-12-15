@@ -1,4 +1,4 @@
-function [rewardnum,pennum]=label_parameters(exploration, penalty)
+function [rewardnum,mode,pennum,penmode]=label_parameters(exploration, penalty)
 switch exploration.mode
         case 'const'
             mode = 'Constant Epsilon';
@@ -12,6 +12,12 @@ switch exploration.mode
         case 'softmaxDecay'
             mode = 'Softmax with Decaying Temp';
             rewardnum=[exploration.tempMax, exploration.tempMin];
+        case 'softmaxAdaptiveExp'
+            mode = 'Softmax with Adaptive Decaying (exp) Temp';
+            rewardnum=[exploration.biasMax, exploration.biasMin];
+        case 'softmaxAdaptiveLin'
+            mode = 'Softmax with Adaptive Decaying (lin) Temp';
+            rewardnum=[exploration.biasMax, exploration.biasMin];
     end
     switch penalty.Mode
         case 'death'

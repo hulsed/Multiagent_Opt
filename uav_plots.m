@@ -1,4 +1,4 @@
-function uav_plots(maxflightTime, flightTime_hist,constraint_hist,numEpochs,penalty,pennum, maxG, G_hist, useD, exploration,rewardnum, epochOfMax, Qinit)
+function uav_plots(maxflightTime, flightTime_hist,constraint_hist,numEpochs,penalty,pennum,penmode, maxG, G_hist, useD, exploration,rewardnum,mode, epochOfMax, Qinit)
     % I'm sorry this is really messy.
 
     maxflightTime = maxflightTime/60;
@@ -11,39 +11,43 @@ function uav_plots(maxflightTime, flightTime_hist,constraint_hist,numEpochs,pena
     else
         reward = 'G';
     end
+%mode=
+
     
-    switch exploration.mode
-        case 'const'
-            mode = 'Constant Epsilon';
-            rewardnum=exploration.epsConst;
-        case 'decay'
-            mode = 'Decaying Epsilon';
-            rewardnum=[exploration.epsMax, exploration.epsMin];
-        case 'softmax'
-            mode = 'Softmax';
-            rewardnum=exploration.tempConst;
-        case 'softmaxDecay'
-            mode = 'Softmax with Decaying Temp';
-            rewardnum=[exploration.tempMax, exploration.tempMin];
-    end
-    switch penalty.Mode
-        case 'death'
-            penmode = 'Death Penalty';
-            pennum=0;
-        case 'quad'
-            penmode = 'Quadratic Penalty';
-            pennum=[penalty.quadMin, penalty.quadMax penalty.quadtrunc];
-        case 'const'
-            penmode = 'Constant Penalty';
-            pennum=penalty.const;
-        case 'div'
-            penmode = 'Divisive Penalty';
-            pennum = penalty.div;
-        case 'divconst'
-            penmode = 'Divisive Penalty with Constant';
-            pennum=[penalty.div, penalty.const];
-    end     
-   
+    
+    
+%     switch exploration.mode
+%         case 'const'
+%             mode = 'Constant Epsilon';
+%             rewardnum=exploration.epsConst;
+%         case 'decay'
+%             mode = 'Decaying Epsilon';
+%             rewardnum=[exploration.epsMax, exploration.epsMin];
+%         case 'softmax'
+%             mode = 'Softmax';
+%             rewardnum=exploration.tempConst;
+%         case 'softmaxDecay'
+%             mode = 'Softmax with Decaying Temp';
+%             rewardnum=[exploration.tempMax, exploration.tempMin];
+%     end
+%     switch penalty.Mode
+%         case 'death'
+%             penmode = 'Death Penalty';
+%             pennum=0;
+%         case 'quad'
+%             penmode = 'Quadratic Penalty';
+%             pennum=[penalty.quadMin, penalty.quadMax penalty.quadtrunc];
+%         case 'const'
+%             penmode = 'Constant Penalty';
+%             pennum=penalty.const;
+%         case 'div'
+%             penmode = 'Divisive Penalty';
+%             pennum = penalty.div;
+%         case 'divconst'
+%             penmode = 'Divisive Penalty with Constant';
+%             pennum=[penalty.div, penalty.const];
+%     end     
+%    
 %% Max Flight Time/Max G
     figure;
     plot(maxflightTime, 'r');
