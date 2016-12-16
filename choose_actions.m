@@ -56,10 +56,21 @@ function actions = choose_actions(agents, exploration)
                 T = exploration.tempConst; % Temperature
             end
             % iterate through possible actions for agent
+            
+            
+            
+            %agent=(agent-mean(agent))/(std(agent)+0.01);
+            if strcmp(exploration.mode, 'softmaxFeatScale')
+                %feature scaling
+                agent=(agent-min(agent))/(max(agent)-min(agent)+0.001);
+                %agent=(agent-mean(agent))/(std(agent)+0.01);
+            end
+            
             for a = 1:numel(agent)
                 if strcmp(exploration.mode, 'softmaxAdaptiveLin') || strcmp(exploration.mode, 'softmaxAdaptiveExp')
-                    T=max(abs(agent))*bias;
+                    T=mean(agent)*bias;
                 end
+                                
                 p(a) = exp(agent(a)/T);
             end
             s = sum(p);

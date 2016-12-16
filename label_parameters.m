@@ -18,6 +18,9 @@ switch exploration.mode
         case 'softmaxAdaptiveLin'
             mode = 'Softmax with Adaptive Decaying (lin) Temp';
             rewardnum=[exploration.biasMax, exploration.biasMin];
+        case 'softmaxFeatScale'
+            mode = 'Softmax with Feature Scaling';
+            rewardnum=[exploration.biasMax, exploration.biasMin];
     end
     switch penalty.Mode
         case 'death'

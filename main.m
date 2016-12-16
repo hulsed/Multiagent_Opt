@@ -7,13 +7,13 @@ numRuns = 5; %Note: D runs slow, so fewer runs is a better idea.
 % useD = 0; % 1 - use difference reward, 0 - use global reward
 Qinit= 100;
 
-expModes = {'const', 'decay', 'softmax', 'softmaxDecay', 'softmaxAdaptiveExp', 'softmaxAdaptiveLin'};
+expModes = {'const', 'decay', 'softmax', 'softmaxDecay', 'softmaxAdaptiveExp', 'softmaxAdaptiveLin', 'softmaxFeatScale'};
 exploration.epsConst=0.1;
 exploration.decayepsMax=0.5;
 exploration.decayepsMin=0.5;
 exploration.tempConst=100;
-exploration.tempMin=10;
-exploration.tempMax=100;
+exploration.tempMin=0.01;
+exploration.tempMax=10;
 exploration.biasMin=0.05;
 exploration.biasMax=1;
 
@@ -32,7 +32,7 @@ penModes={'const', 'quad', 'div','divconst','death'};
 %choose mode with penMode
 penalty.quadMin=100;  %Note: for exponentially decaying penalty, use these to select
 penalty.quadMax=100;  %max and min penalty.
-penalty.quadtrunc=-100;    % truncated minimum G for the exponential penalty
+penalty.quadtrunc=-1000;    % truncated minimum G for the exponential penalty
 penalty.const=100;    %Defines constant portion of penalty
 penalty.div=10;        %Scale term of penalty for divisive penalty
 
@@ -65,8 +65,8 @@ data.batteryData = batteryData; data.motorData = motorData;
 data.propData = propData; data.foilData = foilData; data.rodData = rodData;
 data.matData = matData;
 
-penMode=4;
-for myMode = 6
+penMode=2;
+for myMode = 7
     for useD = 1
         run_experiment;
     end
