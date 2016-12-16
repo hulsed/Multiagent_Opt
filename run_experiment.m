@@ -94,6 +94,7 @@ for r = 1:numRuns
             bestHover(r)=hover;
         end
         disp([num2str(r) ', ' num2str(e)])
+        disp([num2str(r) ', ' num2str(e)])
     end
 end
 
@@ -109,14 +110,14 @@ uav_plots(maxflightTime, flightTime_hist,constraint_hist,numEpochs,penalty,pennu
 save(['Saved Workspaces\\' exploration.mode '_' num2str(rewardnum, '%.2f') '_' 'useD=' num2str(useD, '%d') '_' penalty.Mode '_' num2str(pennum) '_' datestr(now,'mm-dd-yy_HH.MM.SS') '.mat'])
 
 %converged_designs
-converged.flighttimes_mins=flightTime_hist(:,400)/60;
-converged.g1=constraint_hist(1,:,400)';
-converged.g2=constraint_hist(2,:,400)';
-converged.g3=constraint_hist(3,:,400)';
-converged.g4=constraint_hist(4,:,400)';
-converged.g5=constraint_hist(5,:,400)';
-converged.g6=constraint_hist(6,:,400)';
-converged.g7=constraint_hist(7,:,400)';
+converged.flighttimes_mins=flightTime_hist(:,numEpochs)/60;
+converged.g1=constraint_hist(1,:,numEpochs)';
+converged.g2=constraint_hist(2,:,numEpochs)';
+converged.g3=constraint_hist(3,:,numEpochs)';
+converged.g4=constraint_hist(4,:,numEpochs)';
+converged.g5=constraint_hist(5,:,numEpochs)';
+converged.g6=constraint_hist(6,:,numEpochs)';
+converged.g7=constraint_hist(7,:,numEpochs)';
 disp('at final iteration, the converged designs have values:')
 struct2table(converged)
 run_qprop(0, 0, 0, 0, 1); % Save our qprop_map to a file
