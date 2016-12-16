@@ -28,13 +28,16 @@ params = [0.1, 0.5, 100, 100];
 % USE THIS TO SELECT WHICH SELECTION POLICY YOU WANT
 % Adjust params as necessary, see below for description of each
 % myMode = 4;r
-penModes={'const', 'quad', 'div','divconst','death'};
+penModes={'const', 'quad', 'div','divconst','death', 'deathplus', 'lin'};
 %choose mode with penMode
 penalty.quadMin=100;  %Note: for exponentially decaying penalty, use these to select
 penalty.quadMax=100;  %max and min penalty.
 penalty.quadtrunc=-1000;    % truncated minimum G for the exponential penalty
 penalty.const=100;    %Defines constant portion of penalty
 penalty.div=10;        %Scale term of penalty for divisive penalty
+penalty.death=-100;
+penalty.lin=-1000;
+penalty.failure=-5000;
 
 scaleFactor=1;      %Note: DO NOT USE
                     %scales reward to not create an infinite probability in
@@ -66,7 +69,7 @@ data.propData = propData; data.foilData = foilData; data.rodData = rodData;
 data.matData = matData;
 
 penMode=2;
-for myMode = 7
+for myMode = 6
     for useD = 1
         run_experiment;
     end

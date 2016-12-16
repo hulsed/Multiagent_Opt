@@ -25,7 +25,10 @@ switch exploration.mode
     switch penalty.Mode
         case 'death'
             penmode = 'Death Penalty';
-            pennum=0;
+            pennum=penalty.death;
+        case 'deathplus'
+            penmode= 'Death and Linear Penalty';
+            pennum=[penalty.death, penalty.lin];
         case 'quad'
             penmode = 'Quadratic Penalty';
             pennum=[penalty.quadMin, penalty.quadMax penalty.quadtrunc];
@@ -38,5 +41,8 @@ switch exploration.mode
         case 'divconst'
             penmode = 'Divisive Penalty with Constant';
             pennum=[penalty.div, penalty.const];
+        case 'lin';
+            penmode= 'Linear Penalty with Constant';
+            pennum=[penalty.lin]
     end
 end

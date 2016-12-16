@@ -16,7 +16,7 @@ function [G,flightTime,constraints, perf, hover] = calc_G(penalty,scaleFactor, b
     flightTime = battery.Energy /(4*hover.pelec); %note: power use is for EACH motor.
     
    if failure
-        G = 0;
+        G = penalty.failure;
    else
        check=length(constraints);
         switch(penalty.Mode)
@@ -29,14 +29,30 @@ function [G,flightTime,constraints, perf, hover] = calc_G(penalty,scaleFactor, b
                     end     
                   end
                   if death
-                      G=0;
+                      G=penalty.death;
+                  else
+                      G=flightTime/scaleFactor;
+                  end
+            case 'deathplus'
+                  death=0;
+                    for i=1:check
+                        if constraints(i)>0
+                            death=1;
+                            conRewards(i)=penalty.lin*constraints(i);
+                        else
+                            conRewards(i)=0;
+                        end 
+                    end
+                         
+                  if death
+                      G=penalty.death+sum(conRewards);
                   else
                       G=flightTime/scaleFactor;
                   end
             case 'quad' %using the quadratic penalty method.
                for i=1:check
                     if constraints(i)>0
-                        conRewards(i)=-penalty.R*constraints(i)^2;
+                        conRewards(i)=-penalty.R*(1+constraints(i))^2;
                     else
                         conRewards(i)=0;
                     end     
@@ -72,7 +88,15 @@ function [G,flightTime,constraints, perf, hover] = calc_G(penalty,scaleFactor, b
                     end
                 end
                  G=(flightTime/(1+penalty.div*sum(conViolation))+sum(conRewards(i)))/scaleFactor;
-                
+            case 'lin';
+                for i=1:check
+                    if constraints(i)>0
+                        conRewards(i)=penalty.lin*constraints(i)-100;
+                    else
+                        conRewards(i)=0;
+                    end     
+               end
+                G = (flightTime+sum(conRewards))/scaleFactor; 
         end
    end
      
