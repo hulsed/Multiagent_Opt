@@ -21,6 +21,7 @@ function [perf]=run_qprop(battery, motor, prop, foil, SAVE)
     % If so, DO NOT RUN QPROP, but just save the mappings
     if exist('SAVE', 'var') && SAVE == 1
         save('qprop_map.mat', 'qprop_map');
+        disp('qprop_map saved to qprop_map.mat!')
         return
     end
 
@@ -46,11 +47,11 @@ function [perf]=run_qprop(battery, motor, prop, foil, SAVE)
     qpropVars = num2str(qpropVars, '%.4f ');
     qpropVars = regexprep(qpropVars, ' +', ' '); % remove unnecessary space
     % Check if the input is already in our map
-    if ismember(qpropVars, keys(qprop_map))
-        % If it is, GIMME!
-         disp('Found output!')
-        qpropoutput = qprop_map(qpropVars);
-    else
+%     if ismember(qpropVars, keys(qprop_map))
+%         % If it is, GIMME!
+%         disp('Found output!')
+%         qpropoutput = qprop_map(qpropVars);
+%     else
         % If not, we'll need to consult with QProp
         disp('Didn''t find output in mapping, running qprop.exe')
         %creating motor input file
@@ -92,46 +93,85 @@ function [perf]=run_qprop(battery, motor, prop, foil, SAVE)
         volt_incrstr=num2str(volt_incr);
         %thruststr=num2str(thrust_req);
 
-        qpropinput=['qprop.exe propfile motorfile ', velstr, ' 0',' 0',',', ...
-            max_voltagestr,',',volt_incrstr, ' 0 0 0 0 0 ["]' ];
+%         qpropinput=['qprop.exe propfile motorfile ', velstr, ' 0',' 0',',', ...
+%             max_voltagestr,',',volt_incrstr, ' 0 0 0 0 0 ["]' ];
 
+        % After implementing faster qprop execution, the format for
+        % qpropinput below is different (above is original)
+        qpropinput={'qprop.exe' 'propfile' 'motorfile' velstr '0' ['0,' ...
+            max_voltagestr ',' volt_incrstr] '0' '0' '0' '0' '0' '["]'};
         %Note about qprop syntax:
         %The input looks like
         %qprop propfile motorfile vel rpm volt dBeta Thrust Torque Amps Pele 
         % 0 means unspecified
         % to iterate over values, replace a single value with min,max,incr
-        pause(0.05)
-        diary qpropoutput
-        system(qpropinput);
-        diary OFF
-        scantext = -1;
-        while scantext < 3
-            scantext=fopen('qpropoutput');
+        
+%         pause(0.05)
+%         diary qpropoutput
+%         system(qpropinput);
+%         diary OFF
+
+        pb = java.lang.ProcessBuilder({''});
+        % The command to execute, complete with arguments
+        pb.command(qpropinput);
+        myProcess = pb.start();
+        
+        % Reads what comes out of QProp (Even though code says "Input")
+        reader = java.io.BufferedReader(java.io.InputStreamReader(...
+            myProcess.getInputStream()));
+
+        % Writes to the command line, basically
+        writer = java.io.BufferedWriter(java.io.OutputStreamWriter(...
+                myProcess.getOutputStream()));
+    
+        writer.newLine; % Execute!
+        writer.close; % Don't need the writer anymore, has done its job
+        
+        line = reader.readLine; % Start reading output from QProp
+        i = 0;
+        while ~isequal(line, []) % Keep reading until next line is empty
+            line = char(line);
+            if isequal(line, ' ') || isequal(line, '\n') || isequal(line, '') || isequal(line(1), '#')
+                % Skip unimportant line, read next line and continue
+                line = reader.readLine;
+                continue
+            end
+            % Note we don't need to save any files, just read directly
+            i = i + 1;
+            line = line(1:length(line)); % remove newline character
+            crayon = sscanf(line, '%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f');
+            qpropoutput(i,:) = crayon';
+            line = reader.readLine; % read next line
         end
-        qpropoutput=textscan(scantext, '%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f','Headerlines', 17);
+        
+%         scantext = -1;
+%         while scantext < 3
+%             scantext=fopen('qpropoutput');
+%         end
+%         qpropoutput=textscan(scantext, '%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f','Headerlines', 17);
         % Add the output to the map so we can remember it
-        qprop_map(qpropVars) = qpropoutput;
-        fclose('all');
-        delete('qpropoutput')
-    end
+%         qprop_map(qpropVars) = qpropoutput;
+%         fclose('all');
+%         delete('qpropoutput')
+%     end
     % Whichever way we got the output of QProp, get our individual outputs
-    perf.velocity=qpropoutput{1};
-    perf.rpm=qpropoutput{2};
-    perf.dbeta=qpropoutput{3};
-    perf.thrust=qpropoutput{4};
-    perf.q=qpropoutput{5};
-    perf.pshaft=qpropoutput{6};
-    perf.volts=qpropoutput{7};
-    perf.amps=qpropoutput{8};
-    perf.effmotor=qpropoutput{9};
-    perf.effprop=qpropoutput{10};
-    perf.adv=qpropoutput{11};
-    perf.ct=qpropoutput{12};
-    perf.cp=qpropoutput{13};
-    perf.dv=qpropoutput{14};
-    perf.eff=qpropoutput{15};
-    perf.pelec=qpropoutput{16};
-    perf.pprop=qpropoutput{17};
-    perf.clavg=qpropoutput{18};
-    perf.cdavg=qpropoutput{19};
+    perf.velocity=qpropoutput(:,1);
+    perf.rpm=qpropoutput(:,2);
+    perf.dbeta=qpropoutput(:,3);
+    perf.thrust=qpropoutput(:,4);
+    perf.q=qpropoutput(:,5);
+    perf.pshaft=qpropoutput(:,6);
+    perf.volts=qpropoutput(:,7);
+    perf.amps=qpropoutput(:,8);
+    perf.effmotor=qpropoutput(:,9);
+    perf.effprop=qpropoutput(:,10);
+    perf.adv=qpropoutput(:,11);
+    perf.ct=qpropoutput(:,12);
+    perf.cp=qpropoutput(:,13);
+    perf.dv=qpropoutput(:,14);
+    perf.eff=qpropoutput(:,15);
+    perf.pelec=qpropoutput(:,16);
+    perf.pprop=qpropoutput(:,17);
+    perf.clavg=qpropoutput(:,18);
+    perf.cdavg=qpropoutput(:,19);
 end
