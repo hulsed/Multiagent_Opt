@@ -70,7 +70,7 @@ function actions = choose_actions(agents, cTable, exploration)
                 for a = 1:numel(agent)
                     if cTab(a) > 0
                         % p(a) greater for least infeasible designs
-                        p(a) = 1/cTab(a);
+                        p(a) = 1/(cTab(a));
                     end
                 end
             else

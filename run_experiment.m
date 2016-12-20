@@ -35,7 +35,7 @@ bestParams = cell(numRuns, 1); % The design parameters resulting from the agents
 rewards_hist = zeros(numAgents, numRuns, numEpochs);
 actions_hist = zeros(numAgents, numRuns, numEpochs);
 agents_hist = cell(numRuns, numEpochs);
-constraint_hist = zeros(7, numRuns, numEpochs);
+constraint_hist = zeros(8, numRuns, numEpochs);
 perf_hist(numRuns,numEpochs)=init_perf();
 hover=init_perf(); %TEMP. may require its own initialization
 hover.index=[];
@@ -119,6 +119,7 @@ converged.g4=constraint_hist(4,:,numEpochs)';
 converged.g5=constraint_hist(5,:,numEpochs)';
 converged.g6=constraint_hist(6,:,numEpochs)';
 converged.g7=constraint_hist(7,:,numEpochs)';
+converged.g8=constraint_hist(8,:,numEpochs)';
 disp('at final iteration, the converged designs have values:')
 struct2table(converged)
 % run_qprop(0, 0, 0, 0, 1); % Save our qprop_map to a file
