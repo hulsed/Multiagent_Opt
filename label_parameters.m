@@ -35,5 +35,8 @@ switch exploration.mode
         case 'divconst'
             penmode = 'Divisive Penalty with Constant';
             pennum=[penalty.div, penalty.const];
+        case 'none'
+            penmode = 'No Penalty';
+            pennum=[];
     end
 end

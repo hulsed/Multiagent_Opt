@@ -72,7 +72,8 @@ function [G,flightTime,constraints, perf, hover] = calc_G(penalty,scaleFactor, b
                     end
                 end
                  G=(flightTime/(1+penalty.div*sum(conViolation))+sum(conRewards(i)))/scaleFactor;
-                
+            case 'none'
+                G = flightTime/scaleFactor;
         end
    end
      

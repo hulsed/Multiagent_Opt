@@ -11,7 +11,14 @@
 % OUTPUTS
 % actions - column vector of integers, element i corresponds to action
 %   taken by ith agent
-function actions = choose_actions(agents, exploration)
+function actions = choose_actions(agents, cTable, exploration)
+
+    %TEST
+    for truck = 1:numel(cTable)
+        if max(cTable{truck}) > 0
+            disp ''
+        end
+    end
 
     if strcmp(exploration.mode, 'const') % if constant epsilon
         epsilon = exploration.epsConst;
@@ -29,6 +36,7 @@ function actions = choose_actions(agents, exploration)
     % Iterate through the agents
     for ag = 1:numel(agents)
         agent = agents{ag};
+        cTab = cTable{ag};
         % Get number of actions that agent ag can make
         numActions = numel(agent);
         if strcmp(exploration.mode, 'const') || strcmp(exploration.mode, 'decay') % if NOT softmax
@@ -55,25 +63,36 @@ function actions = choose_actions(agents, exploration)
             else
                 T = exploration.tempConst; % Temperature
             end
-            % iterate through possible actions for agent
-            for a = 1:numel(agent)
-                if strcmp(exploration.mode, 'softmaxAdaptiveLin') || strcmp(exploration.mode, 'softmaxAdaptiveExp')
-                    T=max(abs(agent))*bias;
+            % 10% chance choose infeasible action (if there are any), or if
+            % all actions infeasible choose among them
+            r = rand;
+            if (r < 0.1 && ~all(cTab == 0)) || all(cTab > 0)
+                for a = 1:numel(agent)
+                    if cTab(a) > 0
+                        % p(a) greater for least infeasible designs
+                        p(a) = 1/cTab(a);
+                    end
                 end
-                p(a) = exp(agent(a)/T);
+            else
+                % iterate through possible actions for agent
+                for a = 1:numel(agent)
+                    if strcmp(exploration.mode, 'softmaxAdaptiveLin') || strcmp(exploration.mode, 'softmaxAdaptiveExp')
+                        T=max(abs(agent))*bias;
+                    end
+                    if cTab(a) == 0 % If it's a feasible action, p(a) > 0
+                        p(a) = exp(agent(a)/T);
+                    end % Otherwise, p(a) == 0
+                end
             end
-            s = sum(p);
-            for a = 1:numel(agent)
-                p(a) = p(a) / s;
-            end
+            p = p / sum(p);
             actionToTake = find(isnan(p));
             if isempty(actionToTake)
                 % Pick an action according to the probabilities in p
-                actionToTake = randsample(1:numel(agent), 1, true, p);
+                actionToTake = randsample(1:numel(agent), 1, true, p);                
             else
                 disp('Softmax broke due to infinite exponential!')
                 disp('Picking between three best')
-                [sorting,ranking]=sort(agent,'descend');
+                [sorting,ranking]=sort(agent);
                 dice=randi(20,1);
                 if dice<=16
                     actionToTake=ranking(1);

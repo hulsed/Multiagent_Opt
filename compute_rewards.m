@@ -1,4 +1,4 @@
- function [rewards, G, flightTime, constraints, perf,hover] = compute_rewards(useD, ...
+ function [rewards, cUpdate, G, flightTime, constraints, perf,hover] = compute_rewards(useD, ...
      penalty,scaleFactor, battery, motor, prop, foil, rod, data)
     % I included the material in the inputs because I didn't know how to
     % compute the counterfactual rod otherwise... -B
@@ -10,6 +10,7 @@
     
     if ~useD % if NOT using difference reward
         rewards = ones(14, 1) * G; % Just return G for all rewards
+        
     else
         rewards = zeros(14, 1);
         
@@ -72,6 +73,44 @@
         end   
     end
     
+    cUpdate = zeros(14, 1);
+    for ag = 1:14
+        switch ag
+            case 1 % battery cell
+                cUpdate(ag) = max(0, constraints(3)) + max(0, constraints(4));
+            case 2
+                cUpdate(ag) = max(0, constraints(3)) + max(0, constraints(4));
+            case 3
+                cUpdate(ag) = max(0, constraints(3)) + max(0, constraints(4));
+            case 4
+                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(2));
+            case 5
+                true;
+            case 6
+                true;
+            case 7
+                true;
+            case 8
+                true;
+            case 9
+                true;
+            case 10
+                true;
+            case 11
+                cUpdate(ag) = max(0, constraints(5)) + max(0, constraints(6));
+            case 12
+                cUpdate(ag) = max(0, constraints(5)) + max(0, constraints(6)) + max(0, constraints(7));
+            case 13
+                cUpdate(ag) = max(0, constraints(5)) + max(0, constraints(6));
+            case 14
+                cUpdate(ag) = max(0, constraints(5)) + max(0, constraints(6));
+        end
+    end
+    
+    % TEST
+    if G > 0
+        disp 'truck'
+    end
 %     for i = 1:14
 %         if rewards(i) > 1000
 %             rewards(i) = 1000;

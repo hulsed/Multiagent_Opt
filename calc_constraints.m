@@ -5,6 +5,10 @@ function [constraints]=calc_constraints(battery, motor, prop, foil, rod, hover)
 % penalty to create a negative reward (this works because constraint value
 % is negative.)
 
+% After typing in constraint, make sure to assign it to a component in
+% compute_rewards so it can be learned.
+
+
 %Battery 
  %max current
  constraints(1)=(4*hover.amps)/battery.Imax-1; %Note: perf is from EACH motor.
