@@ -92,9 +92,9 @@ function uav_plots(maxflightTime, flightTime_hist,constraint_hist,numEpochs,pena
     
     %%
     figure; %Plot constraint violation at final epoch       
-    bar(mean(constraint_hist(:,:,numEpochs)'))
+    bar(median(constraint_hist(:,:,numEpochs)'))
     hold on
-    errorbar(mean(constraint_hist(:,:,numEpochs)'),std(constraint_hist(:,:,numEpochs)'), '.')
+    errorbar(mean(constraint_hist(:,:,numEpochs)'),range(constraint_hist(:,:,numEpochs)'), '.')
     Title=['Final Constraint Values, ' penmode ' parameters: ' num2str(pennum)];
     title(Title)
     

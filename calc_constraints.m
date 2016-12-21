@@ -9,7 +9,7 @@ function [constraints]=calc_constraints(battery, motor, prop, foil, rod, hover,f
 % compute_rewards so it can be learned.
 %System
 if failure
-constraints(1)=20*failure;
+constraints(1)=10*failure;
 constraints(2:8)=0;
 else
  constraints(1)=0;
@@ -36,7 +36,7 @@ else
  %stiffness/natural freq (cantilever beam) (strouhal no=0.2)
  forcedFreq=hover.rpm/60; %converting to hz
  natFreq=sqrt(rod.Stiffness./(0.5*rod.Mass+motor.Mass))/(2*pi);
- minnatFreq=3*forcedFreq; %natural frequency must be three times the forced frequency.
+ minnatFreq=2*forcedFreq; %natural frequency must be two times the forced frequency.
  % There should be more technical justification for this.
  constraints(6)=1-natFreq/minnatFreq;
  

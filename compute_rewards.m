@@ -77,33 +77,33 @@
     for ag = 1:14
         switch ag
             case 1 % battery cell
-                cUpdate(ag) = max(0, constraints(1) + constraints(4)) + max(0, constraints(5));
-            case 2
-                cUpdate(ag) = max(0, constraints(1) + constraints(4)) + max(0, constraints(5));
-            case 3
-                cUpdate(ag) = max(0, constraints(1) + constraints(4)) + max(0, constraints(5));
-            case 4
-                cUpdate(ag) = max(0, constraints(1) + constraints(2)) + max(0, constraints(3));
-            case 5
+                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(4)) + max(0, constraints(5));
+            case 2 % serial configs
+                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(4)) + max(0, constraints(5));
+            case 3 % parallel configs
+                cUpdate(ag) = max(0, constraints(1)) + max(0,constraints(4)) + max(0, constraints(5));
+            case 4 % motor
+                cUpdate(ag) = max(0, constraints(1)) + max(0,constraints(2)) + max(0, constraints(3));
+            case 5 % foil
                 true;
-            case 6
+            case 6 %diameter
+                true; %cUpdate(ag) =  max(0, constraints(8));
+            case 7 % root alpha
                 true;
-            case 7
+            case 8 % tip alpha
                 true;
-            case 8
+            case 9 % root chord
                 true;
-            case 9
+            case 10 % tip chord
                 true;
-            case 10
-                true;
-            case 11
-                cUpdate(ag) = max(0, constraints(1) + constraints(6)) + max(0, constraints(7));
-            case 12
-                cUpdate(ag) = max(0, constraints(1) + constraints(6)) + max(0, constraints(7)) + max(0, constraints(8));
-            case 13
-                cUpdate(ag) = max(0, constraints(1) + constraints(6)) + max(0, constraints(7));
-            case 14
-                cUpdate(ag) = max(0, constraints(1) + constraints(6)) + max(0, constraints(7));
+            case 11 % material
+                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(6)) + max(0, constraints(7));
+            case 12 % length
+                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(6)) + max(0, constraints(7)) + max(0, constraints(8));
+            case 13 % diameter
+                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(6)) + max(0, constraints(7));
+            case 14 % thickness
+                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(6)) + max(0, constraints(7));
         end
     end
     
