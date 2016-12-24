@@ -87,23 +87,23 @@
             case 5 % foil
                 true;
             case 6 %diameter
-                true; %cUpdate(ag) =  max(0, constraints(8));
+                cUpdate(ag) =  max(0, constraints(8));
             case 7 % root alpha
-                true;
+                cUpdate(ag) = max(0, constraints(1));
             case 8 % tip alpha
                 true;
             case 9 % root chord
-                true;
+                cUpdate(ag) = max(0, constraints(1));
             case 10 % tip chord
                 true;
             case 11 % material
-                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(6)) + max(0, constraints(7));
+                cUpdate(ag) =  max(0, constraints(6)) + max(0, constraints(7));
             case 12 % length
-                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(6)) + max(0, constraints(7)) + max(0, constraints(8));
+                cUpdate(ag) =  max(0, constraints(6)) + max(0, constraints(7)) + max(0, constraints(8));
             case 13 % diameter
-                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(6)) + max(0, constraints(7));
+                cUpdate(ag) = max(0, constraints(6)) + max(0, constraints(7));
             case 14 % thickness
-                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(6)) + max(0, constraints(7));
+                cUpdate(ag) =  max(0, constraints(6)) + max(0, constraints(7));
         end
     end
     

@@ -55,6 +55,7 @@ function actions = choose_actions(agents, cTable, exploration)
             if strcmp(exploration.mode, 'softmaxDecay')
                 b=log(exploration.tempMin/exploration.tempMax);
                 T = exploration.tempMax * exp(b * exploration.completion); % Temperature
+                Tc=exploration.tempMax * exp(b * exploration.completion);
             elseif strcmp(exploration.mode, 'softmaxAdaptiveExp')
                 b=log(exploration.biasMin/exploration.biasMax);
                 bias=exploration.biasMax*exp(b*exploration.completion);
@@ -62,29 +63,51 @@ function actions = choose_actions(agents, cTable, exploration)
                 bias=exploration.biasMax-exploration.completion*(exploration.biasMax-exploration.biasMin);
             else
                 T = exploration.tempConst; % Temperature
+                Tc=exploration.tempConst;
             end
             % 10% chance choose infeasible action (if there are any), or if
             % all actions infeasible choose among them
             r = rand;
-            if (r < 0.1 && ~all(cTab == 0)) || all(cTab > 0)
-                for a = 1:numel(agent)
-                    if cTab(a) > 0
-                        % p(a) greater for least infeasible designs
-                        p(a) = 1/(cTab(a));
-                    end
-                end
-            else
-                % iterate through possible actions for agent
-                for a = 1:numel(agent)
+%             if (r < 0.1 && ~all(cTab == 0)) || all(cTab > 0)
+%                 for a = 1:numel(agent)
+%                     if cTab(a) > 0
+%                         % p(a) greater for least infeasible designs
+%                         p(a) = 1/(cTab(a));
+%                     end
+%                 end
+%             else
+%                 % iterate through possible actions for agent
+%                 for a = 1:numel(agent)
+%                     if strcmp(exploration.mode, 'softmaxAdaptiveLin') || strcmp(exploration.mode, 'softmaxAdaptiveExp')
+%                         T=max(abs(agent))*bias;
+%                     end
+%                     if cTab(a) == 0 % If it's a feasible action, p(a) > 0
+%                         p(a) = exp(agent(a)/T);
+%                     end % Otherwise, p(a) == 0
+%                 end
+%             end
+            
+            
+            
+            
+            
+            
+            
+            for a = 1:numel(agent)
                     if strcmp(exploration.mode, 'softmaxAdaptiveLin') || strcmp(exploration.mode, 'softmaxAdaptiveExp')
-                        T=max(abs(agent))*bias;
+                        T=(mean(abs(agent))+0.1)*bias;
+                        %Tc=(mean(abs(cTab))+0.1)*bias;
                     end
-                    if cTab(a) == 0 % If it's a feasible action, p(a) > 0
-                        p(a) = exp(agent(a)/T);
-                    end % Otherwise, p(a) == 0
-                end
+                        c(a)= exp(-cTab(a)/1);
+                        g(a)= exp(agent(a)/(T));  
+                        %p(a) = g(a)*c(a);     
             end
-            p = p / sum(p);
+            
+            g = g / sum(g);
+            c=c/sum(c);
+            p=g.*c;
+            p=p/sum(p);
+            
             actionToTake = find(isnan(p));
             if isempty(actionToTake)
                 % Pick an action according to the probabilities in p
@@ -107,6 +130,7 @@ function actions = choose_actions(agents, cTable, exploration)
                 [~,actionToTake]=max(agent);
             end
             actions(ag) = actionToTake;   
+            clear g c p
         end
     end
 end

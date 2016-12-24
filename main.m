@@ -67,7 +67,7 @@ data.batteryData = batteryData; data.motorData = motorData;
 data.propData = propData; data.foilData = foilData; data.rodData = rodData;
 data.matData = matData;
 
-for penMode = 2
+for penMode = 6
     for myMode = 5
         for useD = 0
             run_experiment;
