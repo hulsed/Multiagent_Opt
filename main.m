@@ -40,7 +40,7 @@ penModes={'const', 'quad', 'div','divconst','death', 'deathplus', 'lin', 'none'}
 %choose mode with penMode
 penalty.quadMin=100;  %Note: for exponentially decaying penalty, use these to select
 penalty.quadMax=100;  %max and min penalty.
-penalty.quadtrunc=-1000;    % truncated minimum G for the exponential penalty
+penalty.quadtrunc=-100;    % truncated minimum G for the exponential penalty
 penalty.const=100;    %Defines constant portion of penalty
 penalty.div=10;        %Scale term of penalty for divisive penalty
 penalty.death=-100;
