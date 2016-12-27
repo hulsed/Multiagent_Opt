@@ -44,5 +44,8 @@ switch exploration.mode
         case 'lin';
             penmode= 'Linear Penalty with Constant';
             pennum=[penalty.lin]
+        case 'none'
+            penmode = 'No Penalty';
+            pennum=[];
     end
 end

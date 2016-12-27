@@ -2,21 +2,29 @@ tic % Begin measuring time of execution
 
 clear variables
 
-numEpochs = 400; % NOTE: Changed generations to epochs because political correctness
-numRuns = 5; %Note: D runs slow, so fewer runs is a better idea.
+numEpochs = 200; % NOTE: Changed generations to epochs because political correctness
+numRuns = 10; %Note: D runs slow, so fewer runs is a better idea.
 % useD = 0; % 1 - use difference reward, 0 - use global reward
 Qinit= 100;
 
 expModes = {'const', 'decay', 'softmax', 'softmaxDecay', 'softmaxAdaptiveExp', 'softmaxAdaptiveLin', 'softmaxFeatScale'};
 exploration.epsConst=0.1;
+exploration.epsMax=0.5;
+exploration.epsMin=0.01;
 exploration.decayepsMax=0.5;
 exploration.decayepsMin=0.5;
 exploration.tempConst=100;
 exploration.tempMin=0.01;
 exploration.tempMax=10;
+exploration.tempMin=10;
+exploration.tempMax=50;
 exploration.biasMin=0.05;
 exploration.biasMax=1;
-
+exploration.feasTemp=1;
+exploration.feasTempMax=100;
+exploration.feasTempMin=1;
+exploration.fcMin=0.1;
+exploration.fcMax=100;
 
 
 params = [0.1, 0.5, 100, 100];
@@ -28,7 +36,7 @@ params = [0.1, 0.5, 100, 100];
 % USE THIS TO SELECT WHICH SELECTION POLICY YOU WANT
 % Adjust params as necessary, see below for description of each
 % myMode = 4;r
-penModes={'const', 'quad', 'div','divconst','death', 'deathplus', 'lin'};
+penModes={'const', 'quad', 'div','divconst','death', 'deathplus', 'lin', 'none'};
 %choose mode with penMode
 penalty.quadMin=100;  %Note: for exponentially decaying penalty, use these to select
 penalty.quadMax=100;  %max and min penalty.
@@ -57,7 +65,8 @@ motorAgents = [24];
 % PROPELLER
 propAgents = [7, 12, 10, 10, 15, 15];
 % ROD
-rodAgents=[4, 16,11,8];
+rodAgents=[4,11,8];
+%[4, 16,11,8];
 
 alpha = 0.1; % Learning rate
 
@@ -68,13 +77,15 @@ data.batteryData = batteryData; data.motorData = motorData;
 data.propData = propData; data.foilData = foilData; data.rodData = rodData;
 data.matData = matData;
 
-penMode=2;
-for myMode = 6
-    for useD = 1
-        run_experiment;
+
+for penMode = 8
+    for myMode = 6
+        for useD = 0
+            run_experiment;
+        end
+
     end
 end
-
 % WARNING!!!!!!!!!!!!
 % After doing the experiments, ALL the figures will come spewing forth
 % (maybe)

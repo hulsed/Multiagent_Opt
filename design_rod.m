@@ -1,4 +1,4 @@
-function rod = design_rod(actions, rodData, matData)
+function rod = design_rod(actions, rodData, matData, prop)
     % NOTE FOR DANIEL: actions is an array of uint8
     % Just be aware that if a uint8 is multiplied with a double
     % the result is a uint8, so you lose precision
@@ -9,9 +9,15 @@ function rod = design_rod(actions, rodData, matData)
     mat.Dens=matData(actions(11),4); %density in kg/m^3
     mat.Cost=matData(actions(11),5)*(100/2.54)^3; %cost in $/m^3
     
-    length = rodData(actions(12),1)*2.54/100; %length converted to m
-    diameter = rodData(actions(13),2)*2.54/100; %diamenter converted to m
-    thickness = rodData(actions(14),3)*2.54/100; %thickness converted to m
+    
+    sepDist=0.25*prop.diameter+prop.diameter;
+    motorDist=sepDist/sqrt(2);
+    framewidth=0.1; %temp width of frame!
+    minRodLength=motorDist-framewidth/2;       
+    length = minRodLength; %rodData(actions(12),1)*2.54/100; %length converted to m
+    
+    diameter = rodData(actions(12),2)*2.54/100; %diamenter converted to m
+    thickness = rodData(actions(13),3)*2.54/100; %thickness converted to m
     % Create the rod given everything we need
     rod = create_rod(mat, length, diameter, thickness);
 end

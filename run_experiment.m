@@ -48,7 +48,7 @@ epochOfMax = zeros(numRuns, 1);
 
 for r = 1:numRuns
     % Create the agents
-    agents = create_agents(batteryAgents, motorAgents, propAgents,rodAgents,Qinit);
+    [agents, cTable] = create_agents(batteryAgents, motorAgents, propAgents,rodAgents,Qinit);
 
     % The best performance obtained by the team
     maxG(r) = 0;
@@ -58,17 +58,17 @@ for r = 1:numRuns
         exploration.completion = e/numEpochs;
         
         % Have agents choose actions
-        actions = choose_actions(agents, exploration);
+        actions = choose_actions(agents, cTable, exploration);
         actions_hist(:, r, e) = actions;
 
         battery = design_battery(actions, batteryData);
         motor = design_motor(actions, motorData);
         prop = design_prop(actions, propData);
         foil = design_foil(actions, foilData);
-        rod = design_rod(actions, rodData, matData);
+        rod = design_rod(actions, rodData, matData, prop);
 
         % Get rewards for agents and system performance
-        [rewards, G, flightTime,constraints, perf,hover] = compute_rewards(useD, penalty, ...
+        [rewards, cUpdate, G, flightTime,constraints, perf,hover] = compute_rewards(useD, penalty, ...
             scaleFactor, battery, motor, prop, foil, rod, data);
         G=G*scaleFactor;
         perf_hist(r,e)=perf;
@@ -79,6 +79,7 @@ for r = 1:numRuns
         flightTime_hist(r,e)=flightTime;
         
         agents = update_values(agents, rewards, actions, alpha);
+        cTable = update_values(cTable, cUpdate, actions, 0.99);
         agents_hist{r, e} = agents;
         
         % If this is the best performance encountered so far...
@@ -120,4 +121,4 @@ converged.g6=constraint_hist(6,:,numEpochs)';
 converged.g7=constraint_hist(7,:,numEpochs)';
 disp('at final iteration, the converged designs have values:')
 struct2table(converged)
-run_qprop(0, 0, 0, 0, 1); % Save our qprop_map to a file
+% run_qprop(0, 0, 0, 0, 1); % Save our qprop_map to a file

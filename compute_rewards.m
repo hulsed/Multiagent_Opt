@@ -1,4 +1,4 @@
- function [rewards, G, flightTime, constraints, perf,hover] = compute_rewards(useD, ...
+ function [rewards, cUpdate, G, flightTime, constraints, perf,hover] = compute_rewards(useD, ...
      penalty,scaleFactor, battery, motor, prop, foil, rod, data)
     % I included the material in the inputs because I didn't know how to
     % compute the counterfactual rod otherwise... -B
@@ -9,9 +9,10 @@
     %ostensibly this is also where we calculate constraint penalties.
     
     if ~useD % if NOT using difference reward
-        rewards = ones(14, 1) * G; % Just return G for all rewards
+        rewards = ones(13, 1) * G; % Just return G for all rewards
+        
     else
-        rewards = zeros(14, 1);
+        rewards = zeros(13, 1);
         
         % Create "average" components (moved this from main)
         [avgCell, avgMotor, avgProp, avgFoil, avgRod] = counter_calc(data.batteryData, ...
@@ -56,15 +57,15 @@
                     % Counterfact rod's material replaced with avg material
                     counterRod = create_rod(avgRod.mat, rod.Length, rod.Dia, rod.Thick);
                     rewards(ag, 1) = G - calc_G(penalty,scaleFactor, battery, motor, prop, foil, counterRod);
-                case 12 % Rod length
-                    % Counterfact rod's length is replaced with avg rod length
-                    counterRod = create_rod(rod.mat, avgRod.Length, rod.Dia, rod.Thick);
-                    rewards(ag, 1) = G - calc_G(penalty,scaleFactor, battery, motor, prop, foil, counterRod);
-                case 13
+                %case 12 % Rod length
+                %    % Counterfact rod's length is replaced with avg rod length
+                %    counterRod = create_rod(rod.mat, avgRod.Length, rod.Dia, rod.Thick);
+                %    rewards(ag, 1) = G - calc_G(penalty,scaleFactor, battery, motor, prop, foil, counterRod);
+                case 12
                     % Counterfact rod's dia replaced with avg rod's dia
                     counterRod = create_rod(rod.mat, rod.Length, avgRod.Dia, rod.Thick);
                     rewards(ag, 1) = G - calc_G(penalty,scaleFactor, battery, motor, prop, foil, counterRod);
-                case 14
+                case 13
                     % thickness replaced by avg rod's thickness
                     counterRod = create_rod(rod.mat, rod.Length, rod.Dia, avgRod.Thick);
                     rewards(ag, 1) = G - calc_G(penalty,scaleFactor, battery, motor, prop, foil, counterRod);
@@ -72,6 +73,44 @@
         end   
     end
     
+    cUpdate = zeros(14, 1);
+    for ag = 1:14
+        switch ag
+            case 1 % battery cell
+                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(4)) + max(0, constraints(5));
+            case 2 % serial configs
+                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(4)) + max(0, constraints(5));
+            case 3 % parallel configs
+                cUpdate(ag) = max(0, constraints(1)) + max(0,constraints(4)) + max(0, constraints(5));
+            case 4 % motor
+                cUpdate(ag) = max(0, constraints(1)) + max(0,constraints(2)) + max(0, constraints(3))+max(0, constraints(6));
+            case 5 % foil
+                true;
+            case 6 %diameter
+                cUpdate(ag) = max(0,constraints(7))+max(0,constraints(6));
+            case 7 % root alpha
+                cUpdate(ag) = max(0, constraints(1))+max(0, constraints(6));
+            case 8 % tip alpha
+                true;
+            case 9 % root chord
+                cUpdate(ag) = max(0, constraints(1))+max(0, constraints(6));
+            case 10 % tip chord
+                true;
+            case 11 % material
+                cUpdate(ag) =  max(0, constraints(6)) + max(0, constraints(7));
+            %case 12 % length
+            %    cUpdate(ag) =   max(0, constraints(7)) + max(0, constraints(8));
+            case 12 % diameter
+                cUpdate(ag) = max(0, constraints(6)) + max(0, constraints(7));
+            case 13 % thickness
+                cUpdate(ag) =  max(0, constraints(6)) + max(0, constraints(7));
+        end
+    end
+    
+    % TEST
+    if G > 0
+        disp 'truck'
+    end
 %     for i = 1:14
 %         if rewards(i) > 1000
 %             rewards(i) = 1000;
