@@ -3,7 +3,7 @@ tic % Begin measuring time of execution
 clear variables
 
 numEpochs = 200; % NOTE: Changed generations to epochs because political correctness
-numRuns = 10; %Note: D runs slow, so fewer runs is a better idea.
+numRuns = 25; %Note: D runs slow, so fewer runs is a better idea.
 % useD = 0; % 1 - use difference reward, 0 - use global reward
 Qinit= 100;
 

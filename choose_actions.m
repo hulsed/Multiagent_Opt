@@ -11,32 +11,25 @@
 % OUTPUTS
 % actions - column vector of integers, element i corresponds to action
 %   taken by ith agent
-function actions = choose_actions(agents, cTable, exploration)
-
-    %TEST
-    for truck = 1:numel(cTable)
-        if max(cTable{truck}) > 0
-            disp ''
-        end
-    end
+function actions = choose_actions(agentTables, cTables, exploration)
 
     if strcmp(exploration.mode, 'const') % if constant epsilon
         epsilon = exploration.epsConst;
     elseif strcmp(exploration.mode, 'decay')
         % Calculate epsilon. Note that the constant in the
         % exponential is arbitrary and can be adjusted to taste
-        b=log(exploration.decayepsMin/exploration.decayepsMax)
+        b=log(exploration.decayepsMin/exploration.decayepsMax);
         epsilon = exploration.decayepsMax * exp(b * exploration.completion);
     end
 
-    numAgents = numel(agents);
+    numAgents = numel(agentTables);
     % initialize vector of integers corresponding to agent actions
     actions = uint8(zeros(numAgents, 1));
     
     % Iterate through the agents
-    for ag = 1:numel(agents)
-        agent = agents{ag};
-        cTab = cTable{ag};
+    for ag = 1:numel(agentTables)
+        agent = agentTables{ag};
+        cTab = cTables{ag};
         % Get number of actions that agent ag can make
         numActions = numel(agent);
         if strcmp(exploration.mode, 'const') || strcmp(exploration.mode, 'decay') % if NOT softmax
