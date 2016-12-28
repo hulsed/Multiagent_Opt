@@ -45,6 +45,7 @@ bestHover=init_perf();
 bestHover.index=[];
 maxG = zeros(numRuns, 1);
 epochOfMax = zeros(numRuns, 1);
+maxflightTime = zeros(numRuns, 1);
 
 for r = 1:numRuns
     % Create the agents
@@ -83,7 +84,7 @@ for r = 1:numRuns
         agents_hist{r, e} = agents;
         
         % If this is the best performance encountered so far...
-        if G > maxG(r)
+        if G > maxG(r) && all(constraints <= 0)
             maxG(r) = G;
             epochOfMax(r) = e;
             maxflightTime(r)=flightTime;
@@ -94,6 +95,7 @@ for r = 1:numRuns
             bestPerf(r)=perf;
             bestHover(r)=hover;
         end
+        
         disp([num2str(r) ', ' num2str(e)])
         disp([num2str(r) ', ' num2str(e)])
     end
@@ -121,4 +123,7 @@ converged.g6=constraint_hist(6,:,numEpochs)';
 converged.g7=constraint_hist(7,:,numEpochs)';
 disp('at final iteration, the converged designs have values:')
 struct2table(converged)
+disp(['Percentage of converged designs that are feasible: ' num2str( ...
+    numel(find(max(constraint_hist(:, :, numEpochs)) <= 0))/numRuns*100,...
+    '%d') '%'])
 % run_qprop(0, 0, 0, 0, 1); % Save our qprop_map to a file
