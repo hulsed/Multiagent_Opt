@@ -147,7 +147,12 @@ function actions = choose_actions(agentTables, cTables, exploration)
             actionToTake = find(isnan(p));
             if isempty(actionToTake)
                 % Pick an action according to the probabilities in p
-                actionToTake = randsample(1:numel(agent), 1, true, p);                
+                try
+                    actionToTake = randsample(1:numel(agent), 1, true, p);
+                catch
+                    p, g, c, cTab % Sometimes get complex numbers >:[
+                    actionToTake = randsample(1:numel(agent), 1, true, p);
+                end
             else
                 disp('Softmax broke due to infinite exponential!')
                 disp('Picking between three best')

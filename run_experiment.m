@@ -50,9 +50,9 @@ maxflightTime = zeros(numRuns, 1);
 
 for r = 1:numRuns
     % Create the agents
-    [agentTables, cTables] = create_agents(batteryAgents, motorAgents, propAgents,rodAgents,Qinit);
+    [agents, feasels] = create_agents(batteryAgents, motorAgents, propAgents,rodAgents,Qinit);
     % Initial states
-    states = ones(1, numAgents);
+    states = ones(numAgents, 1);
     % The best performance obtained by the team
     maxG(r) = 0;
     epochOfMax(r) = 0;
@@ -60,10 +60,10 @@ for r = 1:numRuns
         penalty.R=penFxnA*exp(penFxnB*e);
         exploration.completion = e/numEpochs;
         
-        [agentTable, cTable] = get_tables(agentTables, cTables, states);
+        [agentTables, cTables] = get_tables(agents, feasels, states);
         
         % Have agents choose actions
-        actions = choose_actions(agentTable, cTable, exploration);
+        actions = choose_actions(agentTables, cTables, exploration);
         actions_hist(:, r, e) = actions;
 
         battery = design_battery(actions, batteryData);
@@ -83,10 +83,10 @@ for r = 1:numRuns
         G_hist(r,e)=G;
         flightTime_hist(r,e)=flightTime;
         
-        agentTables = update_values(agentTables, rewards, actions, states, alpha);
-        cTables = update_values(cTables, cUpdate, actions, states, 0.75);
+        agents = update_values(agents, rewards, actions, states, alpha);
+        feasels = update_values(feasels, cUpdate, actions, states, 0.75);
         states = update_states(states, constraints);
-        agents_hist{r, e} = agentTables;
+        agents_hist{r, e} = agents;
         states_hist(:, r, e) = states;
         
         % If this is the best performance encountered so far...

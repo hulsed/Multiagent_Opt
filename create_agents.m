@@ -10,13 +10,14 @@
 %
 % OUTPUTS
 % agents - a cell array containing the Q-tables of the agents
-function [agentTables, cTables] = create_agents(battery, motor, prop,rod,Qinit)
+function [agentTables, feasels] = create_agents(battery, motor, prop,rod,Qinit)
     % Join all component vectors into one vector
     allComponents = [battery, motor, prop, rod];
     numAgents = size(allComponents, 2);
     % Our multiagent system, of sorts. This will hold all the Q-tables.
     agentTables = cell(numAgents, 1);
-    cTables = cell(numAgents, 1);
+    % Feasels are the constraint tables for the agents
+    feasels = cell(numAgents, 1);
     
     % Create the agents one by one. ag is the "agent number"
     for ag = 1:numel(allComponents)
@@ -26,15 +27,15 @@ function [agentTables, cTables] = create_agents(battery, motor, prop,rod,Qinit)
         if ismember(ag, [1 2 3 4 11 12 13 14]) % each of non-prop agents has 4 possible states
             % Initialize Q-table (table of values)
             agent = Qinit*ones(5, numActions);
-            c = zeros(5, numActions);
+            feasel = zeros(5, numActions);
         else
             % Initialize Q-table (table of values)
             agent = Qinit*ones(1, numActions);
-            c = zeros(1, numActions);
+            feasel = zeros(1, numActions);
         end
         % add agent to our list of1 agents
         agentTables{ag, 1} = agent;
-        cTables{ag, 1} = c;
+        feasels{ag, 1} = feasel;
     end
     
     % (return agents)
