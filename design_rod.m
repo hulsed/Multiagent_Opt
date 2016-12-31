@@ -12,7 +12,7 @@ function rod = design_rod(actions, rodData, matData, prop)
     
     sepDist=0.25*prop.diameter+prop.diameter;
     motorDist=sepDist/sqrt(2);
-    framewidth=0.1; %temp width of frame!
+    framewidth=0.075; %temp width of frame!
     minRodLength=motorDist-framewidth/2;       
     length = minRodLength; %rodData(actions(12),1)*2.54/100; %length converted to m
     

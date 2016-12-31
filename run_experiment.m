@@ -109,7 +109,7 @@ if ~exist('Saved Workspaces', 'dir')
 end
 % save workspace
 [rewardnum,mode,pennum,penmode]=label_parameters(exploration, penalty);
-uav_plots(maxflightTime, flightTime_hist,constraint_hist,numEpochs,penalty,pennum,penmode, maxG, G_hist, useD, exploration,rewardnum,mode, epochOfMax, Qinit);
+uav_plots % No longer a function so we don't need a massive list of params
 save(['Saved Workspaces\\' exploration.mode '_' num2str(rewardnum, '%.2f') '_' 'useD=' num2str(useD, '%d') '_' penalty.Mode '_' num2str(pennum) '_' datestr(now,'mm-dd-yy_HH.MM.SS') '.mat'])
 
 %converged_designs
