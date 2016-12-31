@@ -1,29 +1,29 @@
-function [perf]=run_qprop(battery, motor, prop, foil, SAVE)
+function [perf]=run_qprop(battery, motor, prop, foil)
 
     % I'm breaking my own convention for this variable
     % Instead of camelCase, I'm using an underscore. I confess my sins.
     % But I hope to atone for them through trial by combat (of a seahorse)
     % Although in my defense, this variable KINDA acts like a function
     % (it's a mapping, after all)
-    persistent qprop_map % persistent keyword means variable is not "forgotten"
-    if isempty(qprop_map) % True if it's the first time running this func
-        % If we already have a saved mapping, use that.
-        if exist('qprop_map.mat', 'file')
-            load('qprop_map.mat', 'qprop_map');
-        else
-            qprop_map = containers.Map; % Otherwise, initialize a map
-        end
-        % IN CASE THIS NEEDS TO BE CLEARED:
-        % >> clear run_qprop
-    end
+%     persistent qprop_map % persistent keyword means variable is not "forgotten"
+%     if isempty(qprop_map) % True if it's the first time running this func
+%         % If we already have a saved mapping, use that.
+%         if exist('qprop_map.mat', 'file')
+%             load('qprop_map.mat', 'qprop_map');
+%         else
+%             qprop_map = containers.Map; % Otherwise, initialize a map
+%         end
+%         % IN CASE THIS NEEDS TO BE CLEARED:
+%         % >> clear run_qprop
+%     end
 
     % Check if SAVE input is provided and is 1
     % If so, DO NOT RUN QPROP, but just save the mappings
-    if exist('SAVE', 'var') && SAVE == 1
-        save('qprop_map.mat', 'qprop_map');
-        disp('qprop_map saved to qprop_map.mat!')
-        return
-    end
+%     if exist('SAVE', 'var') && SAVE == 1
+%         save('qprop_map.mat', 'qprop_map');
+%         disp('qprop_map saved to qprop_map.mat!')
+%         return
+%     end
 
     vel=0.0;
     numPts=8;
@@ -39,13 +39,13 @@ function [perf]=run_qprop(battery, motor, prop, foil, SAVE)
     % and propfile)
     %Note: we may not need thrust_req for this... I'm not sure it actually
     %changes the result of qprop
-    qpropVars = [vel volt_max volt_incr ...
-        motor.R0 motor.I0 motor.kv foil.Cl0, foil.Cla, foil.Clmin, ...
-        foil.Clmax foil.Cd0 foil.Cd2 foil.Clcd0 foil.Reref foil.Reexp ...
-        prop.diameter, prop.angleRoot, prop.angleTip, prop.chordRoot, ...
-        prop.chordTip];
-    qpropVars = num2str(qpropVars, '%.4f ');
-    qpropVars = regexprep(qpropVars, ' +', ' '); % remove unnecessary space
+%     qpropVars = [vel volt_max volt_incr ...
+%         motor.R0 motor.I0 motor.kv foil.Cl0, foil.Cla, foil.Clmin, ...
+%         foil.Clmax foil.Cd0 foil.Cd2 foil.Clcd0 foil.Reref foil.Reexp ...
+%         prop.diameter, prop.angleRoot, prop.angleTip, prop.chordRoot, ...
+%         prop.chordTip];
+%     qpropVars = num2str(qpropVars, '%.4f ');
+%     qpropVars = regexprep(qpropVars, ' +', ' '); % remove unnecessary space
     % Check if the input is already in our map
 %     if ismember(qpropVars, keys(qprop_map))
 %         % If it is, GIMME!
@@ -53,7 +53,7 @@ function [perf]=run_qprop(battery, motor, prop, foil, SAVE)
 %         qpropoutput = qprop_map(qpropVars);
 %     else
         % If not, we'll need to consult with QProp
-        disp('Didn''t find output in mapping, running qprop.exe')
+%         disp('Didn''t find output in mapping, running qprop.exe')
         %creating motor input file
         fid = -1;
         while fid < 3

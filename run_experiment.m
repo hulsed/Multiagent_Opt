@@ -99,7 +99,7 @@ for r = 1:numRuns
             states_hist(:, r, e) = states;
         end
         Qlearn = stateful; % Use Q-learning for agents if stateful
-        if e == 1000
+        if e == 200
             disp asfa
         end
         agents = update_values(agents, rewards, alpha, actions, states, oldStates, Qlearn, gamma);
@@ -120,7 +120,6 @@ for r = 1:numRuns
         end
         
         disp([num2str(r) ', ' num2str(e)])
-        disp([num2str(r) ', ' num2str(e)])
     end
 end
 
@@ -132,13 +131,15 @@ if ~exist('Saved Workspaces', 'dir')
 end
 % save workspace
 [rewardnum,mode,pennum,penmode]=label_parameters(exploration, penalty);
-uav_plots(maxflightTime, flightTime_hist,constraint_hist,numEpochs,penalty,pennum,penmode, maxG, G_hist, useD, exploration,rewardnum,mode, epochOfMax, Qinit);
-save(['Saved Workspaces\\' ...
-        char(stateful .* ['state' 0 0] + ~stateful .* 'NOstate') ...
-    '_' exploration.mode '_' num2str(rewardnum, '%.2f_') ...
-        char((useD == 1) * 'D' + (useD == 0) * 'G') ... 'D' or 'G', depending on useD
-    '_' penalty.Mode '_' num2str(pennum, '%.2f_') datestr(now,'mm-dd-yy_HH.MM.SS') '.mat'])
-
+uav_plots
+if saveWorkspace
+    if stateful, strState = 'state'; else strState = 'NOstate'; end
+    save(['Saved Workspaces\\' ...
+            strState ...
+        '_' exploration.mode '_' num2str(rewardnum, '%.2f_') ...
+            char((useD == 1) * 'D' + (useD == 0) * 'G') ... 'D' or 'G', depending on useD
+        '_' penalty.Mode '_' num2str(pennum, '%.2f_') datestr(now,'mm-dd-yy_HH.MM.SS') '.mat'])
+end
 %converged_designs
 converged.flighttimes_mins=flightTime_hist(:,numEpochs)/60;
 converged.g1=constraint_hist(1,:,numEpochs)';

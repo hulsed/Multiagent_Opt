@@ -2,10 +2,11 @@ tic % Begin measuring time of execution
 
 clear variables
 
-numEpochs = 250; % NOTE: Changed generations to epochs because political correctness
-numRuns = 10; %Note: D runs slow, so fewer runs is a better idea.
+numEpochs = 1000; % NOTE: Changed generations to epochs because political correctness
+numRuns = 200; %Note: D runs slow, so fewer runs is a better idea.
 % useD = 0; % 1 - use difference reward, 0 - use global reward
 Qinit= 100;
+saveWorkspace = 1;
 
 expModes = {'const', 'decay', 'softmax', 'softmaxDecay', 'softmaxAdaptiveExp', 'softmaxAdaptiveLin', 'softmaxFeatScale'};
 exploration.epsConst=0.1;
@@ -85,7 +86,6 @@ for penMode = 8
                 run_experiment;
             end
         end
-
     end
 end
 % WARNING!!!!!!!!!!!!

@@ -1,10 +1,9 @@
-function uav_plots(maxflightTime, flightTime_hist,constraint_hist,numEpochs,penalty,pennum,penmode, maxG, G_hist, useD, exploration,rewardnum,mode, epochOfMax, Qinit)
     % I'm sorry this is really messy.
 
-    maxflightTime = maxflightTime/60;
-    flightTime_hist = flightTime_hist/60;
-    maxG = maxG/60;
-    G_hist = G_hist/60;
+    maxflightTime_S = maxflightTime/60;
+    flightTime_hist_S = flightTime_hist/60;
+    maxG_S = maxG/60;
+    G_hist_S = G_hist/60;
     
     if useD
         reward = 'D';
@@ -49,44 +48,45 @@ function uav_plots(maxflightTime, flightTime_hist,constraint_hist,numEpochs,pena
 %     end     
 %    
 %% Max Flight Time/Max G
+if 0
     figure;
-    plot(maxflightTime, 'r');
+    plot(maxflightTime_S, 'r');
     hold on
-    plot(maxG, 'k-.', 'LineWidth', 2);
+    plot(maxG_S, 'k-.', 'LineWidth', 2);
     legend('Max Flight Time (minutes)', 'Max G');
     Title = ['Performance using ' mode ' (' num2str(rewardnum, '%.1f') '), ' reward ', ' num2str(Qinit, '%.1f')];
-    title(Title)
+    title([Title ' ' num2str(stateful)])
     xlabel('Run')
-    
+end    
     
 %% Avg Flight Time/Avg G + Max G Achieved (1 per run)
     figure;
-    plot(mean(G_hist), 'LineWidth', 1.25);
+    plot(mean(G_hist_S), 'LineWidth', 1.25);
 %     Title = ['Average G using ' mode ' (' num2str(rewardnum, '%.1f') '), ' reward];
 %     title(Title)
 
     hold on
-    plot(epochOfMax, maxG, 'o')
+    plot(epochOfMax, maxG_S, 'o')
 
     
 %     Ymax = max(avgflightTime);
 %     axis([0, numel(avgflightTime), 0, Ymax])
-    avgflightTime = mean(flightTime_hist);
-    error = std(flightTime_hist,1,1);% / sqrt(size(flightTime_hist,1));
-    L = size(flightTime_hist, 2);
+    avgflightTime = mean(flightTime_hist_S);
+    error = std(flightTime_hist_S,1,1);% / sqrt(size(flightTime_hist_S,1));
+    L = size(flightTime_hist_S, 2);
     errorbar(1:10:L, avgflightTime(1:10:L), error(1:10:L), 'r', 'LineWidth', 1);
     Title = [mode ' (' num2str(rewardnum, '%.1f') '), ' reward ', Optimism=' num2str(Qinit, '%.1f')];
-    title(Title)
+    title([Title ' ' num2str(stateful)])
     xlabel('Epoch')
     legend('Max G Achieved', 'Average G', 'Average Flight Time (minutes)', 'Location', 'southeast')
-    Ymax = max(maxG) * 1.01;
+    Ymax = max(maxG_S) * 1.01;
     axis([1, numel(avgflightTime), 0, Ymax])
     %%
     figure; % Plot just average flight time
     errorbar(1:10:L, avgflightTime(1:10:L), error(1:10:L), 'r', 'LineWidth', 1);
     axis([1, numel(avgflightTime), 0, Ymax])
     Title = ['Time in the Air - ' mode ' (' num2str(rewardnum, '%.1f') '), ' reward ', Optimism=' num2str(Qinit, '%.1f')];
-    title(Title)
+    title([Title ' ' num2str(stateful)])
     xlabel('Epoch')
     ylabel('Average Flight Time (minutes)')
     
@@ -96,8 +96,4 @@ function uav_plots(maxflightTime, flightTime_hist,constraint_hist,numEpochs,pena
     hold on
     errorbar(1:7, median(constraint_hist(:,:,numEpochs)'),range(constraint_hist(:,:,numEpochs)'), '.')
     Title=['Final Constraint Values, ' penmode ' parameters: ' num2str(pennum)];
-    title(Title)
-    
-    
-
-end
+    title([Title ' ' num2str(stateful)])
