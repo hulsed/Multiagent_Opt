@@ -11,6 +11,7 @@
 % OUTPUTS
 % agents - a cell array containing the Q-tables of the agents
 function [agentTables, feasels] = create_agents(battery, motor, prop,rod,Qinit)
+global stateful
     % Join all component vectors into one vector
     allComponents = [battery, motor, prop, rod];
     numAgents = size(allComponents, 2);
@@ -24,7 +25,7 @@ function [agentTables, feasels] = create_agents(battery, motor, prop,rod,Qinit)
         % Get number of actions for agent ag
         numActions = allComponents(ag);
         
-        if ismember(ag, [1 2 3 4 11 12 13 14]) % each of non-prop agents has 4 possible states
+        if stateful && ismember(ag, [1 2 3 4 11 12 13 14]) % each of non-prop agents has 4 possible states
             % Initialize Q-table (table of values)
             agent = Qinit*ones(5, numActions);
             feasel = zeros(5, numActions);

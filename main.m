@@ -2,8 +2,8 @@ tic % Begin measuring time of execution
 
 clear variables
 
-numEpochs = 200; % NOTE: Changed generations to epochs because political correctness
-numRuns = 25; %Note: D runs slow, so fewer runs is a better idea.
+numEpochs = 250; % NOTE: Changed generations to epochs because political correctness
+numRuns = 10; %Note: D runs slow, so fewer runs is a better idea.
 % useD = 0; % 1 - use difference reward, 0 - use global reward
 Qinit= 100;
 
@@ -69,7 +69,7 @@ rodAgents=[4,11,8];
 %[4, 16,11,8];
 
 alpha = 0.1; % Learning rate
-
+gamma = 0.1;
 [batteryData, motorData, propData, foilData, rodData, matData] = load_data('batterytable.csv', ...
     'motortable.csv', 'propranges.csv', 'airfoiltable.csv','rodtable.csv','materialtable.csv');
 
@@ -77,11 +77,13 @@ data.batteryData = batteryData; data.motorData = motorData;
 data.propData = propData; data.foilData = foilData; data.rodData = rodData;
 data.matData = matData;
 
-
+global stateful
 for penMode = 8
     for myMode = 6
         for useD = 0
-            run_experiment;
+            for stateful = 1
+                run_experiment;
+            end
         end
 
     end

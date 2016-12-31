@@ -1,3 +1,5 @@
+global stateful
+
 % exploration stands for action selector. It's a struct that describes how agents
 % will select actions
 % The mode tells the program which type of policy to use for scaleFactor
@@ -34,7 +36,7 @@ bestParams = cell(numRuns, 1); % The design parameters resulting from the agents
 
 rewards_hist = zeros(numAgents, numRuns, numEpochs);
 actions_hist = zeros(numAgents, numRuns, numEpochs);
-states_hist = zeros(numAgents, numRuns, numEpochs);
+if stateful, states_hist = zeros(numAgents, numRuns, numEpochs); end
 agents_hist = cell(numRuns, numEpochs);
 constraint_hist = zeros(7, numRuns, numEpochs);
 perf_hist(numRuns,numEpochs)=init_perf();
@@ -49,9 +51,10 @@ epochOfMax = zeros(numRuns, 1);
 maxflightTime = zeros(numRuns, 1);
 
 for r = 1:numRuns
-    % Create the agents
+    % Create the agents and feasels
     [agents, feasels] = create_agents(batteryAgents, motorAgents, propAgents,rodAgents,Qinit);
-    % Initial states
+    % Initial states. If not stateful, this is used anyway, but all states
+    % are 1 always
     states = ones(numAgents, 1);
     % The best performance obtained by the team
     maxG(r) = 0;
@@ -60,7 +63,14 @@ for r = 1:numRuns
         penalty.R=penFxnA*exp(penFxnB*e);
         exploration.completion = e/numEpochs;
         
-        [agentTables, cTables] = get_tables(agents, feasels, states);
+        if stateful
+            [agentTables, cTables] = get_tables(agents, feasels, states);
+        else
+            % If not stateful, don't waste time by calling the function.
+            % All the agents and feasels have only one table.
+            agentTables = agents;
+            cTables = feasels;
+        end
         
         % Have agents choose actions
         actions = choose_actions(agentTables, cTables, exploration);
@@ -83,11 +93,18 @@ for r = 1:numRuns
         G_hist(r,e)=G;
         flightTime_hist(r,e)=flightTime;
         
-        agents = update_values(agents, rewards, actions, states, alpha);
-        feasels = update_values(feasels, cUpdate, actions, states, 0.75);
-        states = update_states(states, constraints);
+        oldStates = states;
+        if stateful
+            states = update_states(states, constraints);
+            states_hist(:, r, e) = states;
+        end
+        Qlearn = stateful; % Use Q-learning for agents if stateful
+        if e == 1000
+            disp asfa
+        end
+        agents = update_values(agents, rewards, alpha, actions, states, oldStates, Qlearn, gamma);
+        feasels = update_values(feasels, cUpdate, 0.75, actions, states, oldStates, 0);
         agents_hist{r, e} = agents;
-        states_hist(:, r, e) = states;
         
         % If this is the best performance encountered so far...
         if G > maxG(r) && all(constraints <= 0)
@@ -116,7 +133,11 @@ end
 % save workspace
 [rewardnum,mode,pennum,penmode]=label_parameters(exploration, penalty);
 uav_plots(maxflightTime, flightTime_hist,constraint_hist,numEpochs,penalty,pennum,penmode, maxG, G_hist, useD, exploration,rewardnum,mode, epochOfMax, Qinit);
-save(['Saved Workspaces\\' exploration.mode '_' num2str(rewardnum, '%.2f') '_' 'useD=' num2str(useD, '%d') '_' penalty.Mode '_' num2str(pennum) '_' datestr(now,'mm-dd-yy_HH.MM.SS') '.mat'])
+save(['Saved Workspaces\\' ...
+        char(stateful .* ['state' 0 0] + ~stateful .* 'NOstate') ...
+    '_' exploration.mode '_' num2str(rewardnum, '%.2f_') ...
+        char((useD == 1) * 'D' + (useD == 0) * 'G') ... 'D' or 'G', depending on useD
+    '_' penalty.Mode '_' num2str(pennum, '%.2f_') datestr(now,'mm-dd-yy_HH.MM.SS') '.mat'])
 
 %converged_designs
 converged.flighttimes_mins=flightTime_hist(:,numEpochs)/60;

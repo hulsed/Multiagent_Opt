@@ -94,6 +94,9 @@ function [G,flightTime,constraints, perf, hover] = calc_G(penalty,scaleFactor, b
                 G = (flightTime+sum(conRewards))/scaleFactor; 
             case 'none'
                 G = flightTime/scaleFactor;
+                if ~isreal(flightTime)
+                    disp('fuck fuck fuck')
+                end
         end
    end
      
