@@ -9,4 +9,5 @@ function foil = design_foil(actions, foilData)
     foil.Clcd0=foilData(actions(5),7);
     foil.Reref=foilData(actions(5),8);
     foil.Reexp=foilData(actions(5),9);
+    foil.Num=foilData(actions(5),10);
 end

@@ -63,8 +63,7 @@ for r = 1:numRuns
 
         battery = design_battery(actions, batteryData);
         motor = design_motor(actions, motorData);
-        prop = design_prop(actions, propData);
-        foil = design_foil(actions, foilData);
+        [prop,foil] = design_prop(actions, propData, foilData);
         rod = design_rod(actions, rodData, matData, prop);
         sys=design_sys(battery,motor,prop,foil,rod);
 
