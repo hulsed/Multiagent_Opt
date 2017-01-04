@@ -37,8 +37,11 @@ actions_hist = zeros(numAgents, numRuns, numEpochs);
 agents_hist = cell(numRuns, numEpochs);
 constraint_hist = zeros(8, numRuns, numEpochs);
 hover=init_perf(); %TEMP. may require its own initialization
+hover.failure=[];
 hover_hist=init_perf(); %TEMP. may require its own initialization
+hover_hist.failure=[];
 bestHover=init_perf();
+bestHover.failure=[];
 maxG = zeros(numRuns, 1);
 epochOfMax = zeros(numRuns, 1);
 maxflightTime = zeros(numRuns, 1);
@@ -63,10 +66,11 @@ for r = 1:numRuns
         prop = design_prop(actions, propData);
         foil = design_foil(actions, foilData);
         rod = design_rod(actions, rodData, matData, prop);
+        sys=design_sys(battery,motor,prop,foil,rod);
 
         % Get rewards for agents and system performance
         [rewards, cUpdate, G, flightTime,constraints,hover] = compute_rewards(useD, penalty, ...
-            scaleFactor, battery, motor, prop, foil, rod, data);
+            scaleFactor, battery, motor, prop, foil, rod,sys, data);
         G=G*scaleFactor;
         hover_hist(r,e)=hover;
         rewards_hist(:, r, e) = rewards;
@@ -75,8 +79,9 @@ for r = 1:numRuns
         flightTime_hist(r,e)=flightTime;
         
         agents = update_values(agents, rewards, actions, alpha);
-        cTable = update_values(cTable, cUpdate, actions, 0.99);
+        cTable = update_values(cTable, cUpdate, actions, alpha);
         agents_hist{r, e} = agents;
+        cTable_hist{r,e} = cTable;
         
         % If this is the best performance encountered so far...
         if G > maxG(r) && all(constraints <= 0)
@@ -119,6 +124,6 @@ converged.g8=constraint_hist(8,:,numEpochs)';
 disp('at final iteration, the converged designs have values:')
 struct2table(converged)
 disp(['Percentage of converged designs that are feasible: ' num2str( ...
-    numel(find(max(constraint_hist(:, :, numEpochs)) <= 0))/numRuns*100,...
+    numel(find(max(constraint_hist(:, :, numEpochs)) <= 0.05))/numRuns*100,...
     '%d') '%'])
 % run_qprop(0, 0, 0, 0, 1); % Save our qprop_map to a file

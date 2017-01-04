@@ -1,4 +1,4 @@
-function [constraints]=calc_constraints(battery, motor, prop, foil, rod, hover,failure)
+function [constraints]=calc_constraints(battery, motor, prop, foil, rod,sys, hover,failure)
 % Constraints in a normalized form g=val/valmax-1 or g=1-val/valmin
 % This means when g<0, constraint is satisfied and when g>0, constraint 
 % is violated. When constraints are violated, they are multiplied by the
@@ -14,10 +14,8 @@ constraints(2:8)=0;
 else
  constraints(1)=0;
  %must acheive required thrust
-    resMass=0.3; %TEMP: Defines the mass of the rest of the quadrotor not designed.       
-    totMass = 4*motor.Mass + battery.Mass+4*rod.Mass+resMass;
-    %Note: thrust required from each motor is one-fourth the total mass.
-    thrustReq = totMass*9.81/4;
+    
+    thrustReq = sys.mass*9.81/4;
  constraints(2)=10*(1-hover.thrust/thrustReq); %Note: multiplying by 10 is arbitrary to make the magnitude larger
  
 %Battery 

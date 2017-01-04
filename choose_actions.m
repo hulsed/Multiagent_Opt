@@ -127,7 +127,8 @@ function actions = choose_actions(agents, cTable, exploration)
                     %if cTab(a)>=feasCutoff && not(isempty(find(cTab==0)))
                     %    c(a)=0;
                     %end
-                        g(a)= exp(agent(a)/(T));  
+                        g(a)= exp(agent(a)/(T));
+                        
                         %p(a) = g(a)*c(a);   
                  %if cTab(a)>=feasCutoff && not(isempty(find(cTab==0)))
                  %    p(a)=0;
@@ -135,20 +136,29 @@ function actions = choose_actions(agents, cTable, exploration)
                  %if (isempty(find(cTab==0))) && exploration.completion>=0.5
                  %   p(a)=c(a)+p(a)/numel(agent); 
                  %end
+                 %if cTab(a)>0.01
+                 %    p(a)=c(a)*g(a);
+                 %else
+                 %    p(a)=g(a);
+                 %end
                          
             end
-            
-            
+                      
             g = g / sum(g);
             c=c/sum(c);
-            for a=1:numel(agent)
-                if c(a)<=0.001
-                    c(a)=0;
-                end
-            end
+             for a=1:numel(agent) 
+%                  if cTab(a)>1.0
+%                      p(a)=g(a)*c(a)^3;
+%                  elseif cTab(a)>0.1
+%                      p(a)=g(a)*c(a)^2 
+%                  else
+%                      p(a)=g(a)*c(a);
+%                  end
+            p(a)=g(a)*c(a)^(1+2*cTab(a));
+             end
             
             
-            p=g.*c;
+            %p=g.*c;
             p=p/sum(p);
             
             actionToTake = find(isnan(p));
