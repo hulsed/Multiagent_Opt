@@ -94,6 +94,6 @@
     figure; %Plot constraint violation at final epoch       
     bar(median(constraint_hist(:,:,numEpochs)'))
     hold on
-    errorbar(1:7, median(constraint_hist(:,:,numEpochs)'),range(constraint_hist(:,:,numEpochs)'), '.')
+    errorbar(1:length(constraints), median(constraint_hist(:,:,numEpochs)'),range(constraint_hist(:,:,numEpochs)'), '.')
     Title=['Final Constraint Values, ' penmode ' parameters: ' num2str(pennum)];
     title(Title)

@@ -10,20 +10,27 @@ function [constraints]=calc_constraints(battery, motor, prop, foil, rod, hover,f
 %System
 if failure
 constraints(1)=10*failure;
-constraints(2:7)=0;
+constraints(2:8)=0;
 else
  constraints(1)=0;
+ %must acheive required thrust
+    resMass=0.3; %TEMP: Defines the mass of the rest of the quadrotor not designed.       
+    totMass = 4*motor.Mass + battery.Mass+4*rod.Mass+resMass;
+    %Note: thrust required from each motor is one-fourth the total mass.
+    thrustReq = totMass*9.81/4;
+ constraints(2)=10*(1-hover.thrust/thrustReq); %Note: multiplying by 10 is arbitrary to make the magnitude larger
+ 
 %Battery 
  %max current
- constraints(2)=(4*hover.amps)/battery.Imax-1; %Note: perf is from EACH motor.
+ constraints(3)=(4*hover.amps)/battery.Imax-1; %Note: perf is from EACH motor.
  %max voltage 
- constraints(3)=hover.volts/battery.Volt-1;
+ constraints(4)=hover.volts/battery.Volt-1;
  %max power 
 %Motor Constraint
  %max current
- constraints(4)=hover.amps/motor.Imax-1;
+ constraints(5)=hover.amps/motor.Imax-1;
  %max power
- constraints(5)=hover.pelec/motor.Pmax-1;
+ constraints(6)=hover.pelec/motor.Pmax-1;
  %max voltage???
 %Propeller Constraint
  %Stress under bending
@@ -38,12 +45,12 @@ else
  natFreq=sqrt(rod.Stiffness./(0.5*rod.Mass+motor.Mass))/(2*pi);
  minnatFreq=2*forcedFreq; %natural frequency must be two times the forced frequency.
  % There should be more technical justification for this.
- constraints(6)=1-natFreq/minnatFreq;
+ constraints(7)=1-natFreq/minnatFreq;
  
  %deflection (1% of length, max)
  maxDefl=0.01*rod.Length;
  defl=hover.thrust/rod.Stiffness;
- constraints(7)=defl/maxDefl-1;
+ constraints(8)=defl/maxDefl-1;
  %impact
  
  %must be long enought that propellers don't interfere

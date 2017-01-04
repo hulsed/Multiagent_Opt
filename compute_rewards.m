@@ -1,10 +1,10 @@
- function [rewards, cUpdate, G, flightTime, constraints, perf,hover] = compute_rewards(useD, ...
+ function [rewards, cUpdate, G, flightTime, constraints,hover] = compute_rewards(useD, ...
      penalty,scaleFactor, battery, motor, prop, foil, rod, data)
     % I included the material in the inputs because I didn't know how to
     % compute the counterfactual rod otherwise... -B
     
     % Global System Performance
-    [G, flightTime, constraints, perf,hover] = calc_G(penalty,scaleFactor, battery, motor, prop, foil, rod);
+    [G, flightTime, constraints,hover] = calc_G(penalty,scaleFactor, battery, motor, prop, foil, rod);
     
     %ostensibly this is also where we calculate constraint penalties.
     
@@ -77,33 +77,33 @@
     for ag = 1:14
         switch ag
             case 1 % battery cell
-                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(4)) + max(0, constraints(5));
+                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(5)) + max(0, constraints(6));
             case 2 % serial configs
-                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(4)) + max(0, constraints(5));
+                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(2)) + max(0, constraints(5)) + max(0, constraints(6));
             case 3 % parallel configs
-                cUpdate(ag) = max(0, constraints(1)) + max(0,constraints(4)) + max(0, constraints(5));
+                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(2)) + max(0,constraints(5)) + max(0, constraints(6));
             case 4 % motor
-                cUpdate(ag) = max(0, constraints(1)) + max(0,constraints(2)) + max(0, constraints(3))+max(0, constraints(6));
+                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(2)) + max(0,constraints(3)) + max(0, constraints(4))+max(0, constraints(7));
             case 5 % foil
                 true;
             case 6 %diameter
-                cUpdate(ag) = max(0,constraints(7))+max(0,constraints(6));
+                cUpdate(ag) = max(0,constraints(8))+max(0,constraints(7));
             case 7 % root alpha
-                cUpdate(ag) = max(0, constraints(1))+max(0, constraints(6));
+                cUpdate(ag) = max(0, constraints(1))+ max(0, constraints(2)) + max(0, constraints(7));
             case 8 % tip alpha
                 true;
             case 9 % root chord
-                cUpdate(ag) = max(0, constraints(1))+max(0, constraints(6));
+                cUpdate(ag) = max(0, constraints(1))+ max(0, constraints(2)) + max(0, constraints(7));
             case 10 % tip chord
                 true;
             case 11 % material
-                cUpdate(ag) =  max(0, constraints(6)) + max(0, constraints(7));
+                cUpdate(ag) =  max(0, constraints(7)) + max(0, constraints(8));
             %case 12 % length
-            %    cUpdate(ag) =   max(0, constraints(7)) + max(0, constraints(8));
+            %    cUpdate(ag) =   max(0, constraints(8)) + max(0, constraints(8));
             case 12 % diameter
-                cUpdate(ag) = max(0, constraints(6)) + max(0, constraints(7));
+                cUpdate(ag) = max(0, constraints(7)) + max(0, constraints(8));
             case 13 % thickness
-                cUpdate(ag) =  max(0, constraints(6)) + max(0, constraints(7));
+                cUpdate(ag) =  max(0, constraints(7)) + max(0, constraints(8));
         end
     end
     

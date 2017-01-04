@@ -35,14 +35,10 @@ bestParams = cell(numRuns, 1); % The design parameters resulting from the agents
 rewards_hist = zeros(numAgents, numRuns, numEpochs);
 actions_hist = zeros(numAgents, numRuns, numEpochs);
 agents_hist = cell(numRuns, numEpochs);
-constraint_hist = zeros(7, numRuns, numEpochs);
-perf_hist(numRuns,numEpochs)=init_perf();
+constraint_hist = zeros(8, numRuns, numEpochs);
 hover=init_perf(); %TEMP. may require its own initialization
-hover.index=[];
 hover_hist=init_perf(); %TEMP. may require its own initialization
-hover_hist.index=[];
 bestHover=init_perf();
-bestHover.index=[];
 maxG = zeros(numRuns, 1);
 epochOfMax = zeros(numRuns, 1);
 maxflightTime = zeros(numRuns, 1);
@@ -69,10 +65,9 @@ for r = 1:numRuns
         rod = design_rod(actions, rodData, matData, prop);
 
         % Get rewards for agents and system performance
-        [rewards, cUpdate, G, flightTime,constraints, perf,hover] = compute_rewards(useD, penalty, ...
+        [rewards, cUpdate, G, flightTime,constraints,hover] = compute_rewards(useD, penalty, ...
             scaleFactor, battery, motor, prop, foil, rod, data);
         G=G*scaleFactor;
-        perf_hist(r,e)=perf;
         hover_hist(r,e)=hover;
         rewards_hist(:, r, e) = rewards;
         constraint_hist(:,r,e) = constraints;
@@ -92,7 +87,6 @@ for r = 1:numRuns
             bestActions(r, :) = actions;
             % As well as the parameters that describe the design
             bestParams{r} = {battery, motor, prop, foil, rod};
-            bestPerf(r)=perf;
             bestHover(r)=hover;
         end
         
@@ -121,6 +115,7 @@ converged.g4=constraint_hist(4,:,numEpochs)';
 converged.g5=constraint_hist(5,:,numEpochs)';
 converged.g6=constraint_hist(6,:,numEpochs)';
 converged.g7=constraint_hist(7,:,numEpochs)';
+converged.g8=constraint_hist(8,:,numEpochs)';
 disp('at final iteration, the converged designs have values:')
 struct2table(converged)
 disp(['Percentage of converged designs that are feasible: ' num2str( ...

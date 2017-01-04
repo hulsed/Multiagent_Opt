@@ -1,7 +1,21 @@
-function [G,flightTime,constraints, perf, hover] = calc_G(penalty,scaleFactor, battery, motor, prop, foil, rod)
+function [G,flightTime,constraints, hover] = calc_G(penalty,scaleFactor, battery, motor, prop, foil, rod)
     
-    [perf] = run_qprop(battery, motor, prop, foil);   
-    [hover,failure]=find_oper(battery, motor, prop, foil, rod,perf);
+    failure=0;
+    %write files for qprop
+    write_propfile(prop,foil);
+    write_motorfile(motor);
+    
+    %[perf] = run_qprop(battery, motor, prop, foil);   
+    %[hover,failure]=find_oper(battery, motor, prop, foil, rod,perf);
+    %hover
+    hover = calc_hover(battery, motor, prop, foil,rod);
+    if isnan(hover.pelec)
+        failure=1
+    end
+    
+    %climb
+    
+    %steady flight
     
     % Calculation of Constraints (only possible with performance data) 
         [constraints]=calc_constraints(battery,motor,prop,foil,rod,hover,failure);
@@ -9,6 +23,7 @@ function [G,flightTime,constraints, perf, hover] = calc_G(penalty,scaleFactor, b
     % Calculation of Objectives
     totalCost = battery.Cost + motor.Cost*4+4*rod.Cost;
     flightTime = battery.Energy /(4*hover.pelec); %note: power use is for EACH motor.
+   
     
    if failure
         G = penalty.failure;
