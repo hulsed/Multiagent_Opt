@@ -6,6 +6,7 @@ numEpochs = 200; % NOTE: Changed generations to epochs because political correct
 numRuns = 5; %Note: D runs slow, so fewer runs is a better idea.
 % useD = 0; % 1 - use difference reward, 0 - use global reward
 Qinit= 100;
+saveWorkspace = 1;
 
 expModes = {'const', 'decay', 'softmax', 'softmaxDecay', 'softmaxAdaptiveExp', 'softmaxAdaptiveLin', 'softmaxFeatScale'};
 exploration.epsConst=0.1;
@@ -62,7 +63,7 @@ rodAgents=[4,11,8];
 %[4, 16,11,8];
 
 alpha = 0.1; % Learning rate
-
+gamma = 0.1;
 [batteryData, motorData, propData, foilData, rodData, matData] = load_data('batterytable.csv', ...
     'motortable.csv', 'propranges.csv', 'airfoiltable.csv','rodtable.csv','materialtable.csv');
 
@@ -76,12 +77,14 @@ showAvgFlightTime_AvgG_MaxGAchieved = 1;
 showJustAvgFlightTime               = 1;
 showConstraintViolation             = 1;
 
+global stateful
 for penMode = 8
     for myMode = 6
         for useD = 0
-            run_experiment;
+            for stateful = 0:1
+                run_experiment;
+            end
         end
-
     end
 end
 % WARNING!!!!!!!!!!!!
