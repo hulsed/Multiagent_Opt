@@ -27,10 +27,20 @@ penFxnA=penalty.quadMin/exp(penFxnB);
 
 G_hist= zeros(numRuns, numEpochs);
 flightTime_hist= zeros(numRuns, numEpochs);
+climbEnergy_hist=zeros(numRuns, numEpochs);
 
 numAgents = numel([batteryAgents motorAgents propAgents rodAgents]);
 bestActions = uint8(zeros(numRuns, numAgents)); % The discrete action choices of the agents that give best performance
 bestParams = cell(numRuns, 1); % The design parameters resulting from the agents' best actions
+
+%%%%
+%Residual parameters of the design
+res.mass=0.3;
+res.framewidth=0.075; %temp width of frame!
+res.planArea=res.framewidth^2;
+
+
+%%%%
 
 rewards_hist = zeros(numAgents, numRuns, numEpochs);
 actions_hist = zeros(numAgents, numRuns, numEpochs);
@@ -60,15 +70,14 @@ for r = 1:numRuns
         % Have agents choose actions
         actions = choose_actions(agents, cTable, exploration);
         actions_hist(:, r, e) = actions;
-
         battery = design_battery(actions, batteryData);
         motor = design_motor(actions, motorData);
         [prop,foil] = design_prop(actions, propData, foilData);
-        rod = design_rod(actions, rodData, matData, prop);
-        sys=design_sys(battery,motor,prop,foil,rod);
+        rod = design_rod(actions, rodData, matData, prop,res);
+        sys=design_sys(battery,motor,prop,foil,rod, res);
 
         % Get rewards for agents and system performance
-        [rewards, cUpdate, G, flightTime,constraints,hover] = compute_rewards(useD, penalty, ...
+        [rewards, cUpdate, G, flightTime,climbEnergy,constraints,hover] = compute_rewards(useD, penalty, ...
             scaleFactor, battery, motor, prop, foil, rod,sys, data);
         G=G*scaleFactor;
         hover_hist(r,e)=hover;
@@ -76,6 +85,7 @@ for r = 1:numRuns
         constraint_hist(:,r,e) = constraints;
         G_hist(r,e)=G;
         flightTime_hist(r,e)=flightTime;
+        climbEnergy_hist(r,e)=climbEnergy;
         
         agents = update_values(agents, rewards, actions, alpha);
         cTable = update_values(cTable, cUpdate, actions, alpha);
@@ -112,6 +122,7 @@ save(['Saved Workspaces\\' exploration.mode '_' num2str(rewardnum, '%.2f') '_' '
 
 %converged_designs
 converged.flighttimes_mins=flightTime_hist(:,numEpochs)/60;
+converged.climbenergy=climbEnergy_hist(:,numEpochs);
 converged.g1=constraint_hist(1,:,numEpochs)';
 converged.g2=constraint_hist(2,:,numEpochs)';
 converged.g3=constraint_hist(3,:,numEpochs)';

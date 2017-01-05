@@ -6,5 +6,4 @@ function prop = create_prop(diameter, angleRoot, angleTip, chordRoot, chordTip,m
     prop.chordRoot = chordRoot; % chord at root (inch->m)
     prop.chordTip = chordTip; % chord at tip (inch->m)
     prop.mass=mass;
-    
 end

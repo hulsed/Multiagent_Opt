@@ -40,10 +40,10 @@ else
  
  %stiffness/natural freq (cantilever beam) (strouhal no=0.2)
  forcedFreq=hover.rpm/60; %converting to hz
- natFreq=sqrt(rod.Stiffness./(0.5*rod.Mass+motor.Mass))/(2*pi);
+ 
  minnatFreq=2*forcedFreq; %natural frequency must be two times the forced frequency.
  % There should be more technical justification for this.
- constraints(7)=1-natFreq/minnatFreq;
+ constraints(7)=1-sys.natFreq/minnatFreq;
  
  %deflection (1% of length, max)
  maxDefl=0.01*rod.Length;

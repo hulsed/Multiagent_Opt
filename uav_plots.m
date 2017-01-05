@@ -79,7 +79,7 @@
     title(Title)
     xlabel('Epoch')
     legend('Max G Achieved', 'Average G', 'Average Flight Time (minutes)', 'Location', 'southeast')
-    Ymax = max(maxG_S) * 1.01;
+    Ymax = max(max(maxG_S) * 1.01, 100);
     axis([1, numel(avgflightTime), 0, Ymax])
     %%
     figure; % Plot just average flight time

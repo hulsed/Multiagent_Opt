@@ -57,8 +57,11 @@ switch mode
             % Note we don't need to save any files, just read directly
             i = i + 1;
             line = line(2:length(line)); % remove newline character
-            
+            if line(1:6)=='GVCALC'
+               crayon=nan(1,24);
+            else
             crayon = sscanf(line, '%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f');
+            end
             qpropoutputV(i,:) = crayon';
             %line = reader.readLine; % read next line
         end   

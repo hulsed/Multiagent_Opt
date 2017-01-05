@@ -11,4 +11,5 @@ function rod = create_rod(material, length, diameter, thickness)
     rod.Vol=rod.Length*rod.Area;
     rod.Mass=rod.Vol*rod.mat.Dens; % in kg
     rod.Cost=rod.mat.Cost*rod.Vol;
+    rod.planArea=rod.Length*rod.Dia;
 end
