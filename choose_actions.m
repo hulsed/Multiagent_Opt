@@ -122,7 +122,7 @@ function actions = choose_actions(agents, cTable, exploration)
                         %Tc=exploration.feasTemp;
                     end
 
-                        c(a)= exp(-cTab(a)/1);
+                        c(a)= exp(-cTab(a)/(bias));
                     
                     %if cTab(a)>=feasCutoff && not(isempty(find(cTab==0)))
                     %    c(a)=0;
@@ -136,17 +136,30 @@ function actions = choose_actions(agents, cTable, exploration)
                  %if (isempty(find(cTab==0))) && exploration.completion>=0.5
                  %   p(a)=c(a)+p(a)/numel(agent); 
                  %end
-                 %if cTab(a)>0.01
-                 %    p(a)=c(a)*g(a);
-                 %else
-                 %    p(a)=g(a);
-                 %end
+                 if cTab(a)>0.01
+                     ginf(a)=g(a);
+                     gfeas(a)=0;
+                     cinf(a)=c(a);
+                 else
+                     ginf(a)=0;
+                     gfeas(a)=g(a);
+                     cinf(a)=0;
+                 end
                          
             end
-                      
-            g = g / sum(g);
+            gfeas=gfeas/sum(gfeas+0.01);
+            %ginf=ginf/sum(g+0.01);
+            ginf=ginf/sum(ginf+0.01);
+            cinf=cinf/sum(c);
             c=c/sum(c);
-             for a=1:numel(agent) 
+            %p=gfeas+cinf;
+            
+            %p=(gfeas+ginf).*c.^(1+2*exploration.completion);
+            %c=c/sum(c);
+            
+            %g = g / sum(g);
+            %c=c/sum(c);
+             %for a=1:numel(agent) 
 %                  if cTab(a)>1.0
 %                      p(a)=g(a)*c(a)^3;
 %                  elseif cTab(a)>0.1
@@ -154,9 +167,9 @@ function actions = choose_actions(agents, cTable, exploration)
 %                  else
 %                      p(a)=g(a)*c(a);
 %                  end
-            p(a)=g(a)*c(a)^(1+2*cTab(a));
-             end
-            
+            %p(a)=g(a)*c(a)^(1+2*cTab(a));
+             %end
+            p=g.*c; %.^(10*exploration.completion);
             
             %p=g.*c;
             p=p/sum(p);
@@ -183,7 +196,7 @@ function actions = choose_actions(agents, cTable, exploration)
                 [~,actionToTake]=max(p);
             end
             actions(ag) = actionToTake;   
-            clear g c p
+            clear g c p ginf gfeas cinf
         end
     end
 end

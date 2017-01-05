@@ -50,7 +50,7 @@ if showJustAvgFlightTime
     figure;
     errorbar(x, avgflightTime(x), error(x), 'r', 'LineWidth', 1);
 
-    Ymax = max(avgflightTime * 1.05, 100);
+    Ymax = max(max(avgflightTime * 1.05), 100);
     axis([1, numel(avgflightTime), 0, Ymax])
     Title = ['Time in the Air - ' mode ' (' num2str(rewardnum, '%.1f') '), ' reward ', Optimism=' num2str(Qinit, '%.1f')];
     title(Title)
