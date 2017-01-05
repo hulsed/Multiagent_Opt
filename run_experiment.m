@@ -1,22 +1,4 @@
-% exploration stands for action selector. It's a struct that describes how agents
-% will select actions
-% The mode tells the program which type of policy to use for scaleFactor
-% "const" means eps-greedy with constant epsilon
-% "decay" means eps-greedy with exponentially decaying epsilon
-% "softmax" means softmax (duh), so pick actions with certain probability
 exploration.mode = expModes{myMode};
-
-% param1 is the first parameter which affects scaleFactor
-% For mode "const", this gives the constant value of epsilon
-% For mode "decay", this gives the starting value of epsilon that decays
-% For mode "softmax", this gives the temperature for choosing actions 
-% (good temp is 250)
-%exploration.param1 = params(myMode);
-
-% param2 is the second parameter which affects scaleFactor
-% For mode "const", does nothing
-% For mode "decay", represents percent completion of design (ex: e/numEpochs)
-% For mode "softmax", [to be determined]
 exploration.completion = 0;
 
 penalty.Mode=penModes{penMode};
@@ -39,8 +21,6 @@ res.mass=0.3;
 res.framewidth=0.075; %temp width of frame!
 res.planArea=res.framewidth^2;
 
-
-%%%%
 
 rewards_hist = zeros(numAgents, numRuns, numEpochs);
 actions_hist = zeros(numAgents, numRuns, numEpochs);
@@ -70,15 +50,16 @@ for r = 1:numRuns
         % Have agents choose actions
         actions = choose_actions(agents, cTable, exploration);
         actions_hist(:, r, e) = actions;
+        motorNum = actions(4);
         battery = design_battery(actions, batteryData);
         motor = design_motor(actions, motorData);
         [prop,foil] = design_prop(actions, propData, foilData);
         rod = design_rod(actions, rodData, matData, prop,res);
-        sys=design_sys(battery,motor,prop,foil,rod, res);
+        sys=design_sys(battery, motor, prop, foil, rod, res, motorNum);
 
         % Get rewards for agents and system performance
         [rewards, cUpdate, G, flightTime,climbEnergy,constraints,hover] = compute_rewards(useD, penalty, ...
-            scaleFactor, battery, motor, prop, foil, rod,sys, data);
+            scaleFactor, battery, motor, prop, foil, rod, sys, data);
         G=G*scaleFactor;
         hover_hist(r,e)=hover;
         rewards_hist(:, r, e) = rewards;
@@ -104,7 +85,6 @@ for r = 1:numRuns
             bestHover(r)=hover;
         end
         
-        disp([num2str(r) ', ' num2str(e)])
         disp([num2str(r) ', ' num2str(e)])
     end
 end

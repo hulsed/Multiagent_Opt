@@ -1,10 +1,10 @@
-function [G,flightTime,climbEnergy, constraints, hover] = calc_G(penalty,scaleFactor, battery, motor, prop, foil, rod,sys)
+function [G,flightTime,climbEnergy, constraints, hover] = calc_G(penalty,scaleFactor, battery, motor, prop, foil, rod, sys)
     
     failure=0;
     climbFailure=0;
     %write files for qprop
     write_propfile(prop,foil);
-    write_motorfile(motor);
+%     MEXTEST(motor.R0, motor.I0, motor.kv);
     
     %[perf] = run_qprop(battery, motor, prop, foil);   
     %[hover,failure]=find_oper(battery, motor, prop, foil, rod,perf);

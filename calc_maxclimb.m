@@ -39,7 +39,7 @@ while volts<battery.Volt
     ampsStr='0';        %Amps (A)
     peleStr='0';        %Electrical Power Used
 
-    climb(i)=call_qprop(velStr, rpmStr, voltStr, dBetaStr, thrustStr, torqueStr, ampsStr, peleStr, mode);
+    climb(i)=call_qprop(velStr, rpmStr, voltStr, dBetaStr, thrustStr, torqueStr, ampsStr, peleStr, mode, sys.motorNum);
     volts=climb(i).volts;
     vel(i+1)=vel(i)+veliter;
     if vel>=maxvel

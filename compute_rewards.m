@@ -4,7 +4,8 @@
     % compute the counterfactual rod otherwise... -B
     
     % Global System Performance
-    [G, flightTime,climbEnergy, constraints,hover] = calc_G(penalty,scaleFactor, battery, motor, prop, foil, rod,sys);
+    [G, flightTime,climbEnergy, constraints,hover] = calc_G(penalty, ...
+        scaleFactor, battery, motor, prop, foil, rod, sys);
     
     %ostensibly this is also where we calculate constraint penalties.
     
@@ -106,14 +107,4 @@
                 cUpdate(ag) =  max(0, constraints(7)) + max(0, constraints(8));
         end
     end
-    
-    % TEST
-    if G > 0
-        disp 'truck'
-    end
-%     for i = 1:14
-%         if rewards(i) > 1000
-%             rewards(i) = 1000;
-%         end
-%     end
 end

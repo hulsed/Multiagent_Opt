@@ -3,7 +3,7 @@ tic % Begin measuring time of execution
 clear variables
 
 numEpochs = 200; % NOTE: Changed generations to epochs because political correctness
-numRuns = 10; %Note: D runs slow, so fewer runs is a better idea.
+numRuns = 5; %Note: D runs slow, so fewer runs is a better idea.
 % useD = 0; % 1 - use difference reward, 0 - use global reward
 Qinit= 100;
 
@@ -25,13 +25,6 @@ exploration.feasTempMax=100;
 exploration.feasTempMin=1;
 exploration.fcMin=0.1;
 exploration.fcMax=100;
-
-
-params = [0.1, 0.5, 100, 100];
-% [epsilon, starting epsilon, temp, starting temp ]
-%
-%good values of t
-
 
 % USE THIS TO SELECT WHICH SELECTION POLICY YOU WANT
 % Adjust params as necessary, see below for description of each
@@ -77,6 +70,11 @@ data.batteryData = batteryData; data.motorData = motorData;
 data.propData = propData; data.foilData = foilData; data.rodData = rodData;
 data.matData = matData;
 
+% PLOTTING OPTIONS
+showMaxFlightTime_vs_MaxG           = 1;
+showAvgFlightTime_AvgG_MaxGAchieved = 1;
+showJustAvgFlightTime               = 1;
+showConstraintViolation             = 1;
 
 for penMode = 8
     for myMode = 6

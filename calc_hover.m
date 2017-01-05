@@ -15,7 +15,7 @@ torqueStr='0';      %Torque (N-m)
 ampsStr='0';        %Amps (A)
 peleStr='0';        %Electrical Power Used
 
-hover=call_qprop(velStr, rpmStr, voltStr, dBetaStr, thrustStr, torqueStr, ampsStr, peleStr, mode);
+hover=call_qprop(velStr, rpmStr, voltStr, dBetaStr, thrustStr, torqueStr, ampsStr, peleStr, mode, sys.motorNum);
 
 
 if hover.thrust<0.9*thrustReq

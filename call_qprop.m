@@ -1,11 +1,11 @@
-function [perf]=call_qprop(velStr, rpmStr, voltStr, dBetaStr, thrustStr, torqueStr, ampsStr, peleStr, mode)
+function [perf]=call_qprop(velStr, rpmStr, voltStr, dBetaStr, thrustStr, torqueStr, ampsStr, peleStr, mode, motorNum)
 %Note about qprop syntax:
-        %The input looks like
-        %qprop propfile motorfile vel rpm volt dBeta Thrust Torque Amps Pele 
+%The input looks like
+%qprop propfile motorfile vel rpm volt dBeta Thrust Torque Amps Pele 
       
- qpropinput={'qprop.exe' 'propfile' 'motorfile' velStr rpmStr ...
+ qpropinput={'qprop.exe' 'propfile' ['motorfiles/motorfile' num2str(motorNum)] velStr rpmStr ...
      voltStr dBetaStr thrustStr torqueStr ampsStr peleStr '["]' };  
- 
+
  %BEGIN JAVA CODE       
  pb = java.lang.ProcessBuilder({''});
         % The command to execute, complete with arguments
@@ -18,7 +18,7 @@ function [perf]=call_qprop(velStr, rpmStr, voltStr, dBetaStr, thrustStr, torqueS
 
         % Writes to the command line, basically
         writer = java.io.BufferedWriter(java.io.OutputStreamWriter(...
-                myProcess.getOutputStream()));
+            myProcess.getOutputStream()));
     
         writer.newLine; % Execute!
         writer.close; % Don't need the writer anymore, has done its job
@@ -58,9 +58,9 @@ switch mode
             i = i + 1;
             line = line(2:length(line)); % remove newline character
             if line(1:6)=='GVCALC'
-               crayon=nan(1,24);
+                crayon=nan(1,24);
             else
-            crayon = sscanf(line, '%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f');
+                crayon = sscanf(line, '%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f');
             end
             qpropoutputV(i,:) = crayon';
             %line = reader.readLine; % read next line
