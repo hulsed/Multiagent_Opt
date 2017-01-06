@@ -68,43 +68,8 @@ function actions = choose_actions(agentTables, cTables, exploration)
                 agent=(agent-min(agent))/(max(agent)-min(agent)+0.001);
                 %agent=(agent-mean(agent))/(std(agent)+0.01);
             end
-            
-            % 10% chance choose infeasible action (if there are any), or if
-            % all actions infeasible choose among them
-            r = rand;
-%             if (r < 0.1 && ~all(cTab == 0)) || all(cTab > 0)
-%                 for a = 1:numel(agent)
-%                     if cTab(a) > 0
-%                         % p(a) greater for least infeasible designs
-%                         p(a) = 1/(cTab(a));
-%                     end
-%                 end
-%             else
-%                 % iterate through possible actions for agent
-%                 for a = 1:numel(agent)
-%                     if strcmp(exploration.mode, 'softmaxAdaptiveLin') || strcmp(exploration.mode, 'softmaxAdaptiveExp')
-%                         T=max(abs(agent))*bias;
-%                     end
-%                     if cTab(a) == 0 % If it's a feasible action, p(a) > 0
-%                         p(a) = exp(agent(a)/T);
-%                     end % Otherwise, p(a) == 0
-%                 end
-%             end
-            %b3=log(exploration.fcMin/exploration.fcMax);
-            %feasCutoff=exploration.fcMax*exp(b3*exploration.completion);
-            %feasCutoff=exploration.fcMax-exploration.completion*(exploration.fcMax-exploration.fcMin);
-            
-            %for a=1:numel(agent)
-                %b2=log(exploration.feasTempMin/exploration.feasTempMax);
-                %Tc=exploration.feasTempMax * exp(b2 * exploration.completion);
-            %    Tc=exploration.feasTemp;
 
-            %        c(a)= exp(-cTab(a)/Tc);
-%                 end                 
-            %end
-            %c=c/sum(c);
-            %agent1=agent;
-            %agent=agent.*c;
+            r = rand;
             
             for a = 1:numel(agent)
                     if strcmp(exploration.mode, 'softmaxAdaptiveLin') || strcmp(exploration.mode, 'softmaxAdaptiveExp')
@@ -116,55 +81,16 @@ function actions = choose_actions(agentTables, cTables, exploration)
                     end
 
                         c(a)= exp(-cTab(a)/(bias));
-                    
-                    %if cTab(a)>=feasCutoff && not(isempty(find(cTab==0)))
-                    %    c(a)=0;
-                    %end
                         g(a)= exp(agent(a)/(T));
-                        
-                        %p(a) = g(a)*c(a);   
-                 %if cTab(a)>=feasCutoff && not(isempty(find(cTab==0)))
-                 %    p(a)=0;
-                 %end
-                 %if (isempty(find(cTab==0))) && exploration.completion>=0.5
-                 %   p(a)=c(a)+p(a)/numel(agent); 
-                 %end
-                 if cTab(a)>0.01
-                     ginf(a)=g(a);
-                     gfeas(a)=0;
-                     cinf(a)=c(a);
-                 else
-                     ginf(a)=0;
-                     gfeas(a)=g(a);
-                     cinf(a)=0;
-                 end
-                         
+                              
             end
-            gfeas=gfeas/sum(gfeas+0.01);
-            %ginf=ginf/sum(g+0.01);
-            ginf=ginf/sum(ginf+0.01);
-            cinf=cinf/sum(c);
             c=c/sum(c);
-            %p=gfeas+cinf;
-            
-            %p=(gfeas+ginf).*c.^(1+2*exploration.completion);
-            %c=c/sum(c);
-            
-            %g = g / sum(g);
-            %c=c/sum(c);
-             %for a=1:numel(agent) 
-%                  if cTab(a)>1.0
-%                      p(a)=g(a)*c(a)^3;
-%                  elseif cTab(a)>0.1
-%                      p(a)=g(a)*c(a)^2 
-%                  else
-%                      p(a)=g(a)*c(a);
-%                  end
-            %p(a)=g(a)*c(a)^(1+2*cTab(a));
-             %end
-            p=g.*c; %.^(10*exploration.completion);
-            
-            %p=g.*c;
+            for a=1:numel(agent)
+                if c(a)<0.001
+                    c(a)=0;
+                end
+            end
+            p=g.*c; 
             p=p/sum(p);
             
             actionToTake = find(isnan(p));
@@ -194,7 +120,7 @@ function actions = choose_actions(agentTables, cTables, exploration)
                 [~,actionToTake]=max(p);
             end
             actions(ag) = actionToTake;   
-            clear g c p ginf gfeas cinf
+            clear g c p cTab
         end
     end
 end

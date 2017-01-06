@@ -81,7 +81,7 @@ global stateful
 for penMode = 8
     for myMode = 6
         for useD = 0
-            for stateful = 0:1
+            for stateful = 0
                 run_experiment;
             end
         end

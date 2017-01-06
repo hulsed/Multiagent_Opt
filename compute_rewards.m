@@ -78,13 +78,13 @@
     for ag = 1:14
         switch ag
             case 1 % battery cell
-                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(5)) + max(0, constraints(6));
+                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(3)) + max(0, constraints(4));
             case 2 % serial configs
-                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(2)) + max(0, constraints(5)) + max(0, constraints(6));
+                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(2)) + max(0, constraints(3)) + max(0, constraints(4));
             case 3 % parallel configs
-                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(2)) + max(0,constraints(5)) + max(0, constraints(6));
+                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(2)) + max(0,constraints(3)) + max(0, constraints(4));
             case 4 % motor
-                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(2)) + max(0,constraints(3)) + max(0, constraints(4))+max(0, constraints(7));
+                cUpdate(ag) = max(0, constraints(1)) + max(0, constraints(2)) + max(0,constraints(5)) + max(0, constraints(6))+max(0, constraints(7));
             case 5 % foil
                 true;
             case 6 %diameter
