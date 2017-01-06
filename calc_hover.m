@@ -24,4 +24,8 @@ else
 hover.failure=0;   
 end
 
+if isnan(hover.pelec)
+    hover.pelec=10e9;
+end
+
 end

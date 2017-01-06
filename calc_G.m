@@ -15,7 +15,9 @@ function [G,Objectives, constraints, hover] = calc_G(penalty,scaleFactor, batter
     %max climbing velocity
     %maxv=calc_maxv(sys);
     %climb
-    [Objectives.climbEnergy,climbFailure] = calc_maxclimb(sys,battery,motor);
+    %[Objectives.climbEnergy,climbFailure] = calc_maxclimb(sys,battery,motor);
+    ClimbVel=15; %velocity requirement for climb: 15 m/s (35 mph)
+    [climb] = calc_climb(sys,ClimbVel);
     %steady flight
     
     %Calculation to find out if any of the objective failed
@@ -23,7 +25,7 @@ function [G,Objectives, constraints, hover] = calc_G(penalty,scaleFactor, batter
         failure=1;
     elseif hover.failure==1
         failure=1;
-    elseif climbFailure==1
+    elseif climb.failure==1
         failure=1;
     end
     % Calculation of Constraints (only possible with performance data) 
@@ -32,10 +34,14 @@ function [G,Objectives, constraints, hover] = calc_G(penalty,scaleFactor, batter
     % Calculation of Objectivess
     Objectives.totalCost =sys.cost;
     Objectives.flightTime = battery.Energy /(4*hover.pelec); %note: power use is for EACH motor.
+    distance= 300; % climb distance in meters--temp, should be specified elsewhere
+    time=distance/ClimbVel;
+    energy=time*4*climb.pelec;
+    Objectives.climbEnergy=time*climb.pelec;
     
     
     %Adding Objectivess together...
-    multiObjective=Objectives.flightTime-Objectives.climbEnergy/100-Objectives.totalCost;
+    multiObjective=Objectives.flightTime-Objectives.climbEnergy/100-Objectives.totalCost+10000;
     
    if failure
         G = penalty.failure;

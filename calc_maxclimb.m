@@ -62,7 +62,7 @@ maxclimb=climb(i);
 
 for a=1:i
     time(a)=distance/vel(a);
-    energy(a)=time(a)*climb(a).pelec;
+    energy(a)=time(a)*4*climb(a).pelec;
 end
 [climbEnergy,loc]=min(energy);
 if loc==1
