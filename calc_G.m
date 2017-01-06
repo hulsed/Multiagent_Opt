@@ -132,8 +132,9 @@ function [G,Objectives, constraints, hover] = calc_G(penalty,scaleFactor, batter
      
     
 
-
-        
-        %Note: Truncating possible negative performance to just below zero.
-        %This should help with overly high rewards.
+        %Note: Truncating possible negative performance to just below failure mode.
+        %This should help with overly low values of G.
+        if G<penalty.failure
+            G=1.2*penalty.failure;
+        end
 end
