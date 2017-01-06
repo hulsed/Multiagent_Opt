@@ -57,6 +57,19 @@ switch mode
             % Note we don't need to save any files, just read directly
             i = i + 1;
             line = line(2:length(line)); % remove newline character
+            
+            for z=1:length(line) %remove stars
+                if line(z)=='*';
+                    begin(z)='*';                  
+                    
+                    if begin(z-1)=='*';
+                        line(z)='0';
+                    else
+                        line(z)=' ';
+                    end
+                end
+            end
+                        
             if line(1:6)=='GVCALC'
                 crayon=nan(1,24);
             else

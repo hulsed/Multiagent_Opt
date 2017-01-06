@@ -16,7 +16,7 @@ function [G,Objectives, constraints, hover] = calc_G(penalty,scaleFactor, batter
     %maxv=calc_maxv(sys);
     %climb
     %[Objectives.climbEnergy,climbFailure] = calc_maxclimb(sys,battery,motor);
-    ClimbVel=15; %velocity requirement for climb: 15 m/s (35 mph)
+    ClimbVel=10; %velocity requirement for climb: 10 m/s (22 mph)
     [climb] = calc_climb(sys,ClimbVel);
     %steady flight
     
@@ -41,7 +41,7 @@ function [G,Objectives, constraints, hover] = calc_G(penalty,scaleFactor, batter
     
     
     %Adding Objectivess together...
-    multiObjective=Objectives.flightTime-Objectives.climbEnergy/100-Objectives.totalCost+10000;
+    multiObjective=Objectives.flightTime-Objectives.climbEnergy/100-Objectives.totalCost;
     
    if failure
         G = penalty.failure;
