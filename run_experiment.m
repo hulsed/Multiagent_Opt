@@ -10,9 +10,9 @@ penFxnA=penalty.quadMin/exp(penFxnB);
 %penFxnB=(log(penaltyMax)-log(penFxnA))/numEpochs; %note: log is natural log, not log base 10.
 
 G_hist= zeros(numRuns, numEpochs);
-Objectives_hist.totalCost=[];
-Objectives_hist.flightTime=[];
-Objectives_hist.climbEnergy=[];
+Objectives_hist.totalCost=zeros(numRuns, numEpochs);
+Objectives_hist.flightTime=zeros(numRuns, numEpochs);
+Objectives_hist.climbEnergy=zeros(numRuns, numEpochs);
 
 
 numAgents = numel([batteryAgents motorAgents propAgents rodAgents]);
@@ -84,8 +84,9 @@ for r = 1:numRuns
         rewards_hist(:, r, e) = rewards;
         constraint_hist(:,r,e) = constraints;
         G_hist(r,e)=G;
-        Objectives_hist(r,e)=Objectives;
-        
+        Objectives_hist.flightTime(r,e)=Objectives.flightTime;
+        Objectives_hist.totalCost(r,e)=Objectives.totalCost;
+        Objectives_hist.climbEnergy(r,e)=Objectives.climbEnergy;
         oldStates = states;
         if stateful
             states = update_states(states, constraints);
@@ -113,10 +114,12 @@ for r = 1:numRuns
         disp([num2str(r) ', ' num2str(e)])
     end
 end
-for a=1:numEpochs
-    avgflightTime(a) = mean([Objectives_hist(:,a).flightTime]);
-end
-    
+% for a=1:numEpochs
+%     avgflightTime(a) = mean([Objectives_hist(:,a).flightTime]);
+% end
+
+flightTime_hist = Objectives_hist.flightTime;
+
 avgG=mean(G_hist);
 
 if ~exist('Saved Workspaces', 'dir')
