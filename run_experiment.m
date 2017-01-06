@@ -10,8 +10,10 @@ penFxnA=penalty.quadMin/exp(penFxnB);
 %penFxnB=(log(penaltyMax)-log(penFxnA))/numEpochs; %note: log is natural log, not log base 10.
 
 G_hist= zeros(numRuns, numEpochs);
-flightTime_hist= zeros(numRuns, numEpochs);
-climbEnergy_hist=zeros(numRuns, numEpochs);
+Objectives_hist.totalCost=[];
+Objectives_hist.flightTime=[];
+Objectives_hist.climbEnergy=[];
+
 
 numAgents = numel([batteryAgents motorAgents propAgents rodAgents]);
 bestActions = uint8(zeros(numRuns, numAgents)); % The discrete action choices of the agents that give best performance
@@ -22,6 +24,8 @@ bestParams = cell(numRuns, 1); % The design parameters resulting from the agents
 res.mass=0.3;
 res.framewidth=0.075; %temp width of frame!
 res.planArea=res.framewidth^2;
+res.cost=50;
+%%%%
 
 
 rewards_hist = zeros(numAgents, numRuns, numEpochs);
@@ -73,15 +77,14 @@ for r = 1:numRuns
         sys=design_sys(battery, motor, prop, foil, rod, res, motorNum);
 
         % Get rewards for agents and system performance
-        [rewards, cUpdate, G, flightTime,climbEnergy,constraints,hover] = compute_rewards(useD, penalty, ...
+        [rewards, cUpdate, G, Objectives,constraints,hover] = compute_rewards(useD, penalty, ...
             scaleFactor, battery, motor, prop, foil, rod, sys, data);
         G=G*scaleFactor;
         hover_hist(r,e)=hover;
         rewards_hist(:, r, e) = rewards;
         constraint_hist(:,r,e) = constraints;
         G_hist(r,e)=G;
-        flightTime_hist(r,e)=flightTime;
-        climbEnergy_hist(r,e)=climbEnergy;
+        Objectives_hist(r,e)=Objectives;
         
         oldStates = states;
         if stateful
@@ -99,7 +102,7 @@ for r = 1:numRuns
         if G > maxG(r) && all(constraints <= 0)
             maxG(r) = G;
             epochOfMax(r) = e;
-            maxflightTime(r)=flightTime;
+            maxflightTime(r)=Objectives.flightTime;
             % Update record of actions that got us there
             bestActions(r, :) = actions;
             % As well as the parameters that describe the design
@@ -110,8 +113,10 @@ for r = 1:numRuns
         disp([num2str(r) ', ' num2str(e)])
     end
 end
-
-avgflightTime = mean(flightTime_hist);
+for a=1:numEpochs
+    avgflightTime(a) = mean([Objectives_hist(:,a).flightTime]);
+end
+    
 avgG=mean(G_hist);
 
 if ~exist('Saved Workspaces', 'dir')
@@ -129,8 +134,10 @@ if saveWorkspace
         '_' penalty.Mode '_' num2str(pennum, '%.2f_') datestr(now,'mm-dd-yy_HH.MM.SS') '.mat'])
 end
 %converged_designs
-converged.flighttimes_mins=flightTime_hist(:,numEpochs)/60;
-converged.climbenergy=climbEnergy_hist(:,numEpochs);
+converged.flighttimes_mins=[Objectives_hist(:,numEpochs).flightTime]'/60;
+converged.climbenergy=[Objectives_hist(:,numEpochs).climbEnergy]';
+converged.cost=[Objectives_hist(:,numEpochs).totalCost]';
+
 converged.g1=constraint_hist(1,:,numEpochs)';
 converged.g2=constraint_hist(2,:,numEpochs)';
 converged.g3=constraint_hist(3,:,numEpochs)';

@@ -17,6 +17,9 @@ function [prop,foil] = design_prop(actions, propData,foilData)
     vol=xsArea*diameter;
     %Note: assuming propeller is polycarb (1190 kg/m^3)
     mass=vol*1190;
+    %Note: assuming propeller is polycarb (0.29 $/in^3)
+    costdens=0.29*(100/2.54)^3;
+    cost=costdens*vol;
     
-    prop = create_prop(diameter, angleRoot, angleTip, chordRoot, chordTip,mass);
+    prop = create_prop(diameter, angleRoot, angleTip, chordRoot, chordTip,mass,cost);
 end

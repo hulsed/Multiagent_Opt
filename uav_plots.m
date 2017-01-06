@@ -2,7 +2,7 @@ global stateful
 
 % _S suffix means SCALED
 maxflightTime_S = maxflightTime/60;
-flightTime_hist_S = flightTime_hist/60;
+flightTime_hist_S = avgflightTime/60;
 maxG_S = maxG/60;
 G_hist_S = G_hist/60;
 
