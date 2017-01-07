@@ -41,7 +41,7 @@ function [G,Objectives, constraints, hover] = calc_G(penalty,scaleFactor, batter
     
     
     %Adding Objectivess together...
-    multiObjective=Objectives.flightTime-Objectives.climbEnergy/100-Objectives.totalCost;
+    multiObjective=Objectives.flightTime-Objectives.climbEnergy/5-3*Objectives.totalCost;
     
    if failure
         G = penalty.failure;
@@ -134,6 +134,10 @@ function [G,Objectives, constraints, hover] = calc_G(penalty,scaleFactor, batter
 
 
         
-        %Note: Truncating possible negative performance to just below zero.
+        %Note: Truncating possible negative performance to just below failure.
         %This should help with overly high rewards.
+        
+        if G<penalty.failure
+            G=1.5*penalty.failure;
+        end
 end
