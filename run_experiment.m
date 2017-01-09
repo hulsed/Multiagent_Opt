@@ -137,6 +137,7 @@ if saveWorkspace
         '_' penalty.Mode '_' num2str(pennum, '%.2f_') datestr(now,'mm-dd-yy_HH.MM.SS') '.mat'])
 end
 %converged_designs
+converged.G=G_hist(:,numEpochs);
 converged.flighttimes_mins=Objectives_hist.flightTime(:,numEpochs)/60;
 converged.climbenergy=Objectives_hist.climbEnergy(:,numEpochs);
 converged.cost=Objectives_hist.totalCost(:,numEpochs);

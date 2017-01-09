@@ -41,7 +41,7 @@ function [G,Objectives, constraints, hover] = calc_G(penalty,scaleFactor, batter
     
     
     %Adding Objectivess together...
-    multiObjective=Objectives.flightTime-Objectives.climbEnergy/5-3*Objectives.totalCost;
+    multiObjective=Objectives.flightTime+(-Objectives.climbEnergy)/5-3*(Objectives.totalCost);
     
    if failure
         G = penalty.failure;
