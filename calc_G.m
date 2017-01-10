@@ -33,10 +33,10 @@ function [G,Objectives, constraints, hover] = calc_G(penalty,scaleFactor, batter
   
     % Calculation of Objectivess
     Objectives.totalCost =sys.cost;
-    Objectives.flightTime = battery.Energy /(4*hover.pelec); %note: power use is for EACH motor.
+    Objectives.flightTime = battery.Energy /(4*hover.pelec+sys.power); %note: power use is for EACH motor.
     distance= 300; % climb distance in meters--temp, should be specified elsewhere
     time=distance/ClimbVel;
-    energy=time*4*climb.pelec;
+    energy=time*4*(climb.pelec+sys.power);
     Objectives.climbEnergy=time*climb.pelec;
     
     

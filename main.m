@@ -45,6 +45,7 @@ penalty.const=100;    %Defines constant portion of penalty
 penalty.div=10;        %Scale term of penalty for divisive penalty
 penalty.death=-100;
 penalty.lin=-1000;
+penalty.failure=-7000;
 
 scaleFactor=1;      %Note: DO NOT USE
                     %scales reward to not create an infinite probability in
