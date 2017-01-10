@@ -3,7 +3,7 @@ function [climb] = calc_climb(sys,vel)
 cd=1.5;     % assumed coefficent of drag (quadrotor is a blunt object)
 rho=1.225;   % kg/m^3, density of air
 drag=0.5*rho*cd*sys.planArea*vel^2;
-thrustReq = drag + sys.mass*9.81/4;
+thrustReq = (drag + sys.mass*9.81)/4;
 
 %specified inputs to qprop:
 %specified inputs to qprop:
