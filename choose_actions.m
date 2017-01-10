@@ -89,17 +89,17 @@ function actions = choose_actions(agentTables, cTables, exploration)
                         cscale=(mean(abs(cTab))+0.01)/(max(abs(cTab))+0.01);
                         %gscale=(mean(abs(agent))+0.01)/((abs(agent(a)))+0.01);
                         %cscale=(mean(abs(cTab))+0.01)/((abs(cTab(a)))+0.01);
-                        sf=exploration.feasfactor*gscale/cscale;
+                        sf=1;%exploration.completion*gscale/cscale;
                         c(a)= exp(-cTab(a)*sf/(bias));
                         g(a)= exp(agent(a)/(T));
                               
             end
             c=c/sum(c);
-            %for a=1:numel(agent)
-            %    if c(a)<0.001
-            %        c(a)=0;
-            %    end
-            %end
+            for a=1:numel(agent)
+                if c(a)<0.001
+                    c(a)=0;
+                end
+            end
             p=g.*c; 
             p=p/sum(p);
             
