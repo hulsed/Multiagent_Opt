@@ -35,9 +35,12 @@ if showAvgFlightTime_AvgG_MaxGAchieved
 
     avgflightTime = mean(flightTime_hist_S, 1);
     error = std(flightTime_hist_S,1,1);
-    errorbar(x, avgflightTime(x), error(x), 'r', 'LineWidth', 1);
+    neg=avgflightTime-min(flightTime_hist_S(:,:));
+    pos=max(flightTime_hist_S(:,:))-avgflightTime;
+    
+    errorbar(x, avgflightTime(x), neg(x),pos(x), 'r', 'LineWidth', 1);
 
-    Ymax = max(max(maxG_S) * 1.01, 5);
+    Ymax = max(max(flightTime_hist_S(:,end)) * 1.5, 5);
     axis([1, numel(avgflightTime), 0, Ymax])
     Title = [mode ' (' num2str(rewardnum, '%.1f') '), ' reward ', ' st];
 %     Title = [mode ' (' num2str(rewardnum, '%.1f') '), ' reward ', Optimism=' num2str(Qinit, '%.1f')];
@@ -66,6 +69,53 @@ if showJustAvgFlightTime
     title(Title)
     xlabel('Epoch')
     ylabel('Average Flight Time (minutes)')
+end
+%% Plot cost
+if showcost
+    L = size(flightTime_hist_S, 2);
+    x = [1 10:10:L];
+        
+        
+        avgcost = mean(Objectives_hist.totalCost);
+        neg=avgcost-min(Objectives_hist.totalCost);
+        pos=max(Objectives_hist.totalCost)-avgcost;
+    
+    figure;
+    plot(avgcost);
+    hold on
+    errorbar(x, avgcost(x), neg(x), pos(x), 'r', 'LineWidth', 1);
+
+    Ymax = max(max(avgcost) * 1.05, 5);
+    axis([1, numel(avgcost), 0, Ymax])
+    %Title = ['Time in the Air - ' mode ' (' num2str(rewardnum, '%.1f') '), ' reward ', Optimism=' num2str(Qinit, '%.1f')];
+    Title = ['Quadrotor Cost - ' mode ' (' num2str(rewardnum, '%.1f') '), ' reward ', ' st];
+    title(Title)
+    xlabel('Epoch')
+    ylabel('Average Cost (Dollars)')
+end
+
+%% Plot Energy Used
+if showEnergy
+    L = size(flightTime_hist_S, 2);
+    x = [1 10:10:L];
+        
+        
+        avgenergy = mean(Objectives_hist.climbEnergy);
+        neg=avgenergy-min(Objectives_hist.climbEnergy);
+        pos=max(Objectives_hist.climbEnergy)-avgenergy;
+    
+    figure;
+    plot(avgenergy);
+    hold on
+    errorbar(x, avgenergy(x), neg(x), pos(x), 'r', 'LineWidth', 1);
+
+    Ymax = min(min(avgenergy) * 10);
+    axis([1, numel(avgenergy), 0, Ymax])
+    %Title = ['Time in the Air - ' mode ' (' num2str(rewardnum, '%.1f') '), ' reward ', Optimism=' num2str(Qinit, '%.1f')];
+    Title = ['Quadrotor Climb Energy - ' mode ' (' num2str(rewardnum, '%.1f') '), ' reward ', ' st];
+    title(Title)
+    xlabel('Epoch')
+    ylabel('Average Energy (Joules)')
 end
 
 %% Constraint Violation

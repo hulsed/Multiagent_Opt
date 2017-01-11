@@ -3,7 +3,7 @@ tic % Begin measuring time of execution
 clear variables
 
 numEpochs = 200; % NOTE: Changed generations to epochs because political correctness
-numRuns = 10; %Note: D runs slow, so fewer runs is a better idea.
+numRuns = 5; %Note: D runs slow, so fewer runs is a better idea.
 % useD = 0; % 1 - use difference reward, 0 - use global reward
 Qinit= 100;
 saveWorkspace = 1;
@@ -82,6 +82,8 @@ showMaxFlightTime_vs_MaxG           = 1;
 showAvgFlightTime_AvgG_MaxGAchieved = 1;
 showJustAvgFlightTime               = 1;
 showConstraintViolation             = 1;
+showCost                            = 1;
+showEnergy                          = 1;
 
 global stateful
 for penMode = 8
