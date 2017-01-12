@@ -71,7 +71,7 @@ if showJustAvgFlightTime
     ylabel('Average Flight Time (minutes)')
 end
 %% Plot cost
-if showcost
+if showCost
     L = size(flightTime_hist_S, 2);
     x = [1 10:10:L];
         

@@ -11,4 +11,5 @@ function motor = design_motor(actions, motorData)
     motor.Cost = temp(7); 
     motor.Diam = temp(8) / 1000;
     motor.planArea=(pi/4) * motor.Diam^2;
+    motor.Num=actions(4);
 end

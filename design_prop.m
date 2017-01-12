@@ -8,18 +8,8 @@ function [prop,foil] = design_prop(actions, propData,foilData)
     chordTip = propData(actions(10), 6)*0.0254; % chord at tip (inch->m)
     
     %Foil Calculations
-    chordAvg=mean([chordRoot, chordTip]);
+ 
     foil = design_foil(actions, foilData);
     
-    foilnum=['NACA00' num2str(foil.Num)];
-    avgThickness=0.01*foil.Num*chordAvg;
-    xsArea=0.5*avgThickness*chordAvg; %assuming may be approximated as a triangle
-    vol=xsArea*diameter;
-    %Note: assuming propeller is polycarb (1190 kg/m^3)
-    mass=vol*1190;
-    %Note: assuming propeller is polycarb (0.29 $/in^3)
-    costdens=0.29*(100/2.54)^3;
-    cost=costdens*vol;
-    
-    prop = create_prop(diameter, angleRoot, angleTip, chordRoot, chordTip,mass,cost);
+    prop = create_prop(diameter, angleRoot, angleTip, chordRoot, chordTip, foil);
 end

@@ -26,12 +26,15 @@ exploration.feasTempMax=10;
 exploration.feasTempMin=1;
 exploration.fcMin=0.1;
 exploration.fcMax=100;
-exploration.feasfactor=1.0; %captures the willingness to explore infeasible actions for a good reward
+exploration.feasfactor=4.0; %captures the willingness to explore infeasible actions for a good reward
                           % 1  feasibility and optimality are equally
                           % important
                           % 0  feasibility not important at all
                           % 1+ feasibility is more important than
                           % optimality
+                          % So far, 1=20% feasible, 2=40%feasible,
+                          % 4=80%feasible (but with some performance
+                          % degredation)
 
 % USE THIS TO SELECT WHICH SELECTION POLICY YOU WANT
 % Adjust params as necessary, see below for description of each
@@ -88,7 +91,7 @@ showEnergy                          = 1;
 global stateful
 for penMode = 8
     for myMode = 6
-        for useD = 0
+        for useD = 1
             for stateful = 0
                 run_experiment;
             end

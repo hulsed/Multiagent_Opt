@@ -28,7 +28,17 @@ avgMotor.Imax=mean(motorData(:,4));
 avgMotor.Pmax=mean(motorData(:,5));
 avgMotor.Mass=mean(motorData(:,6))/1000;
 avgMotor.Cost=mean(motorData(:,7));
-avgMotor.Dia=mean(motorData(:,8));
+avgMotor.Diam=mean(motorData(:,8))/1000;
+avgMotor.planArea=(pi/4) * avgMotor.Diam^2;
+avgMotor.Num=0;
+
+%fid = -1;
+%while fid < 3
+     fid = fopen([pwd '/motorfiles/motorfile0'], 'w');
+%end
+format = '\n%s\n\n %d\n\n %f\n %f\n %f\n';
+fprintf(fid, format, 'derp', 1, avgMotor.R0, avgMotor.I0, avgMotor.kv);
+fclose(fid);
 
 % creating counterfact prop
 avgProp.diameter = mean(propData(:, 2)*0.054); % diameter (inch->m)
@@ -47,6 +57,7 @@ avgFoil.Cd2=mean(foilData(:,6)*360/(2*pi)); %converting to 1/deg to 1/rad
 avgFoil.Clcd0=mean(foilData(:,7));
 avgFoil.Reref=mean(foilData(:,8));
 avgFoil.Reexp=mean(foilData(:,9));
+avgFoil.Num=round(mean(foilData(:,10))');
 
 % Average Rod Stewart
 avgMat.Ymod=mean(matData(:,1)); %young's modulus in GPa

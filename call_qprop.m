@@ -1,8 +1,7 @@
 function [perf]=call_qprop(velStr, rpmStr, voltStr, dBetaStr, thrustStr, torqueStr, ampsStr, peleStr, mode, motorNum)
 %Note about qprop syntax:
 %The input looks like
-%qprop propfile motorfile vel rpm volt dBeta Thrust Torque Amps Pele 
-      
+%qprop propfile motorfile vel rpm volt dBeta Thrust Torque Amps Pele   
  qpropinput={'qprop.exe' 'propfile' ['motorfiles/motorfile' num2str(motorNum)] velStr rpmStr ...
      voltStr dBetaStr thrustStr torqueStr ampsStr peleStr '["]' };  
 
