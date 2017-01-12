@@ -101,7 +101,7 @@ for r = 1:numRuns
         feasels_hist{r,e} = feasels;
         
         % If this is the best performance encountered so far...
-        if G > maxG(r) && all(constraints <= 0)
+        if G > maxG(r) && all(constraints <= 0.01)
             maxG(r) = G;
             epochOfMax(r) = e;
             maxflightTime(r)=Objectives.flightTime;
@@ -137,20 +137,12 @@ if saveWorkspace
             char((useD == 1) * 'D' + (useD == 0) * 'G') ... 'D' or 'G', depending on useD
         '_' penalty.Mode '_' num2str(pennum, '%.2f_') datestr(now,'mm-dd-yy_HH.MM.SS') '.mat'])
 end
+%best designs
+best=structure_best(G_hist,Objectives_hist, constraint_hist,numRuns, epochOfMax);
+disp('the best designs in the run have values:')
+struct2table(best)
 %converged_designs
-converged.G=G_hist(:,numEpochs);
-converged.flighttimes_mins=Objectives_hist.flightTime(:,numEpochs)/60;
-converged.climbenergy=Objectives_hist.climbEnergy(:,numEpochs);
-converged.cost=Objectives_hist.totalCost(:,numEpochs);
-
-converged.g1=constraint_hist(1,:,numEpochs)';
-converged.g2=constraint_hist(2,:,numEpochs)';
-converged.g3=constraint_hist(3,:,numEpochs)';
-converged.g4=constraint_hist(4,:,numEpochs)';
-converged.g5=constraint_hist(5,:,numEpochs)';
-converged.g6=constraint_hist(6,:,numEpochs)';
-converged.g7=constraint_hist(7,:,numEpochs)';
-converged.g8=constraint_hist(8,:,numEpochs)';
+converged=structure_best(G_hist,Objectives_hist, constraint_hist,numRuns, numEpochs*ones(numRuns,1));
 disp('at final iteration, the converged designs have values:')
 struct2table(converged)
 disp(['Percentage of converged designs that are feasible: ' num2str( ...
