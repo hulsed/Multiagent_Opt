@@ -1,6 +1,21 @@
 function best=structure_best(G_hist,Objectives_hist, constraint_hist,numRuns, epochOfBest)
 
 for a=1:numRuns
+    if epochOfBest(a)==0
+        best.G(a,1)=NaN;
+best.flighttimes_mins(a,1)=NaN;
+best.climbenergy(a,1)=NaN;
+best.cost(a,1)=NaN;
+
+best.g1(a,1)=NaN;
+best.g2(a,1)=NaN;
+best.g3(a,1)=NaN;
+best.g4(a,1)=NaN;
+best.g5(a,1)=NaN;
+best.g6(a,1)=NaN;
+best.g7(a,1)=NaN;
+best.g8(a,1)=NaN;
+    else
 best.G(a,1)=G_hist(a,epochOfBest(a))';
 best.flighttimes_mins(a,1)=Objectives_hist.flightTime(a,epochOfBest(a))'/60;
 best.climbenergy(a,1)=Objectives_hist.climbEnergy(a,epochOfBest(a))';

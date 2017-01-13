@@ -126,7 +126,18 @@ avgG=mean(G_hist);
 if ~exist('Saved Workspaces', 'dir')
     mkdir('Saved Workspaces');
 end
+%best designs
+best=structure_best(G_hist,Objectives_hist, constraint_hist,numRuns, epochOfMax);
+disp('the best designs in the run have values:')
+struct2table(best)
+%converged_designs
+converged=structure_best(G_hist,Objectives_hist, constraint_hist,numRuns, numEpochs*ones(numRuns,1));
 % save workspace
+disp('at final iteration, the converged designs have values:')
+struct2table(converged)
+disp(['Percentage of converged designs that are feasible: ' num2str( ...
+    numel(find(max(constraint_hist(:, :, numEpochs)) <= 0.05))/numRuns*100,...
+    '%d') '%'])
 [rewardnum,mode,pennum,penmode]=label_parameters(exploration, penalty);
 uav_plots
 if saveWorkspace
@@ -137,15 +148,6 @@ if saveWorkspace
             char((useD == 1) * 'D' + (useD == 0) * 'G') ... 'D' or 'G', depending on useD
         '_' penalty.Mode '_' num2str(pennum, '%.2f_') datestr(now,'mm-dd-yy_HH.MM.SS') '.mat'])
 end
-%best designs
-best=structure_best(G_hist,Objectives_hist, constraint_hist,numRuns, epochOfMax);
-disp('the best designs in the run have values:')
-struct2table(best)
-%converged_designs
-converged=structure_best(G_hist,Objectives_hist, constraint_hist,numRuns, numEpochs*ones(numRuns,1));
-disp('at final iteration, the converged designs have values:')
-struct2table(converged)
-disp(['Percentage of converged designs that are feasible: ' num2str( ...
-    numel(find(max(constraint_hist(:, :, numEpochs)) <= 0.05))/numRuns*100,...
-    '%d') '%'])
+
+
 % run_qprop(0, 0, 0, 0, 1); % Save our qprop_map to a file
