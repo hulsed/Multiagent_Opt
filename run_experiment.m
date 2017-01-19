@@ -70,6 +70,7 @@ for r = 1:numRuns
         % Have agents choose actions
         actions = choose_actions(agentTables, cTables, exploration);
         actions_hist(:, r, e) = actions;
+        
         motorNum = actions(4); % remember motor number so we can get the right motorfile
         battery = design_battery(actions, batteryData);
         motor = design_motor(actions, motorData);
