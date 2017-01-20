@@ -3,7 +3,7 @@ tic % Begin measuring time of execution
 clear variables
 
 numEpochs = 200; % NOTE: Changed generations to epochs because political correctness
-numRuns = 5; %Note: D runs slow, so fewer runs is a better idea.
+numRuns = 10; %Note: D runs slow, so fewer runs is a better idea.
 % useD = 0; % 1 - use difference reward, 0 - use global reward
 Qinit= 100;
 saveWorkspace = 1;
@@ -26,7 +26,7 @@ exploration.feasTempMax=10;
 exploration.feasTempMin=1;
 exploration.fcMin=0.1;
 exploration.fcMax=100;
-exploration.feasfactor=4.0; %captures the willingness to explore infeasible actions for a good reward
+exploration.feasfactor=3.0; %captures the willingness to explore infeasible actions for a good reward
                           % 1  feasibility and optimality are equally
                           % important
                           % 0  feasibility not important at all
@@ -87,6 +87,7 @@ showJustAvgFlightTime               = 1;
 showConstraintViolation             = 1;
 showCost                            = 1;
 showEnergy                          = 1;
+showAvgG                            = 1:
 
 global stateful
 for penMode = 8
