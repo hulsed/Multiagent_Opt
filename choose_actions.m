@@ -79,7 +79,8 @@ function actions = choose_actions(agentTables, cTables, exploration)
             
             for a = 1:numel(agent)
                     if strcmp(exploration.mode, 'softmaxAdaptiveLin') || strcmp(exploration.mode, 'softmaxAdaptiveExp')
-                        T=(mean(abs(agent))+0.1)*bias;
+                        %T=(mean(abs(agent))+0.1)*bias;
+                        T=(max(abs(agent))+0.1)*bias;
                         %Tc=(mean(abs(cTab))+0.1)*feasBias;
                         %b2=log(exploration.feasTempMin/exploration.feasTempMax);
                         %Tc=exploration.feasTempMax * exp(b2 * exploration.completion);

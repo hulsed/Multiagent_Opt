@@ -8,7 +8,7 @@
 
 % OUTPUTS
 % The agents with updated Q-tables
-function agents = update_values(agents, rewards, alpha, actions, states, oldStates, Qlearn, gamma)
+function agents = update_values(agents, rewards, alpha, actions, states, oldStates, Qlearn, gamma,learnmode)
     % Iterate through agents
     for ag = 1:numel(agents)
         % Get the current value of the action that agent ag took in previous state
@@ -30,7 +30,12 @@ function agents = update_values(agents, rewards, alpha, actions, states, oldStat
 %                 disp(['Q-table now looks like: ' num2str(agents{ag}(oldStates(ag), :), '%.2f ')])
 %             end
         else
+            switch learnmode
+                case 'RL'
+                  
             agents{ag}(oldStates(ag), actions(ag)) = Q + alpha*(rewards(ag) - Q);
+                case 'best'
+            agents{ag}(oldStates(ag), actions(ag)) = max(Q,rewards(ag));        
         end
     end
 end

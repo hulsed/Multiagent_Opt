@@ -5,7 +5,8 @@ clear variables
 numEpochs = 200; % NOTE: Changed generations to epochs because political correctness
 numRuns = 5; %Note: D runs slow, so fewer runs is a better idea.
 % useD = 0; % 1 - use difference reward, 0 - use global reward
-Qinit= 100;
+Qinit= -10000;
+learnmode='best'; %
 saveWorkspace = 1;
 
 expModes = {'const', 'decay', 'softmax', 'softmaxDecay', 'softmaxAdaptiveExp', 'softmaxAdaptiveLin', 'softmaxFeatScale'};
@@ -20,13 +21,13 @@ exploration.tempMax=10;
 exploration.tempMin=10;
 exploration.tempMax=50;
 exploration.biasMin=0.05;
-exploration.biasMax=1;
+exploration.biasMax=100;
 exploration.feasTemp=1;
 exploration.feasTempMax=10;
 exploration.feasTempMin=1;
 exploration.fcMin=0.1;
 exploration.fcMax=100;
-exploration.feasfactor=4.0; %captures the willingness to explore infeasible actions for a good reward
+exploration.feasfactor=2.0; %captures the willingness to explore infeasible actions for a good reward
                           % 1  feasibility and optimality are equally
                           % important
                           % 0  feasibility not important at all
@@ -41,14 +42,14 @@ exploration.feasfactor=4.0; %captures the willingness to explore infeasible acti
 % myMode = 4;r
 penModes={'const', 'quad', 'div','divconst','death', 'deathplus', 'lin', 'none'};
 %choose mode with penMode
-penalty.quadMin=100;  %Note: for exponentially decaying penalty, use these to select
-penalty.quadMax=100;  %max and min penalty.
-penalty.quadtrunc=-100;    % truncated minimum G for the exponential penalty
+penalty.quadMin=1000;  %Note: for exponentially decaying penalty, use these to select
+penalty.quadMax=1000;  %max and min penalty.
+penalty.quadtrunc=-10000;    % truncated minimum G for the exponential penalty
 penalty.const=100;    %Defines constant portion of penalty
 penalty.div=10;        %Scale term of penalty for divisive penalty
-penalty.death=-100;
+penalty.death=0;
 penalty.lin=-1000;
-penalty.failure=-7000;
+penalty.failure=-10000;
 
 scaleFactor=1;      %Note: DO NOT USE
                     %scales reward to not create an infinite probability in
@@ -90,8 +91,8 @@ showEnergy                          = 1;
 
 global stateful
 for penMode = 8
-    for myMode = 6
-        for useD = 1
+    for myMode = 5
+        for useD = 0
             for stateful = 0
                 run_experiment;
             end

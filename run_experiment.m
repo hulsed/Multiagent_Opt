@@ -96,8 +96,8 @@ for r = 1:numRuns
         end
         Qlearn = stateful; % Use Q-learning for agents if stateful
 
-        agents = update_values(agents, rewards, alpha, actions, states, oldStates, Qlearn, gamma);
-        feasels = update_values(feasels, cUpdate, alpha, actions, states, oldStates, 0);
+        agents = update_values(agents, rewards, alpha, actions, states, oldStates, Qlearn, gamma,learnmode);
+        feasels = update_values(feasels, cUpdate, alpha, actions, states, oldStates, 0,[],'RL');
         agents_hist{r, e} = agents;
         feasels_hist{r,e} = feasels;
         
