@@ -76,23 +76,24 @@ function actions = choose_actions(agentTables, cTables, exploration)
                end 
             end
             
-            
+            agent2=1./(1+exp(-(agent-mean(agent))/(std(agent)+0.1)));
             for a = 1:numel(agent)
                     if strcmp(exploration.mode, 'softmaxAdaptiveLin') || strcmp(exploration.mode, 'softmaxAdaptiveExp')
                         %T=(mean(abs(agent))+0.1)*bias;
-                        T=(max(abs(agent))+0.1)*bias;
+                        %T=(max(abs(agent2))+0.1)*bias;
+                        T=bias;
                         %Tc=(mean(abs(cTab))+0.1)*feasBias;
                         %b2=log(exploration.feasTempMin/exploration.feasTempMax);
                         %Tc=exploration.feasTempMax * exp(b2 * exploration.completion);
                         %Tc=exploration.feasTemp;
                     end
-                        gscale=(mean(abs(agent))+0.01)/(max(abs(agent))+0.01);
+                        gscale=(mean(abs(agent2))+0.01)/(max(abs(agent2))+0.01);
                         cscale=(mean(abs(cTab))+0.01)/(max(abs(cTab))+0.01);
                         %gscale=(mean(abs(agent))+0.01)/((abs(agent(a)))+0.01);
                         %cscale=(mean(abs(cTab))+0.01)/((abs(cTab(a)))+0.01);
                         sf=exploration.feasfactor*gscale/cscale;
                         c(a)= exp(-cTab(a)*sf/(bias));
-                        g(a)= exp(agent(a)/(T));
+                        g(a)= exp(agent2(a)/(T));
                               
             end
             c=c/sum(c);
