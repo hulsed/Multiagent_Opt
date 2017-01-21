@@ -55,7 +55,8 @@ function actions = choose_actions(agentTables, cTables, exploration)
                 
             elseif strcmp(exploration.mode, 'softmaxAdaptiveLin')
                 bias=exploration.biasMax-exploration.completion*(exploration.biasMax-exploration.biasMin);
-                
+            elseif strcmp(exploration.mode, 'softmaxSigmoid')
+                bias=exploration.biasMax-exploration.completion*(exploration.biasMax-exploration.biasMin);    
             else
                 T = exploration.tempConst; % Temperature
                 Tc=exploration.tempConst;
@@ -76,21 +77,34 @@ function actions = choose_actions(agentTables, cTables, exploration)
                end 
             end
             
+            if strcmp(exploration.mode, 'softmaxSigmoid')
+                        agent2=1./(1+exp(-(agent-mean(agent))/(std(agent)+0.1)));
+                        T=bias;
+                        cTab2=1./(1+exp(-(cTab-mean(cTab))/(std(cTab)+0.1)));
+                        for a=1:numel(cTab)
+                            c(a)= exp(-cTab2(a)/T);
+                        end
+                        c=numel(cTab).*c./sum(c);
+                        value=c.*agent2;
+                        for a=1:numel(cTab)
+                            p(a)= exp(value(a)/T);
+                        end
+            end
             
+            if strcmp(exploration.mode, 'softmaxAdaptiveLin') || strcmp(exploration.mode, 'softmaxAdaptiveExp')
             for a = 1:numel(agent)
-                    if strcmp(exploration.mode, 'softmaxAdaptiveLin') || strcmp(exploration.mode, 'softmaxAdaptiveExp')
+                    
                         T=(mean(abs(agent))+0.1)*bias;
                         %Tc=(mean(abs(cTab))+0.1)*feasBias;
                         %b2=log(exploration.feasTempMin/exploration.feasTempMax);
                         %Tc=exploration.feasTempMax * exp(b2 * exploration.completion);
                         %Tc=exploration.feasTemp;
-                    end
                         gscale=(mean(abs(agent))+0.01)/(max(abs(agent))+0.01);
                         cscale=(mean(abs(cTab))+0.01)/(max(abs(cTab))+0.01);
                         %gscale=(mean(abs(agent))+0.01)/((abs(agent(a)))+0.01);
                         %cscale=(mean(abs(cTab))+0.01)/((abs(cTab(a)))+0.01);
                         sf=exploration.feasfactor*gscale/cscale;
-                        c(a)= exp(-cTab(a)*sf/(bias));
+                        c(a)= exp(-cTab(a)*sf/(bias));                        
                         g(a)= exp(agent(a)/(T));
                               
             end
@@ -102,6 +116,8 @@ function actions = choose_actions(agentTables, cTables, exploration)
             %    end
             %end
             p=g.*c; 
+            
+            end
             p=p/sum(p);
             
             actionToTake = find(isnan(p));

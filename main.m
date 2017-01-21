@@ -8,7 +8,7 @@ numRuns = 20; %Note: D runs slow, so fewer runs is a better idea.
 Qinit= 100;
 saveWorkspace = 1;
 
-expModes = {'const', 'decay', 'softmax', 'softmaxDecay', 'softmaxAdaptiveExp', 'softmaxAdaptiveLin', 'softmaxFeatScale'};
+expModes = {'const', 'decay', 'softmax', 'softmaxDecay', 'softmaxAdaptiveExp', 'softmaxAdaptiveLin', 'softmaxFeatScale', 'softmaxSigmoid'};
 exploration.epsConst=0.1;
 exploration.epsMax=0.5;
 exploration.epsMin=0.01;
@@ -20,7 +20,7 @@ exploration.tempMax=10;
 exploration.tempMin=10;
 exploration.tempMax=50;
 exploration.biasMin=0.05;
-exploration.biasMax=1;
+exploration.biasMax=1.0;
 exploration.feasTemp=1;
 exploration.feasTempMax=10;
 exploration.feasTempMin=1;
@@ -91,7 +91,7 @@ showAvgG                            = 1;
 
 global stateful
 for penMode = 8
-    for myMode = 6
+    for myMode = 8
         for useD = 1
             for stateful = 0
                 run_experiment;
