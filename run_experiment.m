@@ -110,8 +110,8 @@ for r = 1:numRuns
             end
             Qlearn = stateful; % Use Q-learning for agents if stateful
 
-            [, gagents] = update_values(agents, gagents, rewards, alpha, actions, states,...
-                oldStates, Qlearn, gamma,'bestdiff',penalty,scaleFactor,...
+            [agents, gagents] = update_values(agents, gagents, rewards, alpha, actions, states,...
+                oldStates, Qlearn, gamma,'best',penalty,scaleFactor,...
                 battery, motor, prop, foil, rod,sys,res, data);
             
             %feasels = update_values(feasels, cUpdate, alpha, actions, states, oldStates, 0,[],'RL');
@@ -122,15 +122,15 @@ for r = 1:numRuns
             
             disp([num2str(r) ', ' num2str(e) ', ' num2str(k) ', G=' num2str(G, 3) ', maxG=' num2str(maxG(r), 3) ' , avgG=' num2str(avgG, 3)])
 
-            if G > avgG %&& all(constraints <= 0.01)
+            if G > maxG %&& all(constraints <= 0.01)
             
-            [rewards, cUpdate, G, Objectives,constraints,hover] = compute_rewards(1, penalty, ...
-            scaleFactor, battery, motor, prop, foil, rod, sys,res, data);
-           [agents,] = update_values(agents,gagents, rewards, alpha, actions, states,...
-                oldStates, Qlearn, alpha,'RL',penalty,scaleFactor,...
-                battery, motor, prop, foil, rod,sys,res, data);
-        %    maxG(r) = G;
-        %    epochOfMax(r) = e;
+            %[rewards, cUpdate, G, Objectives,constraints,hover] = compute_rewards(1, penalty, ...
+            %scaleFactor, battery, motor, prop, foil, rod, sys,res, data);
+           %[agents,] = update_values(agents,gagents, rewards, alpha, actions, states,...
+           %     oldStates, Qlearn, alpha,'RL',penalty,scaleFactor,...
+           %     battery, motor, prop, foil, rod,sys,res, data);
+            maxG(r) = G;
+            epochOfMax(r) = e;
         %    maxflightTime(r)=Objectives.flightTime;
         %    % Update record of actions that got us there
         %    bestActions(r, :) = actions;
