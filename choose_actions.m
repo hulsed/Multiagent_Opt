@@ -11,7 +11,7 @@
 % OUTPUTS
 % actions - column vector of integers, element i corresponds to action
 %   taken by ith agent
-function actions = choose_actions(agentTables, cTables, exploration)
+function actions = choose_actions(agentTables, cTables, exploration, k)
 
     if strcmp(exploration.mode, 'const') % if constant epsilon
         epsilon = exploration.epsConst;
@@ -55,6 +55,13 @@ function actions = choose_actions(agentTables, cTables, exploration)
                 
             elseif strcmp(exploration.mode, 'softmaxAdaptiveLin')
                 bias=exploration.biasMax-exploration.completion*(exploration.biasMax-exploration.biasMin);
+            elseif strcmp(exploration.mode, 'softmaxSigmoid')
+                %nu=exploration.biasMin*log(2.0);
+                %bias=nu/log(1.00001+exploration.completion);
+                %bias=exploration.biasMax-exploration.completion*(exploration.biasMax-exploration.biasMin);
+                
+                bias=-cos(k/10*(pi))/2+.5+0.05;
+                
                 
             else
                 T = exploration.tempConst; % Temperature
@@ -75,8 +82,14 @@ function actions = choose_actions(agentTables, cTables, exploration)
                    cTab(a)=0;
                end 
             end
-            
+            if strcmp(exploration.mode, 'softmaxSigmoid')
             agent2=1./(1+exp(-(agent-mean(agent))/(std(agent)+0.1)));
+            T=bias;
+            else
+            agent2=agent;
+            end
+            
+            
             for a = 1:numel(agent)
                     if strcmp(exploration.mode, 'softmaxAdaptiveLin') || strcmp(exploration.mode, 'softmaxAdaptiveExp')
                         %T=(mean(abs(agent))+0.1)*bias;

@@ -3,13 +3,13 @@ tic % Begin measuring time of execution
 clear variables
 
 numEpochs = 200; % NOTE: Changed generations to epochs because political correctness
-numRuns = 10; %Note: D runs slow, so fewer runs is a better idea.
+numRuns = 5; %Note: D runs slow, so fewer runs is a better idea.
 % useD = 0; % 1 - use difference reward, 0 - use global reward
 Qinit= -10000;
 learnmode='best'; %
 saveWorkspace = 1;
 
-expModes = {'const', 'decay', 'softmax', 'softmaxDecay', 'softmaxAdaptiveExp', 'softmaxAdaptiveLin', 'softmaxFeatScale'};
+expModes = {'const', 'decay', 'softmax', 'softmaxDecay', 'softmaxAdaptiveExp', 'softmaxAdaptiveLin', 'softmaxFeatScale','softmaxSigmoid'};
 exploration.epsConst=0.1;
 exploration.epsMax=0.5;
 exploration.epsMin=0.01;
@@ -19,8 +19,8 @@ exploration.tempConst=100;
 exploration.tempMin=0.01;
 exploration.tempMax=10;
 exploration.tempMin=10;
-exploration.tempMax=0.5;
-exploration.biasMin=0.002;
+exploration.tempMax=0.01;
+exploration.biasMin=0.05;
 exploration.biasMax=1.0;
 exploration.feasTemp=1;
 exploration.feasTempMax=10;
@@ -91,7 +91,7 @@ showEnergy                          = 1;
 
 global stateful
 for penMode = 2
-    for myMode = 5
+    for myMode = 8
         for useD = 0
             for stateful = 0
                 run_experiment;

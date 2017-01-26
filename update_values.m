@@ -8,11 +8,14 @@
 
 % OUTPUTS
 % The agents with updated Q-tables
-function agents = update_values(agents, rewards, alpha, actions, states, oldStates, Qlearn, gamma,learnmode)
+function [agents,gagents] = update_values(agents,gagents, rewards, alpha, actions,...
+    states, oldStates, Qlearn, gamma,learnmode,penalty,scaleFactor, battery,...
+    motor, prop, foil, rod,sys,res, data)
     % Iterate through agents
     for ag = 1:numel(agents)
         % Get the current value of the action that agent ag took in previous state
         Q = agents{ag}(oldStates(ag), actions(ag));
+        gQ= gagents{ag}(oldStates(ag), actions(ag));
         
         if Qlearn
 %             if ag == 1
@@ -31,11 +34,39 @@ function agents = update_values(agents, rewards, alpha, actions, states, oldStat
 %             end
         else
             switch learnmode
-                case 'RL'
-                  
+                case 'RL'      
             agents{ag}(oldStates(ag), actions(ag)) = Q + alpha*(rewards(ag) - Q);
+            gagents{ag}(oldStates(ag), actions(ag)) = Q + alpha*(rewards(ag) - Q);
                 case 'best'
-            agents{ag}(oldStates(ag), actions(ag)) = max(Q,rewards(ag));        
-        end
+                    agents{ag}(oldStates(ag), actions(ag)) = max(Q,rewards(ag));
+                    gagents{ag}(oldStates(ag), actions(ag)) = max(Q,rewards(ag));
+                case 'bestdiff'
+                    if rewards(ag)>=gQ
+                       gagents{ag}(oldStates(ag), actions(ag)) = max(gQ,rewards(ag));
+                       
+                       dreward=switch_diff(ag,rewards(ag), penalty,scaleFactor, battery, motor, prop, foil, rod,sys,res, data);
+                       %dQ(ag)=dreward;
+                       agents{ag}(oldStates(ag), actions(ag)) = Q + alpha*(dreward - Q);
+                       
+                    else
+                       %agents{ag}(oldStates(ag), actions(ag)) = max(Q,rewards(ag));  
+                       gagents{ag}(oldStates(ag), actions(ag)) = max(gQ,rewards(ag));
+                    end
+                case 'baddiff'
+                    if rewards(ag)<=gQ
+                       %gagents{ag}(oldStates(ag), actions(ag)) = max(gQ,rewards(ag));
+                       
+                       dreward=switch_diff(ag,rewards(ag), penalty,scaleFactor, battery, motor, prop, foil, rod,sys,res, data);
+                       if dreward<Q
+                       agents{ag}(oldStates(ag), actions(ag)) = Q + alpha*(dreward - Q);
+                       else
+                       agents{ag}(oldStates(ag), actions(ag)) = Q; 
+                       end
+                    else
+                       %agents{ag}(oldStates(ag), actions(ag)) = max(Q,rewards(ag));  
+                       %gagents{ag}(oldStates(ag), actions(ag)) = max(gQ,rewards(ag));
+                    end   
+            end
+        clear dQ dreward
     end
 end
