@@ -11,7 +11,7 @@
 % OUTPUTS
 % actions - column vector of integers, element i corresponds to action
 %   taken by ith agent
-function actions = choose_actions(agentTables, cTables, exploration)
+function actions = choose_actions(agentTables, cTables, exploration, penalty)
 
     if strcmp(exploration.mode, 'const') % if constant epsilon
         epsilon = exploration.epsConst;
@@ -55,7 +55,10 @@ function actions = choose_actions(agentTables, cTables, exploration)
                 
             elseif strcmp(exploration.mode, 'softmaxAdaptiveLin')
                 bias=exploration.biasMax-exploration.completion*(exploration.biasMax-exploration.biasMin);
-                
+            elseif strcmp(exploration.mode, 'softmaxSigmoid')
+                %bias=exploration.biasMax-exploration.completion*(exploration.biasMax-exploration.biasMin);
+                nu=exploration.biasMin*log(2.0);
+                bias=nu/log(1.00001+exploration.completion);
             else
                 T = exploration.tempConst; % Temperature
                 Tc=exploration.tempConst;
@@ -77,32 +80,84 @@ function actions = choose_actions(agentTables, cTables, exploration)
             end
             
             agent2=agent;
-            %1./(1+exp(-(agent-mean(agent))/(std(agent)+0.1)));
-            for a = 1:numel(agent)
-                    if strcmp(exploration.mode, 'softmaxAdaptiveLin') || strcmp(exploration.mode, 'softmaxAdaptiveExp')
-                        T=(mean(abs(agent2))+0.1)*bias;
+  
+%             for a = 1:numel(agent)
+%                if cTab(a)<0.01
+%                    feasagent(a)=agent(a);
+%                    infeasagent(a)=nan;
+%                else
+%                    feasagent(a)=nan;
+%                    infeasagent(a)=agent(a);
+%                end 
+%             end
+%             if  not(all(isnan(feasagent)))
+%             bestfeasval=max(feasagent);
+%             worstfeasval=min(feasagent);
+%             bestinfeasval=max(infeasagent);
+%             if bestinfeasval>bestfeasval
+%                 infeasagent=infeasagent-(bestinfeasval-bestfeasval)-1;   
+%             end
+%             for a = 1:numel(agent)
+%                if isnan(feasagent(a))
+%                    agent1(a)=infeasagent(a);
+%                else
+%                    agent1(a)=feasagent(a);
+%                end
+%             end
+%             else
+%                 agent1=agent-1000*cTab.^2
+%             end
+            
+            
+            if strcmp(exploration.mode, 'softmaxSigmoid')
+                        %for a=1:numel(agent)
+                        % agent1(a)=agent(a)-penalty.R*cTab(a)^2 ;
+                        %end
+                        agent1=agent;
+                        agent2=1./(1+exp(-(agent1-mean(agent1))/(std(agent1)+0.1)));
+                        T=bias;
+                        %cTab2=1./(1+exp(-(cTab-mean(cTab))/(std(cTab)+0.1)));
+                        for a=1:numel(cTab)
+                            c(a)= exp(-cTab(a)/T);
+                        end
+                        c=c./sum(c);
+                        value=agent2.*c;
+                        for a=1:numel(agent)
+                            p(a)= exp(numel(value)*value(a)/T);
+                        end
+            end
+            
+                if strcmp(exploration.mode, 'softmaxAdaptiveLin') || strcmp(exploration.mode, 'softmaxAdaptiveExp')
+                        T=(mean(abs(agent))+0.1)*bias;
+                    for a = 1:numel(agent)
+                    
                         %Tc=(mean(abs(cTab))+0.1)*feasBias;
                         %b2=log(exploration.feasTempMin/exploration.feasTempMax);
                         %Tc=exploration.feasTempMax * exp(b2 * exploration.completion);
                         %Tc=exploration.feasTemp;
-                    end
-                        gscale=(mean(abs(agent2))+0.01)/(max(abs(agent2))+0.01);
+                        
+                        gscale=(mean(abs(agent))+0.01)/(max(abs(agent))+0.01);
+
                         cscale=(mean(abs(cTab))+0.01)/(max(abs(cTab))+0.01);
                         %gscale=(mean(abs(agent))+0.01)/((abs(agent(a)))+0.01);
                         %cscale=(mean(abs(cTab))+0.01)/((abs(cTab(a)))+0.01);
                         sf=exploration.feasfactor*gscale/cscale;
                         c(a)= exp(-cTab(a)*sf/(bias));
-                        g(a)= exp(agent2(a)/(T));
-                              
-            end
-            c=c/sum(c);
-            %Note: this seems to work better when using the global reward.
-            %for a=1:numel(agent)
-            %    if c(a)<0.001
-            %        c(a)=0;
-            %    end
-            %end
-            p=g.*c; 
+                        g(a)= exp(agent(a)/(T));
+                    end
+
+                
+                    c=c/sum(c);
+                    %Note: this seems to work better when using the global reward.
+                    %for a=1:numel(agent)
+                    %    if c(a)<0.001
+                    %        c(a)=0;
+                    %    end
+                    %end
+                    p=g.*c; 
+            
+                    end
+            
             p=p/sum(p);
             
             actionToTake = find(isnan(p));
@@ -132,7 +187,7 @@ function actions = choose_actions(agentTables, cTables, exploration)
                 [~,actionToTake]=max(p);
             end
             actions(ag) = actionToTake;   
-            clear g c p cTab
+            clear g c p cTab agent1 agent2
         end
     end
 end

@@ -21,6 +21,32 @@ if showMaxFlightTime_vs_MaxG
     title(Title)
     xlabel('Run')
 end
+if showAvgG
+    figure;
+    plot(mean(G_hist), 'LineWidth', 1.25);
+
+    hold on
+    plot(epochOfMax, maxG, 'o')
+
+    L = size(G_hist, 2);
+    x = [1 10:10:L];
+
+    avgG = mean(G_hist, 1);
+    error = std(G_hist,1,1);
+    neg=avgG-min(G_hist(:,:));
+    pos=max(G_hist(:,:))-avgG;
+    
+    errorbar(x, avgG(x), neg(x),pos(x), 'r', 'LineWidth', 1);
+
+    Ymax = max(max(G_hist(:,end)) * 1.5, 5);
+    Ymin= max(min(min(G_hist)), -10000)
+    axis([1, numel(avgG), Ymin, Ymax])
+    Title = [mode ' (' num2str(rewardnum, '%.1f') '), ' reward ', ' st];
+%     Title = [mode ' (' num2str(rewardnum, '%.1f') '), ' reward ', Optimism=' num2str(Qinit, '%.1f')];
+    title(Title)
+    xlabel('Epoch')
+    legend('Average G', 'Max G Achieved', 'Average G', 'Location', 'northwest')
+end
 
 %% Avg Flight Time/Avg G + Max G Achieved (1 per run)
 if showAvgFlightTime_AvgG_MaxGAchieved

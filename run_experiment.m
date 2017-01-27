@@ -68,7 +68,7 @@ for r = 1:numRuns
         end
         
         % Have agents choose actions
-        actions = choose_actions(agentTables, cTables, exploration);
+        actions = choose_actions(agentTables, cTables, exploration, penalty);
         actions_hist(:, r, e) = actions;
         
         motorNum = actions(4); % remember motor number so we can get the right motorfile
