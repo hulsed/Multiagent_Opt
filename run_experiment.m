@@ -55,12 +55,18 @@ for r = 1:numRuns
     states = ones(numAgents, 1);
     % The best performance obtained by the team
     maxG(r) = -10000;
+    bestG(1)= -10000;
     G=-10000;
     epochOfMax(r) = 0;
-    for e = 1:numEpochs
+    e=1;
+    converged=false;
+    while converged==false
         penalty.R=penFxnA*exp(penFxnB*e);
-        k=1;
-        while G<=maxG(r)
+        e=e+1;
+        
+        bestG(e)=bestG(e-1);
+        k=0;
+        while G<=bestG(e)
             k=k+1;
             
             %exploration.completion = k/(k+100);
@@ -109,8 +115,8 @@ for r = 1:numRuns
                 states_hist(:, r, e) = states;
             end
             Qlearn = stateful; % Use Q-learning for agents if stateful
-
-            [agents, gagents] = update_values(agents, gagents, rewards, alpha, actions, states,...
+            learned=0;
+            [agents, gagents,learned] = update_values(agents, gagents, rewards, alpha, actions, states,...
                 oldStates, Qlearn, gamma,'best',penalty,scaleFactor,...
                 battery, motor, prop, foil, rod,sys,res, data);
             
@@ -120,17 +126,29 @@ for r = 1:numRuns
             avgG=median(G_hist(r,:,k));
             stdG=std(G_hist(r,:,k));
             
-            disp([num2str(r) ', ' num2str(e) ', ' num2str(k) ', G=' num2str(G, 3) ', maxG=' num2str(maxG(r), 3) ' , avgG=' num2str(avgG, 3)])
-
-            if G > maxG %&& all(constraints <= 0.01)
+            if learned
+            learndisp=' learned';
+            else
+                learndisp='.';
+            end
+            
+            disp([num2str(r) ', ' num2str(e) ', ' num2str(k) ', G=' num2str(G, 3) ', maxG=' num2str(bestG(e), 3) ' , avgG=' num2str(avgG, 3) learndisp])
+            if G > bestG(e) %&& all(constraints <= 0.01)
             
             %[rewards, cUpdate, G, Objectives,constraints,hover] = compute_rewards(1, penalty, ...
             %scaleFactor, battery, motor, prop, foil, rod, sys,res, data);
            %[agents,] = update_values(agents,gagents, rewards, alpha, actions, states,...
            %     oldStates, Qlearn, alpha,'RL',penalty,scaleFactor,...
            %     battery, motor, prop, foil, rod,sys,res, data);
-            maxG(r) = G;
+            bestG(e) = G;
             epochOfMax(r) = e;
+            bestG(e) = G;
+        %    epochOfMax(r) = e;
+        %    maxflightTime(r)=Objectives.flightTime;
+        %    % Update record of actions that got us there
+            bestActions(r, :) = actions;
+            % As well as the parameters that describe the design
+            bestParams{r} = {battery, motor, prop, foil, rod};
         %    maxflightTime(r)=Objectives.flightTime;
         %    % Update record of actions that got us there
         %    bestActions(r, :) = actions;
@@ -146,23 +164,27 @@ for r = 1:numRuns
             break
             
             end
+            
+            
+            
+            
              
         end
                 % If this is the best performance encountered so far...
-        if G > maxG(r) %&& all(constraints <= 0.01)
+        %if G > bestG(e) %&& all(constraints <= 0.01)
         %    
-            [rewards, cUpdate, G, Objectives,constraints,hover] = compute_rewards(1, penalty, ...
-            scaleFactor, battery, motor, prop, foil, rod, sys,res, data);
-            [agents,] = update_values(agents,gagents, rewards, alpha, actions, states,...
-                oldStates, Qlearn, alpha,'RL',penalty,scaleFactor,...
-                battery, motor, prop, foil, rod,sys,res, data);
-            maxG(r) = G;
+            %[rewards, cUpdate, G, Objectives,constraints,hover] = compute_rewards(1, penalty, ...
+            %scaleFactor, battery, motor, prop, foil, rod, sys,res, data);
+            %[agents,] = update_values(agents,gagents, rewards, alpha, actions, states,...
+            %    oldStates, Qlearn, alpha,'RL',penalty,scaleFactor,...
+            %    battery, motor, prop, foil, rod,sys,res, data);
+            %bestG(e) = G;
         %    epochOfMax(r) = e;
         %    maxflightTime(r)=Objectives.flightTime;
         %    % Update record of actions that got us there
-        %    bestActions(r, :) = actions;
-        %    % As well as the parameters that describe the design
-        %    bestParams{r} = {battery, motor, prop, foil, rod};
+            %bestActions(r, :) = actions;
+            % As well as the parameters that describe the design
+            %bestParams{r} = {battery, motor, prop, foil, rod};
         %    bestHover(r)=hover;
         %elseif G<avgGk;
         %    [rewards, cUpdate, G, Objectives,constraints,hover] = compute_rewards(0, penalty, ...
@@ -170,9 +192,14 @@ for r = 1:numRuns
         %   [agents,] = update_values(agents,gagents, rewards, alpha, actions, states,...
         %       oldStates, Qlearn, gamma,'baddiff',penalty,scaleFactor,...
         %        battery, motor, prop, foil, rod,sys,res, data);
-        end
+        %end
        %[gagents, feasels] = create_agents(batteryAgents, motorAgents, propAgents,rodAgents,Qinit);
-        
+       if e>26
+            if bestG(e)==bestG(e-25)
+                converged=true;
+            end
+       end
+       
     end
 end
 % for a=1:numEpochs

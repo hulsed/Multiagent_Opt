@@ -8,9 +8,11 @@
 
 % OUTPUTS
 % The agents with updated Q-tables
-function [agents,gagents] = update_values(agents,gagents, rewards, alpha, actions,...
+function [agents,gagents, learned] = update_values(agents,gagents, rewards, alpha, actions,...
     states, oldStates, Qlearn, gamma,learnmode,penalty,scaleFactor, battery,...
     motor, prop, foil, rod,sys,res, data)
+    
+    learned=0;
     % Iterate through agents
     for ag = 1:numel(agents)
         % Get the current value of the action that agent ag took in previous state
@@ -38,8 +40,13 @@ function [agents,gagents] = update_values(agents,gagents, rewards, alpha, action
             agents{ag}(oldStates(ag), actions(ag)) = Q + alpha*(rewards(ag) - Q);
             gagents{ag}(oldStates(ag), actions(ag)) = Q + alpha*(rewards(ag) - Q);
                 case 'best'
+                    if Q<rewards(ag)
+                       learned=1; 
+                    end
                     agents{ag}(oldStates(ag), actions(ag)) = max(Q,rewards(ag));
                     gagents{ag}(oldStates(ag), actions(ag)) = max(Q,rewards(ag));
+
+                    
                 case 'bestdiff'
                     if rewards(ag)>=gQ
                        gagents{ag}(oldStates(ag), actions(ag)) = max(gQ,rewards(ag));

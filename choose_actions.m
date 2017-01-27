@@ -60,7 +60,7 @@ function actions = choose_actions(agentTables, cTables, exploration, k)
                 %bias=nu/log(1.00001+exploration.completion);
                 %bias=exploration.biasMax-exploration.completion*(exploration.biasMax-exploration.biasMin);
                 
-                bias=-cos(k/10*(pi))/2+.5+0.05;
+                bias=0.25*(-cos(k/100*(pi))+1)+0.005;
                 
                 
             else
