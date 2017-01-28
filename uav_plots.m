@@ -1,10 +1,10 @@
 global stateful
 
 % _S suffix means SCALED
-maxflightTime_S = maxflightTime/60;
-flightTime_hist_S = flightTime_hist/60;
-maxG_S = maxG/60;
-G_hist_S = G_hist/60;
+%maxflightTime_S = maxflightTime/60;
+%flightTime_hist_S = flightTime_hist/60;
+%maxG_S = maxG/60;
+%G_hist_S = G_hist/60;
 
 if useD, reward = 'D'; else reward = 'G'; end
 if stateful, st = 'Stateful'; else st = 'Stateless'; end
@@ -132,6 +132,50 @@ if showConstraintViolation
     title(Title)
     xlabel('Constraint Number')
     ylabel('Value')
+end
+if altplots
+    figure;
+
+    
+    %avgbest=mean(bestGhist);
+    medbest=nanmedian(bestGhist);
+    neg=medbest-min(bestGhist);
+    pos=max(bestGhist)-medbest;
+    
+    for r=1:numRuns
+        for h=1:length(medbest)
+            if ~isnan(bestGhist(r,h))
+                endptx(r)=h;
+                endpty(r)=bestGhist(r,h);
+            end
+        end
+
+        
+        if ~isnan(medbest(h))
+            graphend=h;
+        end
+    end
+    endpt=[endptx;endpty];
+    for r=1:numRuns
+            numdup{r}=sum(endptx(r)==endptx);
+    end
+        
+    errorbar([1:graphend], medbest(1:graphend),neg(1:graphend),pos(1:graphend))
+    Title=['Agent Optimization Over ' num2str(numRuns) ' runs'];
+    title(Title)
+    xlabel('Learning Cycles')
+    ylabel('Performance G')
+    xlim([0,graphend])
+    ylim([0.25*min(min(bestGhist)),1.1*max(max(bestGhist))])
+    hold on
+    %plot(endptx, endpty, 'o', 'color','r')
+    grid on
+    grid minor
+    for r=1:numRuns
+        text(endptx(r), endpty(r),num2str(numdup{r}))
+    end
+
+    
 end
 
 hold off % I think this might be good to put
