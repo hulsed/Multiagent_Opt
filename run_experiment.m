@@ -61,6 +61,7 @@ for r = 1:numRuns
     converged=false;
     bestGc=nan(1,maxEpochs);
     avgGk=nan(1,maxEpochs);
+    
     while converged==false
         penalty.R=penFxnA*exp(penFxnB*e);
         e=e+1;
@@ -131,9 +132,9 @@ for r = 1:numRuns
                 epochOfMax(r) = e;
                 % Update record of actions that got us there
                 bestActions(r,:) = actions;
+                bestConstraints(r,:) = constraints;
                 % As well as the parameters that describe the design
                 bestParams{r} = {battery, motor, prop, foil, rod};
-                break
             end
             
         end
@@ -151,6 +152,7 @@ for r = 1:numRuns
     bestGc(1:length(bestG))=bestG;
     bestGhist(r,:)=bestGc;
     avgGhist(r,:)=avgGk;
+    clear bestG
 end
 
 

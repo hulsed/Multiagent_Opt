@@ -121,14 +121,15 @@ end
 %% Constraint Violation
 if showConstraintViolation
     figure; %Plot constraint violation at final epoch       
-    bar(median(constraint_hist(:,:,numEpochs)'))
+    medconst=median(bestConstraints(:,:))
+    bar(medconst)
     
     hold on
-    neg=median(constraint_hist(:,:,numEpochs)')-min(constraint_hist(:,:,numEpochs)');
-    pos=max(constraint_hist(:,:,numEpochs)')-median(constraint_hist(:,:,numEpochs)');
-    errorbar([1:8],median(constraint_hist(:,:,numEpochs)'),neg,pos, '.')
+    neg=medconst-min(bestConstraints(:,:));
+    pos=max(bestConstraints(:,:))-medconst;
+    errorbar([1:8],medconst,neg,pos, '.')
 
-    Title=['Final Constraint Values, ' penmode ' parameters: ' num2str(pennum) ', ' st];
+    Title=['Constraint Values of converged designs'];
     title(Title)
     xlabel('Constraint Number')
     ylabel('Value')
@@ -148,11 +149,9 @@ if altplots
                 endptx(r)=h;
                 endpty(r)=bestGhist(r,h);
             end
-        end
-
-        
-        if ~isnan(medbest(h))
-            graphend=h;
+            if ~isnan(medbest(h))
+                graphend=h;
+             end
         end
     end
     endpt=[endptx;endpty];
@@ -168,13 +167,20 @@ if altplots
     xlim([0,graphend])
     ylim([0.25*min(min(bestGhist)),1.1*max(max(bestGhist))])
     hold on
-    %plot(endptx, endpty, 'o', 'color','r')
+    plot(endptx, endpty, 'o', 'color','r')
     grid on
     grid minor
-    for r=1:numRuns
-        text(endptx(r), endpty(r),num2str(numdup{r}))
-    end
+    %for r=1:numRuns
+    %    text(endptx(r), endpty(r),num2str(numdup{r}))
+    %end
+figure;
+boxplot(endpty, 'orientation', 'horizontal')
+title('Best values found by each run')
 
+grid on
+grid minor
+hold on
+plot([2090.49],[1],'*', 'color', 'g')
     
 end
 

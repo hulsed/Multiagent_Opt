@@ -3,8 +3,8 @@ tic % Begin measuring time of execution
 clear variables
 
 numKs=50;
-numRuns = 5; %Note: D runs slow, so fewer runs is a better idea.
-stopEpoch=30; %If it hasn't improved after this many Epochs, stop
+numRuns = 10; %Note: D runs slow, so fewer runs is a better idea.
+stopEpoch=50; %If it hasn't improved after this many Epochs, stop
 maxEpochs=250;
 numEpochs=numKs;
 %stopDens=
@@ -89,7 +89,7 @@ data.matData = matData;
 showMaxFlightTime_vs_MaxG           = 0;
 showAvgFlightTime_AvgG_MaxGAchieved = 0;
 showJustAvgFlightTime               = 0;
-showConstraintViolation             = 0;
+showConstraintViolation             = 1;
 showCost                            = 0;
 showEnergy                          = 0;
 altplots                            =1;
