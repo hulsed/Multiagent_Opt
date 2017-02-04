@@ -158,15 +158,22 @@ if altplots
     for r=1:numRuns
             numdup{r}=sum(endptx(r)==endptx);
     end
-        
-    errorbar([1:graphend], medbest(1:graphend),neg(1:graphend),pos(1:graphend))
+    % Plot line without errorbars. Contains all points.
+    plot(1:graphend, medbest(1:graphend), 'k')
+    hold on
+    L = size(medbest, 2);
+    x = [1 10:10:L];
+    % Plot errorbar about every 10 points
+    % NOTE: Must go into plot editor thing to remove line without removing
+    % error bars
+    errorbar(x, medbest(x),neg(x),pos(x), 'k')
+    %errorbar([1:graphend], medbest(1:graphend),neg(1:graphend),pos(1:graphend))
     Title=['Agent Optimization Over ' num2str(numRuns) ' runs'];
     title(Title)
     xlabel('Learning Cycles')
     ylabel('Performance G')
     xlim([0,graphend])
     ylim([0.25*min(min(bestGhist)),1.1*max(max(bestGhist))])
-    hold on
     plot(endptx, endpty, 'o', 'color','r')
     grid on
     grid minor
@@ -175,12 +182,13 @@ if altplots
     %end
 figure;
 boxplot(endpty, 'orientation', 'horizontal')
+% axis([900,2300, 0.9, 1.1])
 title('Best values found by each run')
 
 grid on
 grid minor
-hold on
-plot([2090.49],[1],'*', 'color', 'g')
+% hold on
+% plot([2204.4],[1], '*', 'color', 'k', 'MarkerSize', 9)
     
 end
 
