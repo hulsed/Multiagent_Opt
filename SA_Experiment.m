@@ -31,6 +31,6 @@ end
 %[x,fval] = ga(ObjectiveFunction,nvars,[],[],[],[],LB,UB, ...
  %   ConstraintFunction,IntCon,options)
  
- 
- soptions=saoptimset('DataType','custom','AnnealingFcn',@annealfunc,'PlotFcn',@saplotf, 'InitialTemperature', 1000, 'MaxStallIterations',2500)
+ % 'InitialTemperature', 500, 'TemperatureFcn', @temperatureboltz,
+ soptions=saoptimset('DataType','custom','AnnealingFcn',@annealfunc,'PlotFcn',{@saplotf, @saplottemperature},'InitialTemperature', 600, 'TemperatureFcn', @temperatureboltz, 'StallIterLim',2500) %'reannealinterval', 20)
  [x,fval]=simulannealbnd(ObjectiveFunction, Xinit,LB, UB,soptions)

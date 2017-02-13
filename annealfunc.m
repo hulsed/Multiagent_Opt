@@ -1,4 +1,4 @@
-function [xnew] = annealfunc(values,problem)
+function [xnew] = annealfunc(values,problem);
 
 % BATTERY
 batteryAgents = [6, 6, 4];
@@ -13,7 +13,7 @@ LB = ones(1,numAgents);   % Lower bound
 UB = [batteryAgents motorAgents propAgents rodAgents];  % Upper bound
 
 xnew=values.x;
-while 1==1 xnew~=values.x
+while 1==1 xnew~=values.x;
 xnew=min(UB,max(LB,values.x+randi(3,1,length(UB))-2));
 if not(all(isequal(values.x,xnew)));
    break 
