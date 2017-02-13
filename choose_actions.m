@@ -56,11 +56,12 @@ function actions = choose_actions(agentTables, cTables, exploration, k)
             elseif strcmp(exploration.mode, 'softmaxAdaptiveLin')
                 bias=exploration.biasMax-exploration.completion*(exploration.biasMax-exploration.biasMin);
             elseif strcmp(exploration.mode, 'softmaxSigmoid')
-                %nu=exploration.biasMin*log(2.0);
-                %bias=nu/log(1.00001+exploration.completion);
+                nu=exploration.biasMin*log(2.0);
+                bias=nu/log(1.00001+exploration.completion);
                 %bias=exploration.biasMax-exploration.completion*(exploration.biasMax-exploration.biasMin);
                 
-                bias=0.25*(-cos(k/100*(pi))+1)+0.005;
+                %bias=0.25*(-cos(k/100*(pi))+1)+0.005;
+                %bias=0.5*(exploration.biasMax-exploration*biasMin)
                 
                 
             else
@@ -68,8 +69,7 @@ function actions = choose_actions(agentTables, cTables, exploration, k)
                 Tc=exploration.tempConst;
             end
             % iterate through possible actions for agent   
-            
-            %agent=(agent-mean(agent))/(std(agent)+0.01);
+
             if strcmp(exploration.mode, 'softmaxFeatScale')
                 %feature scaling
                 agent=(agent-min(agent))/(max(agent)-min(agent)+0.001);
@@ -82,6 +82,7 @@ function actions = choose_actions(agentTables, cTables, exploration, k)
                    cTab(a)=0;
                end 
             end
+            
             if strcmp(exploration.mode, 'softmaxSigmoid')
             agent2=1./(1+exp(-(agent-mean(agent))/(std(agent)+0.1)));
             T=bias;
