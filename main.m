@@ -2,12 +2,8 @@ tic % Begin measuring time of execution
 
 clear variables
 
-numKs=50;
-numRuns = 10; %Note: D runs slow, so fewer runs is a better idea.
-stopEpoch=50; %If it hasn't improved after this many Epochs, stop
-maxEpochs=250;
-numEpochs=numKs;
-%stopDens=
+numEpochs = 200; % NOTE: Changed generations to epochs because political correctness
+numRuns = 5; %Note: D runs slow, so fewer runs is a better idea.
 % useD = 0; % 1 - use difference reward, 0 - use global reward
 Qinit= -10000;
 learnmode='best'; %
@@ -86,13 +82,12 @@ data.propData = propData; data.foilData = foilData; data.rodData = rodData;
 data.matData = matData;
 
 % PLOTTING OPTIONS
-showMaxFlightTime_vs_MaxG           = 0;
-showAvgFlightTime_AvgG_MaxGAchieved = 0;
-showJustAvgFlightTime               = 0;
+showMaxFlightTime_vs_MaxG           = 1;
+showAvgFlightTime_AvgG_MaxGAchieved = 1;
+showJustAvgFlightTime               = 1;
 showConstraintViolation             = 1;
-showCost                            = 0;
-showEnergy                          = 0;
-altplots                            =1;
+showCost                            = 1;
+showEnergy                          = 1;
 
 global stateful
 for penMode = 2
@@ -104,8 +99,6 @@ for penMode = 2
         end
     end
 end
-
-
 % WARNING!!!!!!!!!!!!
 % After doing the experiments, ALL the figures will come spewing forth
 % (maybe)
