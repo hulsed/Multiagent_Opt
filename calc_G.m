@@ -129,6 +129,8 @@ function [G,Objectives, constraints, hover] = calc_G(penalty,scaleFactor, batter
                 G = (multiObjective)/scaleFactor;
         end
    end
+     
+    
 
         %Note: Truncating possible negative performance to just below failure mode.
         %This should help with overly low values of G.
