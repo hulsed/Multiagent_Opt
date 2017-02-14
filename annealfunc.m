@@ -12,6 +12,7 @@ numAgents = numel([batteryAgents motorAgents propAgents rodAgents]);
 LB = ones(1,numAgents);   % Lower bound
 UB = [batteryAgents motorAgents propAgents rodAgents];  % Upper bound
 
+stepsizes=max(ones(1,length(UB)), ceil((UB-LB)/4*0.995^values.iteration));
 
 xnew=values.x;
 while 1==1 xnew~=values.x;

@@ -34,6 +34,7 @@ end
  %   ConstraintFunction,IntCon,options)
  
  % 'InitialTemperature', 500, 'TemperatureFcn', @temperatureboltz,
+ soptions=saoptimset('DataType','custom','AnnealingFcn',@annealfunc,'PlotFcn',{@saplotbestf},'InitialTemperature', 600, 'TemperatureFcn', @temperatureboltz, 'StallIterLim',2500) %'reannealinterval', 20)
  [x(a,:),fval(a)]=simulannealbnd(ObjectiveFunction, Xinit,LB, UB,soptions)
  
  namestring=['sa5_' num2str(a) '.fig'];
