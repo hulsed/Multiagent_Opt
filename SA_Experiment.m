@@ -17,6 +17,8 @@ UB = [batteryAgents motorAgents propAgents rodAgents];  % Upper bound
 ConstraintFunction = @constfun;
 IntCon=1:numAgents;
 
+for a=1:10
+
 for i=1:length(UB)
 Xinit(i)=randi(UB(i));
 end
@@ -32,5 +34,9 @@ end
  %   ConstraintFunction,IntCon,options)
  
  % 'InitialTemperature', 500, 'TemperatureFcn', @temperatureboltz,
- soptions=saoptimset('DataType','custom','AnnealingFcn',@annealfunc,'PlotFcn',{@saplotf, @saplottemperature},'InitialTemperature', 600, 'TemperatureFcn', @temperatureboltz, 'StallIterLim',2500) %'reannealinterval', 20)
- [x,fval]=simulannealbnd(ObjectiveFunction, Xinit,LB, UB,soptions)
+ [x(a,:),fval(a)]=simulannealbnd(ObjectiveFunction, Xinit,LB, UB,soptions)
+ 
+ namestring=['sa5_' num2str(a) '.fig'];
+saveas(gcf, namestring)
+
+end
