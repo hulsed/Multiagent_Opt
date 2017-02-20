@@ -3,12 +3,6 @@ global stateful
 exploration.mode = expModes{myMode};
 exploration.completion = 0;
 
-penalty.Mode=penModes{penMode};
-penFxnB=log(penalty.quadMin/penalty.quadMax)/(1-numEpochs);
-penFxnA=penalty.quadMin/exp(penFxnB);
-%penFxnA=penaltyMin/exp(1);
-%penFxnB=(log(penaltyMax)-log(penFxnA))/numEpochs; %note: log is natural log, not log base 10.
-
 G_hist= zeros(numRuns, numEpochs);
 Objectives_hist.totalCost=zeros(numRuns, numEpochs);
 Objectives_hist.flightTime=zeros(numRuns, numEpochs);
@@ -18,15 +12,6 @@ Objectives_hist.climbEnergy=zeros(numRuns, numEpochs);
 numAgents = numel([batteryAgents motorAgents propAgents rodAgents]);
 bestActions = uint8(zeros(numRuns,numAgents)); % The discrete action choices of the agents that give best performance
 bestParams = cell(numRuns, 1); % The design parameters resulting from the agents' best actions
-
-%%%%
-%Residual parameters of the design
-res.mass=0.3;
-res.framewidth=0.075; %temp width of frame!
-res.planArea=res.framewidth^2;
-res.cost=50;
-res.power=5;
-%%%%
 
 
 rewards_hist = zeros(numAgents, numRuns, numEpochs);
@@ -63,7 +48,6 @@ for r = 1:numRuns
     avgGk=nan(1,maxEpochs);
     
     while converged==false
-        penalty.R=penFxnA*exp(penFxnB*e);
         e=e+1;
         
         bestG(e)=bestG(e-1);
@@ -85,20 +69,10 @@ for r = 1:numRuns
             actions = choose_actions(agentTables, cTables, exploration, k);
             actions_hist(:, r, e) = actions;
 
-            motorNum = actions(4); % remember motor number so we can get the right motorfile
-            battery = design_battery(actions, batteryData);
-            motor = design_motor(actions, motorData);
-            [prop,foil] = design_prop(actions, propData, foilData);
-            rod = design_rod(actions, rodData, matData, prop,res);
-            sys=design_sys(battery, motor, prop, foil, rod, res, motorNum);
-
             % Get rewards for agents and system performance
-            [rewards, cUpdate, G, Objectives,constraints,hover] = compute_rewards(useD, penalty, ...
-                scaleFactor, battery, motor, prop, foil, rod, sys,res, data);
+            [rewards, G] = compute_rewards(actions);
             G=G*scaleFactor;
-            hover_hist(r,e)=hover;
             rewards_hist(:, r, e) = rewards;
-            constraint_hist(:,r,e) = constraints;
             G_hist(r,e,k)=G;
             G_khist(k)=G;
             avgGk(e)=mean(G_khist);
@@ -111,13 +85,10 @@ for r = 1:numRuns
             Qlearn = stateful; % Use Q-learning for agents if stateful
             
             learned=0;
-            [agents, gagents,learned] = update_values(agents, gagents, rewards, alpha, actions, states,...
-                oldStates, Qlearn, gamma,'best',penalty,scaleFactor,...
-                battery, motor, prop, foil, rod,sys,res, data);
+            [agents,gagents, learned] = update_values(agents,gagents, rewards, alpha, actions, 'best');
             
             %feasels = update_values(feasels, cUpdate, alpha, actions, states, oldStates, 0,[],'RL');
             agents_hist{r, e} = agents;
-            feasels_hist{r,e} = feasels;
             
             if learned
             learndisp=' learned';
@@ -132,9 +103,6 @@ for r = 1:numRuns
                 epochOfMax(r) = e;
                 % Update record of actions that got us there
                 bestActions(r,:) = actions;
-                bestConstraints(r,:) = constraints;
-                % As well as the parameters that describe the design
-                bestParams{r} = {battery, motor, prop, foil, rod};
             end
             
         end

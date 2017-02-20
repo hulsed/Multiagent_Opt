@@ -44,16 +44,6 @@ exploration.feasfactor=0.0; %captures the willingness to explore infeasible acti
 % USE THIS TO SELECT WHICH SELECTION POLICY YOU WANT
 % Adjust params as necessary, see below for description of each
 % myMode = 4;r
-penModes={'const', 'quad', 'div','divconst','death', 'deathplus', 'lin', 'none'};
-%choose mode with penMode
-penalty.quadMin=1000;  %Note: for exponentially decaying penalty, use these to select
-penalty.quadMax=1000;  %max and min penalty.
-penalty.quadtrunc=-10000;    % truncated minimum G for the exponential penalty
-penalty.const=100;    %Defines constant portion of penalty
-penalty.div=10;        %Scale term of penalty for divisive penalty
-penalty.death=0;
-penalty.lin=-1000;
-penalty.failure=-10000;
 
 scaleFactor=1;      %Note: DO NOT USE
                     %scales reward to not create an infinite probability in
@@ -78,12 +68,6 @@ rodAgents=[4,11,8];
 
 alpha = 0.1; % Learning rate
 gamma = 0.1;
-[batteryData, motorData, propData, foilData, rodData, matData] = load_data('batterytable.csv', ...
-    'motortable.csv', 'propranges.csv', 'airfoiltable.csv','rodtable.csv','materialtable.csv');
-
-data.batteryData = batteryData; data.motorData = motorData;
-data.propData = propData; data.foilData = foilData; data.rodData = rodData;
-data.matData = matData;
 
 % PLOTTING OPTIONS
 showMaxFlightTime_vs_MaxG           = 0;
@@ -95,7 +79,6 @@ showEnergy                          = 0;
 altplots                            =1;
 
 global stateful
-for penMode = 2
     for myMode = 8
         for useD = 0
             for stateful = 0
@@ -103,7 +86,6 @@ for penMode = 2
             end
         end
     end
-end
 
 
 % WARNING!!!!!!!!!!!!
