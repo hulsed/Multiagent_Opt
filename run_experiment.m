@@ -1,15 +1,10 @@
 
-G_hist= zeros(numRuns, numEpochs);
+
 
 numAgents = numel([batteryAgents motorAgents propAgents rodAgents]);
 bestActions = uint8(zeros(numRuns,numAgents)); % The discrete action choices of the agents that give best performance
 
-rewards_hist = zeros(numAgents, numRuns, numEpochs);
-actions_hist = zeros(numAgents, numRuns, numEpochs);
-agents_hist = cell(numRuns, numEpochs);
 maxG = -10000*zeros(numRuns, 1);
-epochOfMax = zeros(numRuns, 1);
-maxflightTime = zeros(numRuns, 1);
 exploration.completion = 0;
 
 for r = 1:numRuns
@@ -85,11 +80,4 @@ end
 
 uav_plots
 
-if saveWorkspace
-    if stateful, strState = 'state'; else strState = 'NOstate'; end
-    save(['Saved Workspaces\\' ...
-            strState ...
-        '_' exploration.mode '_' ...
-            char((useD == 1) * 'D' + (useD == 0) * 'G') ... 'D' or 'G', depending on useD
-        '_' penalty.Mode '_' datestr(now,'mm-dd-yy_HH.MM.SS') '.mat'])
-end
+

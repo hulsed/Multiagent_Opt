@@ -187,9 +187,7 @@ title('Best values found by each run')
 
 grid on
 grid minor
-% hold on
-% plot([2204.4],[1], '*', 'color', 'k', 'MarkerSize', 9)
-    
+   
 end
 
-hold off % I think this might be good to put
+hold off 
