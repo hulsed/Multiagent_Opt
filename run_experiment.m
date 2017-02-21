@@ -14,7 +14,7 @@ exploration.completion = 0;
 
 for r = 1:numRuns
     % Create the agents and feasels
-    [agents] = create_agents(batteryAgents, motorAgents, propAgents,rodAgents,Qinit);
+    [agents] = create_agents(batteryAgents, motorAgents, propAgents,rodAgents,-1000);
     % The best performance obtained by the team
     bestG(1)= -10000;
     G=-10000;

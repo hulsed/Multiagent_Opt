@@ -2,11 +2,7 @@
 
 % INPUTS
 % agents - the cell array of agents, each cell containing a Q-table
-% exploration - struct with two properties, mode and two params
-%   modes are "const", "decay", and "softmax"
-%   param1 is epsilon value, starting epsilon value, or temperature,
-%       repsectively
-%   param2 gives percent completion for mode "decay"
+% exploration - struct determinint exploration
 
 % OUTPUTS
 % actions - column vector of integers, element i corresponds to action
@@ -32,7 +28,9 @@ function actions = choose_actions(agentTables, exploration)
             agent2=1./(1+exp(-(agent-mean(agent))/(std(agent)+0.1)));
             %softmax selection
             for a = 1:numel(agent)
-                        p(a)= exp(agent2(a)/(bias));                  
+                    %yet another scale factor (DO NOT REMOVE)
+                        sf=((mean(abs(agent2))+0.01)/(max(abs(agent2))+0.01))^-1;
+                        p(a)= exp(agent2(a)*sf/(bias));                  
             end
             p=p/sum(p);
             
@@ -64,6 +62,6 @@ function actions = choose_actions(agentTables, exploration)
                 [~,actionToTake]=max(p);
             end
             actions(ag) = actionToTake;   
-            clear g c p cTab
+            clear p
     end
 end
