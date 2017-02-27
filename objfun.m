@@ -25,10 +25,7 @@ scaleFactor=1;      %Note: DO NOT USE
 
 data.batteryData = batteryData; data.motorData = motorData;
 data.propData = propData; data.foilData = foilData; data.rodData = rodData;
-data.matData = matData;
-     
-                    
-                    
+data.matData = matData;              
                     
         res.mass=0.3;
         res.framewidth=0.075; %temp width of frame!

@@ -10,17 +10,15 @@
 %
 % OUTPUTS
 % agents - a cell array containing the Q-tables of the agents
-function [agentTables] = create_agents(battery, motor, prop,rod,Qinit)
-    % Join all component vectors into one vector
-    allComponents = [battery, motor, prop, rod];
-    numAgents = size(allComponents, 2);
+function [agentTables] = create_agents(choices,Qinit)
+    numAgents = size(choices, 2);
     % Our multiagent system, of sorts. This will hold all the Q-tables.
     agentTables = cell(numAgents, 1);
     
     % Create the agents one by one. ag is the "agent number"
-    for ag = 1:numel(allComponents)
+    for ag = 1:numel(choices)
         % Get number of actions for agent ag
-        numActions = allComponents(ag);
+        numActions = choices(ag);
         % Initialize Q-table (table of values)
         agent = Qinit*ones(1, numActions);
         % add agent to our list of agents

@@ -29,8 +29,8 @@ function actions = choose_actions(agentTables, exploration)
             %softmax selection
             for a = 1:numel(agent)
                     %yet another scale factor (DO NOT REMOVE)
-                        sf=((mean(abs(agent2))+0.01)/(max(abs(agent2))+0.01))^-1;
-                        p(a)= exp(agent2(a)*sf/(bias));                  
+                        %sf=((mean(abs(agent2))+0.01)/(max(abs(agent2))+0.01))^-1;
+                        p(a)= exp(agent2(a)/(bias));                  
             end
             p=p/sum(p);
             

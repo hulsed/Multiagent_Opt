@@ -22,8 +22,6 @@ function [agents, learned] = update_values(agents, rewards, alpha, actions, lear
                 case 'best'
                     if Q<rewards(ag)
                        learned=1;
-                    else
-                       learned=0;
                     end
                     agents{ag}(actions(ag)) = max(Q,rewards(ag));
             end
