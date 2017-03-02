@@ -9,7 +9,6 @@
 %   taken by ith agent
 function actions = choose_actions(agentTables, exploration)
 
-
     numAgents = numel(agentTables);
     % initialize vector of integers corresponding to agent actions
     actions = uint8(zeros(numAgents, 1));
@@ -28,12 +27,9 @@ function actions = choose_actions(agentTables, exploration)
             agent2=1./(1+exp(-(agent-mean(agent))/(std(agent)+0.1)));
             %softmax selection
             for a = 1:numel(agent)
-                    %yet another scale factor (DO NOT REMOVE)
-                        %sf=((mean(abs(agent2))+0.01)/(max(abs(agent2))+0.01))^-1;
                         p(a)= exp(agent2(a)/(bias));                  
             end
             p=p/sum(p);
-            
             %picks action
             actionToTake = find(isnan(p));
             if isempty(actionToTake)
@@ -41,7 +37,7 @@ function actions = choose_actions(agentTables, exploration)
                 try
                     actionToTake = randsample(1:numel(agent), 1, true, p);
                 catch
-                    p, g, c % Sometimes get complex numbers >:[
+                    p % in case it produces a complex number
                     actionToTake = randsample(1:numel(agent), 1, true, p);
                 end
             else
