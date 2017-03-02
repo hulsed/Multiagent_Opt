@@ -98,6 +98,7 @@ if ~exist('Saved Workspaces', 'dir')
     mkdir('Saved Workspaces');
 end
 
+generate_plots
 
 end
 
