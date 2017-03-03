@@ -17,6 +17,7 @@ exploration.biasMax=1.0;
 saveWorkspace = 1;
 showConstraintViolation             = 0;
 altplots                            =1;
+%addpath('C:\Projects\GitHub\QuadrotorModel')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
