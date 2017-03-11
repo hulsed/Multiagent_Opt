@@ -16,13 +16,22 @@ TMin=0.1;
 saveWorkspace = 1;
 showConstraintViolation             = 0;
 altplots                            =1;
+
+rewardtype='G';
+availableactions=[1,0.5,0.2,0.1,0.05,-0.05,-0.1];
+T=10;
+
+
 %addpath('C:\Projects\GitHub\QuadrotorModel')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-numAgents = numel(varchoices);
-x_opt = uint8(zeros(numRuns,numAgents)); % The discrete action choices of the agents that give best performance
+numVars = numel(varchoices);
+% The discrete choices for the variables that give best performance
+x_opt = uint8(zeros(numRuns,numVars)); 
+
+numactions=numel(availableactions)*ones(1,numVars);
 
 minobj = 10000*zeros(numRuns, 1);
 completion = 0;
@@ -30,6 +39,7 @@ completion = 0;
 for r = 1:numRuns
     % Create the expectation of merit for the paremeters
     [expMerit] = create_expfuncs(varchoices,Qinit);
+    values=create_expfuncs(numactions,0);
     
     % initializing best performance obtained
     bestobj(1)= 10000;
@@ -47,11 +57,14 @@ for r = 1:numRuns
         k=0;
         for k=1:numKs
             
-            completion = k/numKs;
-
+            %choose actions based on learned values
+            actions=choose_actions(values,T);
+            %temps
+            temps=availableactions(actions);
+            
             % Have agents choose the values of each given design variable
             % x.
-            x = choose_paramvals(expMerit, completion,TMin);
+            x = choose_paramvals(expMerit, temps);
 
             % Calculate the objective function of the chosen design. Assign
             % that to the found merit of each paremeter value taken.
@@ -60,10 +73,14 @@ for r = 1:numRuns
             
             % update the expected merit of each design variable given the
             % objective value calculated.
-            [expMerit, learned] = update_values(expMerit, foundMerit, alpha, x, 'best');
+            [expMerit, learned,expimprovement] = update_merit(expMerit, foundMerit, alpha, x, 'best');
             agents_hist{r, e} = expMerit;
             
-            if learned
+            rewards=calc_rewards(learned,rewardtype);
+            
+            values=learn_values(values,actions,rewards,alpha);
+            
+            if any(learned)
             learndisp=' learned';
             else
                 learndisp='.';

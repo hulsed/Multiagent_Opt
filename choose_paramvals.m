@@ -8,7 +8,7 @@
 % OUTPUTS
 % x - column vector of integers, element i corresponds to the chosen value
 % for the variable i.
-function x = choose_paramvals(expMerit, completion,TMin)
+function x = choose_paramvals(expMerit, temps)
     
     % initialize vector of integers corresponding to the choices for each
     % parameter
@@ -23,9 +23,7 @@ function x = choose_paramvals(expMerit, completion,TMin)
             % (since the best has the lowest objective value)
             merit = -expMerit{ag};
 
-            %calculating T for exploration
-            nu=TMin*log(2.0);
-            T=nu/log(1.00001+completion);
+            T=temps(ag);
             
             %softmax normalization
             merit2=1./(1+exp(-(merit-mean(merit))/(std(merit)+0.1)));
@@ -61,10 +59,7 @@ function x = choose_paramvals(expMerit, completion,TMin)
                 end
                     
             end
-            
-            if completion==1
-                [~,ChosenValue]=max(p);
-            end
+
             x(ag) = ChosenValue;   
             clear p
     end
