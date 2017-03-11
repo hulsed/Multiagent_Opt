@@ -1,41 +1,23 @@
-
-%% Constraint Violation
-if showConstraintViolation
-    figure; %Plot constraint violation at final epoch       
-    medconst=median(bestConstraints(:,:))
-    bar(medconst)
-    
-    hold on
-    neg=medconst-min(bestConstraints(:,:));
-    pos=max(bestConstraints(:,:))-medconst;
-    errorbar([1:8],medconst,neg,pos, '.')
-
-    Title=['Constraint Values of converged designs'];
-    title(Title)
-    xlabel('Constraint Number')
-    ylabel('Value')
-end
-
 if altplots
     figure;
 
     if numRuns==1   
-        plot(bestGhist)
+        plot(bestobjhist)
         grid on
         grid minor
         Title=['Agent Optimization Over ' num2str(numRuns) ' runs'];
         title(Title)
         xlabel('Learning Cycles')
-        ylabel('Performance G')
+        ylabel('Performance f(x)')
     else
-        medbest=nanmedian(bestGhist);
-        neg=medbest-min(bestGhist);
-        pos=max(bestGhist)-medbest;
+        medbest=nanmedian(bestobjhist);
+        neg=medbest-min(bestobjhist);
+        pos=max(bestobjhist)-medbest;
         for r=1:numRuns
             for h=1:length(medbest)
-                if ~isnan(bestGhist(r,h))
+                if ~isnan(bestobjhist(r,h))
                     endptx(r)=h;
-                    endpty(r)=bestGhist(r,h);
+                    endpty(r)=bestobjhist(r,h);
                 end
                 if ~isnan(medbest(h))
                     graphend=h;
@@ -59,9 +41,9 @@ if altplots
         Title=['Agent Optimization Over ' num2str(numRuns) ' runs'];
         title(Title)
         xlabel('Learning Cycles')
-        ylabel('Performance G')
+        ylabel('Performance f(x)')
         xlim([0,graphend])
-        ylim([0.25*min(min(bestGhist)),1.1*max(max(bestGhist))])
+        ylim([0.25*min(min(bestobjhist)),1.1*max(max(bestobjhist))])
         plot(endptx, endpty, 'o', 'color','r')
         grid on
         grid minor
@@ -73,8 +55,6 @@ if altplots
     grid on
     grid minor   
     end
-    
-
 
    
 end

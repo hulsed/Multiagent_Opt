@@ -19,7 +19,7 @@ cd('C:\Projects\GitHub\UAV_MAS_design\QuadrotorModel')
 addpath('C:\Projects\GitHub\UAV_MAS_design')
 funchandle=@objcfun;
 
-[bestFoundG,bestActions]=multiagent_opt(funchandle, varchoices);
+[f_opt,x_opt]=multiagent_opt(funchandle, varchoices)
 
 toc % Return execution time
 
