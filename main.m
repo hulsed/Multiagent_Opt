@@ -2,7 +2,7 @@ tic % Begin measuring time of execution
 
 clear variables
 
-%number of choices of each variable
+%declare the number of choices of each variable
 % BATTERY
 batteryChoices = [6, 6, 4];
 % MOTOR
@@ -13,6 +13,10 @@ propChoices = [7, 12, 10, 10, 15, 15];
 rodChoices=[4,11,8];
 varchoices=[batteryChoices motorChoices propChoices rodChoices];
 
+%add path of model, function
+addpath('C:\Projects\GitHub\UAV_MAS_design\QuadrotorModel')
+cd('C:\Projects\GitHub\UAV_MAS_design\QuadrotorModel')
+addpath('C:\Projects\GitHub\UAV_MAS_design')
 funchandle=@objcfun;
 
 [bestFoundG,bestActions]=multiagent_opt(funchandle, varchoices);

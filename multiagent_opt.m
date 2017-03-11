@@ -10,13 +10,14 @@ stopEpoch=50; %If it hasn't improved after this many Epochs, stop
 maxEpochs=250;
 %agent options
 alpha = 0.1;    % Learning rate
-Qinit= -1000;   %Q-table initialization
+Qinit= -10000;   %Q-table initialization
 exploration.biasMin=0.1;
 exploration.biasMax=1.0;
 %plotting and workspace options
 saveWorkspace = 1;
 showConstraintViolation             = 0;
 altplots                            =1;
+%addpath('C:\Projects\GitHub\QuadrotorModel')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

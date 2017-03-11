@@ -1,13 +1,14 @@
-# General crap
+# General 
 *.exe
 desktop.ini
 *.png # Maybe
 
-# QProp crap
+# QProp Model
 propfile
 motorfile
+QuadrotorModel/
 
-# MATLAB crap
+# MATLAB 
 *.asv
 propfile
 *.mat
