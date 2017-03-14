@@ -10,7 +10,7 @@ stopEpoch=50; %If it hasn't improved after this many Epochs, stop
 maxEpochs=250;
 %agent options
 alpha = 0.1;    % Learning rate
-Qinit= 10000;   %Q-table initialization
+Vinit= 10000;   %Value table initialization
 TMin=0.1;
 %plotting and workspace options
 saveWorkspace = 1;
@@ -38,7 +38,7 @@ completion = 0;
 
 for r = 1:numRuns
     % Create the expectation of merit for the paremeters
-    [expMerit] = create_expfuncs(varchoices,Qinit);
+    [expMerit] = create_expfuncs(varchoices,Vinit);
     values=create_expfuncs(numactions,0);
     
     % initializing best performance obtained
