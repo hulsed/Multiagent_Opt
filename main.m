@@ -6,9 +6,9 @@ clear variables
 % BATTERY
 batteryChoices = [6, 6, 4];
 % MOTOR
-motorChoices = [24];
+motorChoices = [9]; %24 in total, restricting to 9
 % PROPELLER
-propChoices = [7, 12, 10, 10, 15, 15];
+propChoices = [7, 12, 10, 10, 10, 10];
 % ROD
 rodChoices=[4,11,8];
 varchoices=[batteryChoices motorChoices propChoices rodChoices];
