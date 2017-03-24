@@ -17,7 +17,8 @@ saveWorkspace = 1;
 showConstraintViolation             = 0;
 altplots                            =1;
 
-rewardtype='G';
+rewardstruct='D';       %G, L, or D
+rewardtype='DiffEst';    %learned, expImprovement, or DiffEst
 availableactions=[1,0.5,0.2,0.1,0.05,-0.05,-0.1];
 T=10;
 
@@ -39,7 +40,7 @@ completion = 0;
 for r = 1:numRuns
     % Create the expectation of merit for the paremeters
     [expMerit] = create_expfuncs(varchoices,Qinit);
-    values=create_expfuncs(numactions,0);
+    values=create_expfuncs(numactions,-10000);
     
     % initializing best performance obtained
     bestobj(1)= 10000;
@@ -73,10 +74,10 @@ for r = 1:numRuns
             
             % update the expected merit of each design variable given the
             % objective value calculated.
-            [expMerit, learned,expimprovement] = update_merit(expMerit, foundMerit, alpha, x, 'best');
+            [expMerit, learned,expimprovement,DiffEst] = update_merit(expMerit, foundMerit, alpha, x, 'best');
             agents_hist{r, e} = expMerit;
             
-            rewards=calc_rewards(learned,rewardtype);
+            rewards=calc_rewards(learned,expimprovement,DiffEst,rewardtype,rewardstruct);
             
             values=learn_values(values,actions,rewards,alpha);
             

@@ -14,9 +14,9 @@ rodChoices=[4,11,8];
 varchoices=[batteryChoices motorChoices propChoices rodChoices];
 
 %add path of model, function
-addpath('C:\Projects\GitHub\UAV_MAS_design\QuadrotorModel')
-cd('C:\Projects\GitHub\UAV_MAS_design\QuadrotorModel')
-addpath('C:\Projects\GitHub\UAV_MAS_design')
+addpath('C:\Users\Daniel\Documents\GitHub\UAV_MAS_design\QuadrotorModel')
+cd('C:\Users\Daniel\Documents\GitHub\UAV_MAS_design\QuadrotorModel')
+addpath('C:\Users\Daniel\Documents\GitHub\UAV_MAS_design')
 funchandle=@objcfun;
 
 [f_opt,x_opt]=multiagent_opt(funchandle, varchoices)
