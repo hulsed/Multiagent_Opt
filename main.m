@@ -4,14 +4,17 @@ clear variables
 
 %declare the number of choices of each variable
 % BATTERY
-batteryChoices = [6, 6, 4];
+batteryChoices = [7, 6, 4];
 % MOTOR
 motorChoices = [9]; %24 in total, restricting to 9
 % PROPELLER
 propChoices = [7, 12, 10, 10, 10, 10];
 % ROD
 rodChoices=[4,11,8];
-varchoices=[batteryChoices motorChoices propChoices rodChoices];
+% ESC
+escChoices=[6];
+
+varchoices=[batteryChoices motorChoices propChoices rodChoices escChoices];
 
 %add path of model, function
 addpath('C:\Users\Daniel\Documents\GitHub\UAV_MAS_design\QuadrotorModel')
