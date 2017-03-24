@@ -5,7 +5,7 @@ function [obj_opt,x_opt]= multiagent_opt(funchandle, varchoices)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %experiment options
 numKs=50;
-numRuns = 1; 
+numRuns = 10; 
 stopEpoch=50; %If it hasn't improved after this many Epochs, stop
 maxEpochs=250;
 %agent options
@@ -16,7 +16,7 @@ TMin=0.1;
 saveWorkspace = 1;
 showConstraintViolation             = 0;
 altplots                            =1;
-verbose=1;
+verbose=0;
 
 rewardstruct='D';       %G, L, or D
 rewardtype='DiffEst';    %learned, expImprovement, or DiffEst
@@ -38,7 +38,7 @@ x_opt = uint8(zeros(numRuns,numVars));
 
 numactions=numel(availableactions)*ones(1,numVars);
 
-minobj = 10000*zeros(numRuns, 1);
+minobj = Meritinit*zeros(numRuns, 1);
 completion = 0;
 
 for r = 1:numRuns
@@ -75,7 +75,7 @@ for r = 1:numRuns
             % Calculate the objective function of the chosen design. Assign
             % that to the found merit of each paremeter value taken.
              obj=funchandle(x);
-             foundMerit = ones(13, 1) * obj;
+             foundMerit = ones(numVars, 1) * obj;
             
             % update the expected merit of each design variable given the
             % objective value calculated.
