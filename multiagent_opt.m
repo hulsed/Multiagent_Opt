@@ -6,7 +6,7 @@ function [obj_opt,x_opt]= multiagent_opt(funchandle, varchoices)
 %experiment options
 numKs=50;
 numRuns = 10; 
-stopEpoch=50; %If it hasn't improved after this many Epochs, stop
+stopEpoch=250; %If it hasn't improved after this many Epochs, stop
 maxEpochs=250;
 %agent options
 alpha = 0.1;    % Learning rate
@@ -18,8 +18,8 @@ showConstraintViolation             = 0;
 altplots                            =1;
 verbose=0;
 
-rewardstruct='D';       %G, L, or D
-rewardtype='DiffEst';    %learned, expImprovement, or DiffEst
+rewardstruct='G';       %G, L, or D
+rewardtype='expImprovement';    %learned, expImprovement, or DiffEst
 availableactions=[1,0.5,0.2,0.1,0.05];%,-0.05,-0.1];
 Qinit=0;
 
@@ -108,7 +108,7 @@ for r = 1:numRuns
                 converged=true;
             end
        end
-       if e>maxEpochs
+       if e>=maxEpochs
            converged=true;
        end
        
