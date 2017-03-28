@@ -1,4 +1,4 @@
-function [meritfxn,oldptsx,oldptsy,learned, expImprovement]=update_continousmerit(oldptsx,oldptsy,xfound, yfound, UB,LB,tol,maxzones, Qinit)
+function [meritfxn,oldptsx,oldptsy,learned, expImprovement]=update_continousmerit(oldptsx,oldptsy,xfound, yfound, UB,LB,tol,maxzones, Meritinit)
 
 
 for ag=1:numel(oldptsx)
@@ -24,7 +24,7 @@ for ag=1:numel(oldptsx)
        zonerepx(z)=zptsx(loc);
            
        else
-       zonerepy(z)=Qinit;
+       zonerepy(z)=Meritinit;
        zonerepx(z)=(zone{ag}(z+1)-zone{ag}(z))/2+zone{ag}(z);
             
        end
@@ -44,7 +44,7 @@ for ag=1:numel(oldptsx)
    end
 
    x{ag}=[LB(ag),zonerepx,UB(ag)+0.0001];
-   y{ag}=[Qinit,zonerepy,Qinit];
+   y{ag}=[Meritinit,zonerepy,Meritinit];
 
    
    %create interpolation of merit of each

@@ -48,8 +48,8 @@ for r = 1:numRuns
     [expMerit] = create_expfuncs(intchoices,Meritinit);
     values=create_expfuncs(numactions,Qinit);
     %continuous variables
-     meritfxn=init_meritfxn(UB,LB,Tol, Qinit);
-    [oldptsx,oldptsy]=init_pts(UB,LB,MaxZones, Qinit);
+     meritfxn=init_meritfxn(UB,LB,Tol, Meritinit);
+    [oldptsx,oldptsy]=init_pts(UB,LB,MaxZones, Meritinit);
     
     % initializing best performance obtained
     bestobj(1)= 10000;
@@ -89,7 +89,7 @@ for r = 1:numRuns
             % discrete variables
             [expMerit, learnedi,expimprovementi,DiffEst] = update_merit(expMerit, intMerit, alpha, x_int, 'best');
             % constinuous variables
-            [meritfxn,oldptsx,oldptsy,learnedc,expimprovementc]=update_continousmerit(oldptsx,oldptsy,x_cont, contMerit, UB,LB,Tol,MaxZones, Qinit);
+            [meritfxn,oldptsx,oldptsy,learnedc,expimprovementc]=update_continousmerit(oldptsx,oldptsy,x_cont, contMerit, UB,LB,Tol,MaxZones, Meritinit);
             
             rewards=calc_rewards([learnedi,learnedc],[expimprovementi,expimprovementc],DiffEst,rewardtype,rewardstruct);
             

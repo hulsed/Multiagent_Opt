@@ -21,10 +21,10 @@ escIntChoices=[6];
 
 Intchoices=[batteryIntChoices motorIntChoices propIntChoices rodIntChoices escIntChoices];
 
-UB=propUB
-LB=propLB
-Tol=propTol
-MaxZones=propMaxZones
+UB=propUB;
+LB=propLB;
+Tol=propTol;
+MaxZones=propMaxZones;
 
 %add path of model, function
 addpath('C:\Projects\GitHub\UAV_MAS_design\QuadrotorModel')
