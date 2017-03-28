@@ -1,6 +1,4 @@
- xfound=[0.4,9,75];
- yfound=[0.01,0.01,0.01];
-% 
+
  xcont=rand(1,3);
  foundmerit=rand(1,3);
 % 
@@ -37,13 +35,13 @@
  meritfxn=init_meritfxn(UB,LB,tol, Qinit);
  [oldptsx,oldptsy]=init_pts(UB,LB,maxzones, Qinit)
  
- for z=1:100
+ for z=1:1000
  x_cont = choose_continuousparamvals(meritfxn, temps)
  
  yfound=x_cont.^2;
  xfound=x_cont;
  
- [meritfxn,oldptsx,oldptsy,learned,expImprovement]=update_continousmerit(oldptsx,oldptsy,xfound, yfound, UB,LB,tol,maxzones, Qinit)
+ [meritfxn,oldptsx,oldptsy,learned,expImprovement]=update_continousmerit(oldptsx,oldptsy,xfound, yfound, UB,LB,tol,maxzones, Qinit);
 
  end
  

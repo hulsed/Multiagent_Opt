@@ -1,43 +1,9 @@
-function [meritfxn,oldptsx,oldptsy,learned]=update_continousmerit(oldptsx,oldptsy,xfound, yfound, UB,LB,tol,maxzones, Qinit)
-
-% xfound=[0.4,9,75];
-% yfound=[0.99,0.99,0.99];
-% 
-% xcont=rand(1,3);
-% foundmerit=rand(1,3);
-% 
-% %upper bounds
-% UB(1)=1;
-% UB(2)=10;
-% UB(3)=100;
-% %lower bounds
-% LB(1)=0;
-% LB(2)=1;
-% LB(3)=50;
-% %points stored already for each variable
-% oldptsx{1}=rand(1,100)*(UB(1)-LB(1))+LB(1);
-% oldptsx{2}=rand(1,100)*(UB(2)-LB(2))+LB(2);
-% oldptsx{3}=rand(1,100)*(UB(3)-LB(3))+LB(3);
-% 
-% oldptsy{1}=rand(1,100);
-% oldptsy{2}=rand(1,100);
-% oldptsy{3}=rand(1,100);
-% 
-% %tolerance for each variable
-% tol(1)=0.0001;
-% tol(2)=0.001;
-% tol(3)=0.001;
-% %maximum number of zones for each variable
-% maxzones(1)=20;
-% maxzones(2)=20;
-% maxzones(3)=20;
-% %initial value
-% Qinit=0;
+function [meritfxn,oldptsx,oldptsy,learned, expImprovement]=update_continousmerit(oldptsx,oldptsy,xfound, yfound, UB,LB,tol,maxzones, Qinit)
 
 
-
-for ag=1:3
+for ag=1:numel(oldptsx)
    learned(ag)=0;
+   expImprovement(ag)=0;
    
    ptsx=oldptsx{ag};
    ptsy=oldptsy{ag};
@@ -76,17 +42,22 @@ for ag=1:3
        end
        
    end
-   
-   x{ag}=[LB(ag),zonerepx,UB(ag)];
+
+   x{ag}=[LB(ag),zonerepx,UB(ag)+0.0001];
    y{ag}=[Qinit,zonerepy,Qinit];
+
    
    %create interpolation of merit of each
    xx{ag}=x{ag}(1):tol(ag):x{ag}(end);
    %could use interp1 for linear interpolation...
    %or spline for spline
-   %pchip seems to make sense
-   yy{ag}=pchip(x{ag},y{ag},xx{ag});
    
+   %pchip seems to make sense
+   try
+   yy{ag}=pchip(x{ag},y{ag},xx{ag});
+   catch error
+       
+   end
    %figure(ag)
    %plot(xx{ag},yy{ag},ptsx,ptsy,'o');
    
@@ -96,7 +67,7 @@ for ag=1:3
     oldptsy{ag}=[oldptsy{ag},yfound(ag)];
     
     %create merit function (for use in action selection)
-    meritfxn{ag}=[xx{ag};yy{ag}]
+    meritfxn{ag}=[xx{ag};yy{ag}];
 end
 
 
