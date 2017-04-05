@@ -31,7 +31,7 @@ skidIntChoices=[4];
 skidUB=[60,0.0380,0.006];
 skidLB=[20,0.0065,0.0009];
 skidTol=[1,0.0005,0.0001];
-skidMaxZones=[5,11,8];
+skidMaxZones=[5,8,8];
 
 Intchoices=[batteryIntChoices motorIntChoices propIntChoices rodIntChoices escIntChoices skidIntChoices];
 
