@@ -15,16 +15,30 @@ propTol=        [0.002, 1,  0.01,   0.0005, 0.01];
 propMaxZones=[  10,     9,  10,     5,      10];
 
 % ROD
-rodIntChoices=[4,11,8];
+rodIntChoices=[4];
+
+rodUB=[0.006,0.0380,0.0380];
+rodLB=[0.0009,0.0065,0.0065];
+rodTol=[0.0001,0.0005,0.0005];
+rodMaxZones=[8,11,11];
+
 % ESC
 escIntChoices=[6];
 
-Intchoices=[batteryIntChoices motorIntChoices propIntChoices rodIntChoices escIntChoices];
+% SKID
+skidIntChoices=[4];
 
-UB=propUB;
-LB=propLB;
-Tol=propTol;
-MaxZones=propMaxZones;
+skidUB=[60,0.0380,0.006];
+skidLB=[20,0.0065,0.0009];
+skidTol=[1,0.0005,0.0001];
+skidMaxZones=[5,11,8];
+
+Intchoices=[batteryIntChoices motorIntChoices propIntChoices rodIntChoices escIntChoices skidIntChoices];
+
+UB=[propUB,rodUB,skidUB];
+LB=[propLB,rodLB, skidLB];
+Tol=[propTol,rodTol, skidTol];
+MaxZones=[propMaxZones,rodMaxZones, skidMaxZones];
 
 %add path of model, function
 addpath('C:\Projects\GitHub\UAV_MAS_design\QuadrotorModel')

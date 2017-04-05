@@ -5,7 +5,7 @@ function [obj_opt,x_opt_int,x_opt_cont]= multiagent_opt(funchandle, intchoices,U
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %experiment options
 numKs=50;
-numRuns = 10; 
+numRuns = 1; 
 stopEpoch=250; %If it hasn't improved after this many Epochs, stop
 maxEpochs=250;
 %agent options
