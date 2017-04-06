@@ -10,21 +10,22 @@ stopEpoch=250; %If it hasn't improved after this many Epochs, stop
 maxEpochs=250;
 %agent options
 alpha = 0.1;    % Learning rate
-Meritinit= 10000;   %Value table initialization
+Meritinit= 100000;   %Value table initialization
 TMin=0.1;
 %plotting and workspace options
 saveWorkspace = 1;
 showConstraintViolation             = 0;
-altplots                            =1;
+altplots                            = 1;
 verbose=1;
 
 rewardstruct='G';       %G, L, or D
 rewardtype='expImprovement';    %learned, expImprovement, or DiffEst
-availableactions=[1,0.5,0.2,0.1,0.05,0.01];%,-0.05,-0.1];
+availableactions=[10, 1,0.2,0.1,0.05,0.01];%,-0.05,-0.1];
 Qinit=0;
 
 
 T=10;
+epsilon=0.01;
 
 
 %addpath('C:\Projects\GitHub\QuadrotorModel')
@@ -52,7 +53,7 @@ for r = 1:numRuns
     [oldptsx,oldptsy]=init_pts(UB,LB,MaxZones, Meritinit);
     
     % initializing best performance obtained
-    bestobj(1)= 10000;
+    bestobj(1)= Meritinit;
     obj=-10000;
     epochOfMax(r) = 0;
     e=1;
@@ -68,7 +69,7 @@ for r = 1:numRuns
         for k=1:numKs
             
             %choose actions based on learned values
-            actions=choose_actions(values,T);
+            actions=choose_actions(values,T, epsilon);
             %temps
             temps=availableactions(actions);
             

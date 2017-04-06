@@ -1,4 +1,4 @@
-function actions=choose_actions(values,T)
+function actions=choose_actions(values,T, epsilon)
 
     % initialize vector of integers corresponding to the choices for each
     % parameter
@@ -11,7 +11,6 @@ function actions=choose_actions(values,T)
             % NOTE: the sign is inverted so that the best value is chosen
             % (since the best has the lowest objective value)
             value = values{ag};
-            epsilon=0.05;
             
             dice=rand;
             if dice>epsilon
