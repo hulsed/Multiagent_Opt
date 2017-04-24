@@ -35,7 +35,7 @@ skidMaxZones=[5,8,8];
 
 % Oper
 
-operUB=[50,45];
+operUB=[30,45];
 operLB=[0.1,0.1];
 operTol=[1,1];
 operMaxZones=[10,9];
