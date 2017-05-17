@@ -53,11 +53,8 @@ for ag=1:numel(oldptsx)
    %or spline for spline
    
    %pchip seems to make sense
-   try
    yy{ag}=pchip(x{ag},y{ag},xx{ag});
-   catch error
-       
-   end
+
    %figure(ag)
    %plot(xx{ag},yy{ag},ptsx,ptsy,'o');
    
@@ -68,6 +65,10 @@ for ag=1:numel(oldptsx)
     
     %create merit function (for use in action selection)
     meritfxn{ag}=[xx{ag};yy{ag}];
+
+    
+    clear zonerepx zonerepy
+    
 end
 
 
