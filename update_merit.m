@@ -8,42 +8,60 @@
 
 % OUTPUTS
 % The expMerit with updated Q-tables
-function [expMerit, learned,expimprovement,DiffEst] = update_merit(expMerit, foundMerit, alpha, x, learnmode)
+function [expMerit, learned,expimprovement] = update_merit(expMerit, foundMerit_obj, foundMerit_con, alpha, x, learnmode)
     
     learned=zeros(1,numel(expMerit));
-    expimprovement=zeros(1,numel(expMerit));
+    expimprovement=zeros(1,numel(expMerit)/2);
     
     % Iterate through variables
-    for ag = 1:numel(expMerit)
+    for ag = 1:(numel(expMerit)/2)
         % Get the current merit of the parameter value chosen in previous state
-        Q = expMerit{ag}(x(ag));
+        Q_obj = expMerit{ag,1}(x(ag));
+        Q_con = expMerit{ag,2}(x(ag));
         
         %estimating the difference reward--what the global learning would
         %have been if the found design had the merit of an average action.
-        Qavg=mean(expMerit{ag});
-        for ag2= 1:numel(expMerit)
-            Q2=expMerit{ag2}(x(ag2));
+        %Qavg=mean(expMerit{ag});
+        %for ag2= 1:numel(expMerit)
+            %Q2=expMerit{ag2}(x(ag2));
             %if Q2>foundMerit(ag2)
-                CounterEst(ag2)=Qavg-foundMerit(ag2);
+                %CounterEst(ag2)=Qavg-foundMerit(ag2);
             %else
             %    CounterEst=-Qavg;
             %end
-        end
-        DiffEst(ag)=sum(CounterEst);
+        %end
+        %DiffEst(ag)=sum(CounterEst);
 
         
             switch learnmode
                 case 'RL'      
-            expMerit{ag}( x(ag)) = Q + alpha*(foundMerit(ag) - Q);
+            expMerit{ag}( x(ag)) = Q_obj + alpha*(foundMerit(ag) - Q_obj);
                 case 'best'
-                    if Q>foundMerit(ag)
+                    
+                    if Q_con>foundMerit_con(ag)
                        learned(ag)=1;
-                       expimprovement(ag)=Q-foundMerit(ag);
+                       expimprovement(ag)=(Q_con-foundMerit_con(ag))^2;
+                       
+                       expMerit{ag,1}(x(ag)) = foundMerit_con(ag);
+                       expMerit{ag,2}(x(ag)) = foundMerit_obj(ag);
+                       
+                    elseif Q_con==foundMerit_con(ag)
+                        if Q_obj<foundMerit_obj(ag)
+                            learned(ag)=1;
+                            expimprovement(ag)=Q_obj-foundmerit_obj(ag);
+                            
+                            expMerit{ag,1}(x(ag)) = foundMerit_con(ag);
+                            expMerit{ag,2}(x(ag)) = foundMerit_obj(ag);
+                            
+                        end
                     else
                         learned(ag)=0;
                         expimprovement(ag)=0;
+                        
+                        expMerit{ag,1}(x(ag)) = expMerit{ag,1}(x(ag));
+                        expMerit{ag,2}(x(ag)) = expMerit{ag,2}(x(ag));                        
                     end
-                    expMerit{ag}(x(ag)) = min(Q,foundMerit(ag));
+                    
 
             end
     end

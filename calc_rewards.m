@@ -1,12 +1,12 @@
-function rewards=calc_rewards(learned,expimprovement,DiffEst,rewardtype, rewardstruct)
+function rewards=calc_rewards(learned,expimprovement,rewardtype, rewardstruct)
 
 switch rewardtype
     case 'expImprovement'
         reward=expimprovement;
     case 'learned'
         reward=learned;
-    case 'DiffEst'
-        reward=DiffEst;
+    %case 'DiffEst'
+    %    reward=DiffEst;
 end
 
 

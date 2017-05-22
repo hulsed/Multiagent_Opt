@@ -10,10 +10,10 @@
 %
 % OUTPUTS
 % agents - a cell array containing the Q-tables of the agents
-function [agentTables] = create_expfunc(choices,Qinit)
+function [agentTables] = create_values(choices,Qinit)
     numAgents = size(choices, 2);
     % Our multiagent system, of sorts. This will hold all the Q-tables.
-    agentTables = cell(numAgents, 2);
+    agentTables = cell(numAgents, 1);
     
     % Create the agents one by one. ag is the "agent number"
     for ag = 1:numel(choices)
@@ -23,7 +23,6 @@ function [agentTables] = create_expfunc(choices,Qinit)
         agent = Qinit*ones(1, numActions);
         % add agent to our list of agents
         agentTables{ag, 1} = agent;
-        agentTables{ag, 2} = agent;
     end
     
     % (return agents)

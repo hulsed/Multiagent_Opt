@@ -12,16 +12,16 @@ function x = choose_paramvals(expMerit, temps)
     
     % initialize vector of integers corresponding to the choices for each
     % parameter
-    numChoices = numel(expMerit);
+    numChoices = numel(expMerit)/2;
     x = uint8(zeros(numChoices, 1));
     
     % Iterate through the variables
-    for ag = 1:numel(expMerit)
+    for ag = 1:numChoices
         
             % merit function for that specific variable
             % NOTE: the sign is inverted so that the best value is chosen
             % (since the best has the lowest objective value)
-            merit = -expMerit{ag};
+            merit = -expMerit{ag,1}-1000*expMerit{ag,2};
 
             T=temps(ag);
             

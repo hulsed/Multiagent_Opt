@@ -1,4 +1,4 @@
-function [meritfxn,oldptsx,oldptsy,learned, expImprovement]=update_continousmerit(oldptsx,oldptsy,xfound, yfound, UB,LB,tol,maxzones, Meritinit)
+function [meritfxn,oldptsx,oldptsobj,oldptscon,learned, expImprovement]=update_continousmerit(oldptsx,oldptsobj,oldptscon,xfound, objfound,confound, UB,LB,tol,maxzones, Meritinit)
 
 
 for ag=1:numel(oldptsx)
@@ -6,7 +6,8 @@ for ag=1:numel(oldptsx)
    expImprovement(ag)=0;
    
    ptsx=oldptsx{ag};
-   ptsy=oldptsy{ag};
+   ptsobj=oldptsobj{ag};
+   ptscon=oldptscon{ag};
    
    zones(ag)=max(4,min(maxzones(ag),round(numel(ptsx)/10)));
    zone{ag}=linspace(LB(ag),UB(ag),zones(ag));
@@ -14,46 +15,73 @@ for ag=1:numel(oldptsx)
    for z=1:zones(ag)-1
        zonepts=(zone{ag}(z)<ptsx & ptsx<=zone{ag}(z+1));
        xpts=ptsx.*zonepts;
-       ypts=ptsy.*zonepts;
+       objpts=ptsobj.*zonepts;
+       conpts=ptscon.*zonepts;
        
        if any(xpts~=0)
         zptsx=xpts(xpts~=0);
-        zptsy=ypts(xpts~=0);
+        zptsobj=objpts(xpts~=0);
+        zptscon=conpts(xpts~=0);
         
-       [zonerepy(z),loc]=min(zptsy);
-       zonerepx(z)=zptsx(loc);
+        minconzone=min(zptscon);
+            mostfeaspts=minconzone==zptscon;
+            
+            mostfeasx=zptsx(mostfeaspts);
+            mostfeasobj=zptsobj(mostfeaspts);
+            %best point is the most feasible
+            zonerepcon(z)=minconzone;
+            %that has the best objective value
+            [zonerepobj(z), loc]=min(mostfeasobj);
+            %
+            zonerepx(z)=mostfeasx(loc);
            
        else
-       zonerepy(z)=Meritinit;
+       zonerepobj(z)=Meritinit;
+        zonerepcon(z)=Meritinit;
        zonerepx(z)=(zone{ag}(z+1)-zone{ag}(z))/2+zone{ag}(z);
             
        end
        % learned if better than other points in the zone
        if (zone{ag}(z)<xfound(ag) & xfound(ag)<=zone{ag}(z+1))
-           if yfound(ag)<zonerepy(z)
-               expImprovement(ag)=zonerepy(z)-yfound(ag);
-               learned(ag)=1;
-               
-               zonerepx(z)=xfound(ag);
-               zonerepy(z)=yfound(ag);
+            
+            if confound(ag)<zonerepcon(z)
+                   expImprovement(ag)=zonerepcon(z)-confound(ag);
+                   learned(ag)=1;
+
+                   zonerepx(z)=xfound(ag);
+                   zonerepobj(z)=objfound(ag);
+                    zonerepcon(z)=confound(ag);
+            end
+            if confound(ag)==zonerepcon(z)
+               if objfound(ag)<zonerepobj(z)
+                   expImprovement(ag)=zonerepobj(z)-objfound(ag);
+                   learned(ag)=1;
+
+                   zonerepx(z)=xfound(ag);
+                   zonerepobj(z)=objfound(ag);
+                    zonerepcon(z)=confound(ag);
+                end
                
            end
-           
+
+                       
        end
        
    end
 
-   x{ag}=[LB(ag),zonerepx,UB(ag)+0.0001];
-   y{ag}=[Meritinit,zonerepy,Meritinit];
+   xcell{ag}=[LB(ag),zonerepx,UB(ag)+0.0001];
+   ycell{ag}=[Meritinit,zonerepobj,Meritinit];
+   zcell{ag}=[Meritinit,zonerepcon,Meritinit];
 
    
    %create interpolation of merit of each
-   xx{ag}=x{ag}(1):tol(ag):x{ag}(end);
+   xx{ag}=xcell{ag}(1):tol(ag):xcell{ag}(end);
    %could use interp1 for linear interpolation...
    %or spline for spline
    
    %pchip seems to make sense
-   yy{ag}=pchip(x{ag},y{ag},xx{ag});
+   yy{ag}=pchip(xcell{ag},ycell{ag},xx{ag});
+   zz{ag}=pchip(xcell{ag},zcell{ag},xx{ag});
 
    %figure(ag)
    %plot(xx{ag},yy{ag},ptsx,ptsy,'o');
@@ -61,13 +89,14 @@ for ag=1:numel(oldptsx)
     
     %add found point to cell
     oldptsx{ag}=[oldptsx{ag},xfound(ag)];
-    oldptsy{ag}=[oldptsy{ag},yfound(ag)];
+    oldptsobj{ag}=[oldptsobj{ag},objfound(ag)];
+    oldptscon{ag}=[oldptscon{ag},confound(ag)];
     
     %create merit function (for use in action selection)
-    meritfxn{ag}=[xx{ag};yy{ag}];
+    meritfxn{ag}=[xx{ag};yy{ag}; zz{ag}];
 
     
-    clear zonerepx zonerepy
+    clear zonerepx zonerepobj zonerepcon
     
 end
 
