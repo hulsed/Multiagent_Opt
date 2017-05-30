@@ -8,7 +8,7 @@
 % OUTPUTS
 % x - column vector of integers, element i corresponds to the chosen value
 % for the variable i.
-function x = choose_paramvals(expMerit, temps)
+function x = choose_paramvals(expMerit, temps, w1s, w2s,conscale)
     
     % initialize vector of integers corresponding to the choices for each
     % parameter
@@ -21,7 +21,11 @@ function x = choose_paramvals(expMerit, temps)
             % merit function for that specific variable
             % NOTE: the sign is inverted so that the best value is chosen
             % (since the best has the lowest objective value)
-            merit = -expMerit{ag,1}-1000*expMerit{ag,2};
+            
+            w1=w1s(ag);
+            w2=w2s(ag);
+            
+            merit = -w1*expMerit{ag,1}-w2*conscale*expMerit{ag,2};
 
             T=temps(ag);
             

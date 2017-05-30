@@ -1,4 +1,6 @@
-function rewards=calc_rewards(learned,expimprovement,rewardtype, rewardstruct)
+function rewards=calc_rewards(learned, objimprovement,conimprovement,conscale, rewardtype, rewardstruct)
+
+expimprovement=objimprovement+conscale*conimprovement;
 
 switch rewardtype
     case 'expImprovement'

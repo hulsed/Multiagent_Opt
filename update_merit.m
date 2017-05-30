@@ -8,10 +8,11 @@
 
 % OUTPUTS
 % The expMerit with updated Q-tables
-function [expMerit, learned,expimprovement] = update_merit(expMerit, foundMerit_obj, foundMerit_con, alpha, x, learnmode)
+function [expMerit, learned,objimprovement,conimprovement] = update_merit(expMerit, foundMerit_obj, foundMerit_con, alpha, x, learnmode)
     
     learned=zeros(1,numel(expMerit));
-    expimprovement=zeros(1,numel(expMerit)/2);
+    objimprovement=zeros(1,numel(expMerit)/2);
+    conimprovement=zeros(1,numel(expMerit)/2);
     
     % Iterate through variables
     for ag = 1:(numel(expMerit)/2)
@@ -40,7 +41,14 @@ function [expMerit, learned,expimprovement] = update_merit(expMerit, foundMerit_
                     
                     if Q_con>foundMerit_con(ag)
                        learned(ag)=1;
-                       expimprovement(ag)=(Q_con-foundMerit_con(ag))^2;
+                       
+                       conimprovement(ag)=(Q_con-foundMerit_con(ag));
+                       
+                       if Q_obj<foundMerit_obj
+                            objimprovement(ag)=Q_obj-foundmerit_obj(ag);
+                       else
+                           objimprovement(ag)=0;
+                       end
                        
                        expMerit{ag,1}(x(ag)) = foundMerit_con(ag);
                        expMerit{ag,2}(x(ag)) = foundMerit_obj(ag);
@@ -48,7 +56,9 @@ function [expMerit, learned,expimprovement] = update_merit(expMerit, foundMerit_
                     elseif Q_con==foundMerit_con(ag)
                         if Q_obj<foundMerit_obj(ag)
                             learned(ag)=1;
-                            expimprovement(ag)=Q_obj-foundmerit_obj(ag);
+                            
+                            objimprovement(ag)=Q_obj-foundmerit_obj(ag);
+                            conimprovement(ag)=0;
                             
                             expMerit{ag,1}(x(ag)) = foundMerit_con(ag);
                             expMerit{ag,2}(x(ag)) = foundMerit_obj(ag);
@@ -56,7 +66,9 @@ function [expMerit, learned,expimprovement] = update_merit(expMerit, foundMerit_
                         end
                     else
                         learned(ag)=0;
-                        expimprovement(ag)=0;
+                        
+                        objimprovement(ag)=0;
+                        conimprovement(ag)=0;
                         
                         expMerit{ag,1}(x(ag)) = expMerit{ag,1}(x(ag));
                         expMerit{ag,2}(x(ag)) = expMerit{ag,2}(x(ag));                        

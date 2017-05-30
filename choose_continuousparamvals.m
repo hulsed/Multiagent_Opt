@@ -8,7 +8,7 @@
 % OUTPUTS
 % x - column vector of floating-point numbers, element i corresponds to the chosen value
 % for the variable i.
-function x_cont = choose_continuousparamvals(meritfxn, temps)
+function x_cont = choose_continuousparamvals(meritfxn, temps, w1s, w2s,conscale)
     
     % initialize vector of integers corresponding to the choices for each
     % parameter
@@ -21,7 +21,11 @@ function x_cont = choose_continuousparamvals(meritfxn, temps)
             % merit function for that specific variable
             % NOTE: the sign is inverted so that the best value is chosen
             % (since the best has the lowest objective value)
-            merit = -meritfxn{ag}(2,:)-1000*meritfxn{ag}(3,:);
+            
+            w1=w1s(ag);
+            w2=w2s(ag);
+            
+            merit = -w1*meritfxn{ag}(2,:)-w2*conscale*meritfxn{ag}(3,:);
 
             T=temps(ag);
             

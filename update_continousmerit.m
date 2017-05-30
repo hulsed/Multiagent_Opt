@@ -1,9 +1,10 @@
-function [meritfxn,oldptsx,oldptsobj,oldptscon,learned, expImprovement]=update_continousmerit(oldptsx,oldptsobj,oldptscon,xfound, objfound,confound, UB,LB,tol,maxzones, Meritinit)
+function [meritfxn,oldptsx,oldptsobj,oldptscon,learned, objImprovement,conImprovement]=update_continousmerit(oldptsx,oldptsobj,oldptscon,xfound, objfound,confound, UB,LB,tol,maxzones, Meritinit)
 
 
 for ag=1:numel(oldptsx)
    learned(ag)=0;
-   expImprovement(ag)=0;
+   objImprovement(ag)=0;
+   conImprovement(ag)=0;
    
    ptsx=oldptsx{ag};
    ptsobj=oldptsobj{ag};
@@ -45,23 +46,40 @@ for ag=1:numel(oldptsx)
        if (zone{ag}(z)<xfound(ag) & xfound(ag)<=zone{ag}(z+1))
             
             if confound(ag)<zonerepcon(z)
-                   expImprovement(ag)=zonerepcon(z)-confound(ag);
+                
+                   conImprovement(ag)=zonerepcon(z)-confound(ag);
+                   
+                   if objfound(ag)<zonerepobj(z)
+                        objImprovement(ag)=zonerepobj(z)-objfound(ag);
+                   else
+                        objImprovement(ag)=0;
+                   end
+                   
                    learned(ag)=1;
 
                    zonerepx(z)=xfound(ag);
                    zonerepobj(z)=objfound(ag);
                     zonerepcon(z)=confound(ag);
-            end
-            if confound(ag)==zonerepcon(z)
+            
+            elseif confound(ag)==zonerepcon(z)
                if objfound(ag)<zonerepobj(z)
-                   expImprovement(ag)=zonerepobj(z)-objfound(ag);
+                   
+                   conImprovement(ag)=0;
+                   objImprovement(ag)=zonerepobj(z)-objfound(ag);
+                   
+                   
                    learned(ag)=1;
 
                    zonerepx(z)=xfound(ag);
                    zonerepobj(z)=objfound(ag);
                     zonerepcon(z)=confound(ag);
-                end
+               end
                
+            else
+                
+                conImprovement(ag)=0;
+                objImprovement(ag)=0;
+                
            end
 
                        

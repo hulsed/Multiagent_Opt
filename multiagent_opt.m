@@ -20,7 +20,25 @@ verbose=1;
 
 rewardstruct='G';       %G, L, or D
 rewardtype='expImprovement';    %learned, expImprovement, or DiffEst
-availableactions=[10, 1,0.2,0.1,0.05,0.01];%,-0.05,-0.1];
+availabletemps=[10,0.1,0.05,0.01];%,-0.05,-0.1]; %temperatures to explore at
+availablew1s=[1,0]; %weights to use for contraints in picking values
+availablew2s=[1,1];
+conscale=1000; %value of constraint over objective (takes place of penalty)
+contol=0.2;
+
+pq=0
+for lm=1:numel(availabletemps)
+    for no=1:numel(availablew1s)
+        pq=pq+1;
+        
+        availableactions(pq,:)=[availabletemps(lm),availablew1s(no),availablew2s(no)];
+    
+    end
+    
+end
+
+
+
 Qinit=0;
 
 
@@ -38,7 +56,7 @@ numVars = numel(intchoices)+numel(UB);
 x_opt_int = zeros(numRuns,numel(intchoices));
 x_opt_cont = zeros(numRuns,numel(UB));
 
-numactions=numel(availableactions)*ones(1,numVars);
+numactions=pq*ones(1,numVars);
 
 minobj = Meritinit*zeros(numRuns, 1);
 completion = 0;
@@ -73,14 +91,16 @@ for r = 1:numRuns
             
             %choose actions based on learned values
             actions=choose_actions(values,T, epsilon);
-            %temps
-            temps=availableactions(actions);
+            %temperatures to explore with
+            temps=availableactions(actions,1);
+            w1s=availableactions(actions,2);
+            w2s=availableactions(actions,3);  
             
             % Have agents choose the values of each given design variable
             % integer variables
-            x_int = choose_paramvals(expMerit, temps);
+            x_int = choose_paramvals(expMerit, temps,w1s,w2s,conscale);
             % continuous variables
-            x_cont = choose_continuousparamvals(meritfxn, temps);
+            x_cont = choose_continuousparamvals(meritfxn, temps,w1s,w2s,conscale);
 
             % Calculate the objective function of the chosen design. Assign
             % that to the found merit of each paremeter value taken.
@@ -94,11 +114,11 @@ for r = 1:numRuns
             % update the expected merit of each design variable given the
             % objective value calculated.
             % discrete variables
-            [expMerit, learnedi,expimprovementi] = update_merit(expMerit, intMerit_obj, intMerit_con, alpha, x_int, 'best');
+            [expMerit, learnedi,objimprovementi,conimprovementi] = update_merit(expMerit, intMerit_obj, intMerit_con, alpha, x_int, 'best');
             % constinuous variables
-            [meritfxn,oldptsx,oldptsobj,oldptscon,learnedc,expimprovementc]=update_continousmerit(oldptsx,oldptsobj,oldptscon,x_cont, contMerit_obj, contMerit_con, UB,LB,Tol,MaxZones, Meritinit);
-            
-            rewards=calc_rewards([learnedi,learnedc],[expimprovementi,expimprovementc],rewardtype,rewardstruct);
+            [meritfxn,oldptsx,oldptsobj,oldptscon,learnedc,objimprovementc,conimprovementc]=update_continousmerit(oldptsx,oldptsobj,oldptscon,x_cont, contMerit_obj, contMerit_con, UB,LB,Tol,MaxZones, Meritinit);
+                       
+            rewards=calc_rewards([learnedi,learnedc],[objimprovementi,objimprovementc],[conimprovementi,conimprovementc],conscale, rewardtype,rewardstruct);
             
             values=learn_values(values,actions,rewards,alpha);
             
