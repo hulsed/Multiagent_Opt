@@ -10,7 +10,7 @@
 % The expMerit with updated Q-tables
 function [expMerit, learned,objimprovement,conimprovement] = update_merit(expMerit, foundMerit_obj, foundMerit_con, alpha, x, learnmode)
     
-    learned=zeros(1,numel(expMerit));
+    learned=zeros(1,numel(expMerit)/2);
     objimprovement=zeros(1,numel(expMerit)/2);
     conimprovement=zeros(1,numel(expMerit)/2);
     

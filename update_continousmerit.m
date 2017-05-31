@@ -3,8 +3,11 @@ function [meritfxn,oldptsx,oldptsobj,oldptscon,learned, objImprovement,conImprov
 
 for ag=1:numel(oldptsx)
    learned(ag)=0;
-   objImprovement(ag)=0;
+   objImprovementz(ag)=0;
+   conImprovementz(ag)=0;
    conImprovement(ag)=0;
+   objImprovement(ag)=0;
+   
    
    ptsx=oldptsx{ag};
    ptsobj=oldptsobj{ag};
@@ -43,16 +46,16 @@ for ag=1:numel(oldptsx)
             
        end
        % learned if better than other points in the zone
-       if (zone{ag}(z)<xfound(ag) & xfound(ag)<=zone{ag}(z+1))
+       if (zone{ag}(z)<xfound(ag) && xfound(ag)<=zone{ag}(z+1))
             
             if confound(ag)<zonerepcon(z)
                 
-                   conImprovement(ag)=zonerepcon(z)-confound(ag);
+                   conImprovementz(ag)=zonerepcon(z)-confound(ag);
                    
                    if objfound(ag)<zonerepobj(z)
-                        objImprovement(ag)=zonerepobj(z)-objfound(ag);
+                        objImprovementz(ag)=zonerepobj(z)-objfound(ag);
                    else
-                        objImprovement(ag)=0;
+                        objImprovementz(ag)=0;
                    end
                    
                    learned(ag)=1;
@@ -64,8 +67,8 @@ for ag=1:numel(oldptsx)
             elseif confound(ag)==zonerepcon(z)
                if objfound(ag)<zonerepobj(z)
                    
-                   conImprovement(ag)=0;
-                   objImprovement(ag)=zonerepobj(z)-objfound(ag);
+                   conImprovementz(ag)=0;
+                   objImprovementz(ag)=zonerepobj(z)-objfound(ag);
                    
                    
                    learned(ag)=1;
@@ -73,18 +76,31 @@ for ag=1:numel(oldptsx)
                    zonerepx(z)=xfound(ag);
                    zonerepobj(z)=objfound(ag);
                     zonerepcon(z)=confound(ag);
+                    
+               else
+               conImprovementz(ag)=0;
+                objImprovementz(ag)=0;
+                                      
                end
                
             else
                 
-                conImprovement(ag)=0;
-                objImprovement(ag)=0;
+                conImprovementz(ag)=0;
+                objImprovementz(ag)=0;
                 
-           end
+            end
 
-                       
+       
+       else
+           conImprovementz(ag)=0;
+           objImprovementz(ag)=0;
+           
        end
        
+       conImprovement(ag)=conImprovement(ag)+conImprovementz(ag);
+       objImprovement(ag)=objImprovement(ag)+objImprovementz(ag);
+       
+
    end
 
    xcell{ag}=[LB(ag),zonerepx,UB(ag)+0.0001];
