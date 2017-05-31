@@ -25,7 +25,7 @@ function x = choose_paramvals(expMerit, temps, w1s, w2s,conscale)
             w1=w1s(ag);
             w2=w2s(ag);
             
-            merit = -w1*expMerit{ag,1}-w2*conscale*expMerit{ag,2};
+            merit = -w1*conscale*expMerit{ag,1}-w2*expMerit{ag,2};
 
             T=temps(ag);
             

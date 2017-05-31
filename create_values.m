@@ -20,7 +20,7 @@ function [agentTables] = create_values(choices,Qinit)
         % Get number of actions for agent ag
         numActions = choices(ag);
         % Initialize Q-table (table of values)
-        agent = Qinit*ones(1, numActions);
+        agent = Qinit*ones(1, numActions).*(1+rand(1,choices(ag))/10);
         % add agent to our list of agents
         agentTables{ag, 1} = agent;
     end

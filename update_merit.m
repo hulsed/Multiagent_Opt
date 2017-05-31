@@ -17,8 +17,8 @@ function [expMerit, learned,objimprovement,conimprovement] = update_merit(expMer
     % Iterate through variables
     for ag = 1:(numel(expMerit)/2)
         % Get the current merit of the parameter value chosen in previous state
-        Q_obj = expMerit{ag,1}(x(ag));
-        Q_con = expMerit{ag,2}(x(ag));
+        Q_con = expMerit{ag,1}(x(ag));
+        Q_obj = expMerit{ag,2}(x(ag));
         
         %estimating the difference reward--what the global learning would
         %have been if the found design had the merit of an average action.
@@ -45,7 +45,7 @@ function [expMerit, learned,objimprovement,conimprovement] = update_merit(expMer
                        conimprovement(ag)=(Q_con-foundMerit_con(ag));
                        
                        if Q_obj<foundMerit_obj
-                            objimprovement(ag)=Q_obj-foundmerit_obj(ag);
+                            objimprovement(ag)=Q_obj-foundMerit_obj(ag);
                        else
                            objimprovement(ag)=0;
                        end
@@ -57,7 +57,7 @@ function [expMerit, learned,objimprovement,conimprovement] = update_merit(expMer
                         if Q_obj<foundMerit_obj(ag)
                             learned(ag)=1;
                             
-                            objimprovement(ag)=Q_obj-foundmerit_obj(ag);
+                            objimprovement(ag)=Q_obj-foundMerit_obj(ag);
                             conimprovement(ag)=0;
                             
                             expMerit{ag,1}(x(ag)) = foundMerit_con(ag);

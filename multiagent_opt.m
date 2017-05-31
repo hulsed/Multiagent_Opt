@@ -10,7 +10,7 @@ stopEpoch=250; %If it hasn't improved after this many Epochs, stop
 maxEpochs=250;
 %agent options
 alpha = 0.1;    % Learning rate
-Meritinit= 1e8;   %Value table initialization
+Meritinit= 1e4;   %Value table initialization
 TMin=0.1;
 %plotting and workspace options
 saveWorkspace = 1;
@@ -20,9 +20,9 @@ verbose=1;
 
 rewardstruct='G';       %G, L, or D
 rewardtype='expImprovement';    %learned, expImprovement, or DiffEst
-availabletemps=[10,0.1,0.05,0.01];%,-0.05,-0.1]; %temperatures to explore at
-availablew1s=[1,0]; %weights to use for contraints in picking values
-availablew2s=[1,1];
+availabletemps=[10,0.5,0.2,0.1,0.05,0.01];%,-0.05,-0.1]; %temperatures to explore at
+availablew1s=[1]; %weights to use for contraints in picking values
+availablew2s=[1];
 conscale=1000; %value of constraint over objective (takes place of penalty)
 contol=0.2;
 
@@ -39,7 +39,7 @@ end
 
 
 
-Qinit=0;
+Qinit=1e8;
 
 
 T=10;
@@ -128,7 +128,7 @@ for r = 1:numRuns
                 learndisp='.';
             end 
             if verbose
-            disp([num2str(r,'%03.0f') ', ' num2str(e,'%03.0f') ', ' num2str(k,'%03.0f') ', obj=' num2str(obj1, '%+10.2e\n') ', con=' num2str(conviol, '%+10.2e\n') ', min obj=' num2str(bestobj(e), '%+10.2e\n') ', min con=' num2str(bestconviol(e), '%+10.2e\n') learndisp])
+            disp([num2str(r,'%03.0f') ', ' num2str(e,'%03.0f') ', ' num2str(k,'%03.0f') ', obj=' num2str(obj1, '%+10.2e\n') ', con=' num2str(conviol, '%+10.2e\n') ', min obj=' num2str(bestobj(e), '%+10.2e\n') ', min con=' num2str(bestconviol(e), '%+10.2e\n') ', reward=' num2str(rewards(1)) ])
             end
             if conviol < bestconviol(e) %&& all(constraints <= 0.01)
                 bestconviol(e) = conviol;
