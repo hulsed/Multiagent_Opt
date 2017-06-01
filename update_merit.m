@@ -44,7 +44,7 @@ function [expMerit, learned,objimprovement,conimprovement] = update_merit(expMer
                        
                        conimprovement(ag)=(Q_con-foundMerit_con(ag));
                        
-                       if Q_obj<foundMerit_obj
+                       if Q_obj>foundMerit_obj
                             objimprovement(ag)=Q_obj-foundMerit_obj(ag);
                        else
                            objimprovement(ag)=0;
@@ -54,7 +54,7 @@ function [expMerit, learned,objimprovement,conimprovement] = update_merit(expMer
                        expMerit{ag,2}(x(ag)) = foundMerit_obj(ag);
                        
                     elseif Q_con==foundMerit_con(ag)
-                        if Q_obj<foundMerit_obj(ag)
+                        if Q_obj>foundMerit_obj(ag)
                             learned(ag)=1;
                             
                             objimprovement(ag)=Q_obj-foundMerit_obj(ag);
@@ -76,5 +76,10 @@ function [expMerit, learned,objimprovement,conimprovement] = update_merit(expMer
                     
 
             end
+    end
+    
+    if objimprovement<0
+        pause
+        
     end
 end

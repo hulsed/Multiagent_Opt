@@ -122,6 +122,7 @@ for r = 1:numRuns
             
             values=learn_values(values,actions,rewards,alpha);
             
+            
             if any([learnedi,learnedc])
             learndisp=' learned';
             else

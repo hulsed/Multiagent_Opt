@@ -12,7 +12,7 @@ propIntChoices = [7];%, 12, 10, 10, 10, 10];
 propUB=         [0.2,   45, 1,      0.02,   1];
 propLB=         [0.02,  0,  0,      0.005,  0];
 propTol=        [0.002, 1,  0.01,   0.0005, 0.01];
-propMaxZones=[  10,     9,  10,     5,      10];
+propMaxZones=[  5,     5,  5,     5,      5];
 
 % ROD
 rodIntChoices=[4];
@@ -20,7 +20,7 @@ rodIntChoices=[4];
 rodUB=[0.006,0.0380,0.0380];
 rodLB=[0.0009,0.0065,0.0065];
 rodTol=[0.0001,0.0005,0.0005];
-rodMaxZones=[8,11,11];
+rodMaxZones=[5,5,5];
 
 % ESC
 escIntChoices=[6];
@@ -31,14 +31,14 @@ skidIntChoices=[4];
 skidUB=[60,0.0380,0.006];
 skidLB=[20,0.0065,0.0009];
 skidTol=[1,0.0005,0.0001];
-skidMaxZones=[5,8,8];
+skidMaxZones=[5,5,5];
 
 % Oper
 
 operUB=[30,45];
 operLB=[0.1,0.1];
 operTol=[1,1];
-operMaxZones=[10,9];
+operMaxZones=[5,5];
 
 Intchoices=[batteryIntChoices motorIntChoices propIntChoices rodIntChoices escIntChoices skidIntChoices];
 
