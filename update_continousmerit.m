@@ -104,8 +104,8 @@ for ag=1:numel(oldptsx)
    end
 
    xcell{ag}=[LB(ag),zonerepx,UB(ag)+0.0001];
-   ycell{ag}=[Meritinit,zonerepobj,Meritinit];
-   zcell{ag}=[Meritinit,zonerepcon,Meritinit];
+   ycell{ag}=[mean(zonerepobj),zonerepobj,mean(zonerepobj)];
+   zcell{ag}=[mean(zonerepcon),zonerepcon,mean(zonerepcon)];
 
    
    %create interpolation of merit of each
