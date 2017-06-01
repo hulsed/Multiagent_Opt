@@ -9,7 +9,7 @@ numRuns = 1;
 stopEpoch=250; %If it hasn't improved after this many Epochs, stop
 maxEpochs=250;
 %agent options
-alpha = 0.1;    % Learning rate
+alpha = 0.2;    % Learning rate
 Meritinit= 1e4;   %Value table initialization
 TMin=0.1;
 %plotting and workspace options
