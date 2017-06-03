@@ -10,7 +10,7 @@ stopEpoch=250; %If it hasn't improved after this many Epochs, stop
 maxEpochs=250;
 %agent options
 alpha = 0.2;    % Learning rate
-Meritinit= 1e4;   %Value table initialization
+Meritinit= 1e5;   %Value table initialization
 TMin=0.1;
 %plotting and workspace options
 saveWorkspace = 1;
@@ -23,7 +23,7 @@ rewardtype='expImprovement';    %learned, expImprovement, or DiffEst
 availabletemps=[10,0.5,0.1,0.05,0.01, 0.005];%,-0.05,-0.1]; %temperatures to explore at
 availablew1s=[1]; %weights to use for contraints in picking values
 availablew2s=[1];
-conscale=1000; %value of constraint over objective (takes place of penalty)
+conscale=10000; %value of constraint over objective (takes place of penalty)
 contol=0.2;
 
 pq=0
