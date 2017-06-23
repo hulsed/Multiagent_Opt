@@ -262,6 +262,7 @@ if ~exist('Saved Workspaces', 'dir')
 end
 
 generate_plots
+save('DifferenceReward.mat')
 
 end
 
