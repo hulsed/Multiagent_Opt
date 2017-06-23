@@ -4,10 +4,10 @@ function [obj_opt,x_opt_int,x_opt_cont]= multiagent_opt(funchandle, intchoices,U
 % OPTIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %experiment options
-numKs=50;
-numRuns = 1; 
-stopEpoch=250; %If it hasn't improved after this many Epochs, stop
-maxEpochs=250;
+numKs=100;
+numRuns = 10; 
+stopEpoch=200; %If it hasn't improved after this many Epochs, stop
+maxEpochs=200;
 %agent options
 alpha = 0.2;    % Learning rate
 Meritinit= 1e5;   %Value table initialization
@@ -177,7 +177,9 @@ if ~exist('Saved Workspaces', 'dir')
     mkdir('Saved Workspaces');
 end
 
-generate_plots
+%generate_plots
+
+save('MASResults')
 
 end
 
