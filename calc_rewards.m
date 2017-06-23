@@ -18,7 +18,7 @@ switch rewardstruct
     case 'G'
         rewards=sum(reward)*ones(1,numel(reward));
     case 'D'
-        rewards=reward;
+        rewards=sum(reward);
 end
 
 end
