@@ -9,7 +9,7 @@ numRuns = 10;
 stopEpoch=200; %If it hasn't improved after this many Epochs, stop
 maxEpochs=200;
 %agent options
-alpha = 0.2;    % Learning rate
+alpha = 0.01;    % Learning rate
 Meritinit= 1e5;   %Value table initialization
 TMin=0.1;
 %plotting and workspace options
@@ -39,11 +39,11 @@ end
 
 
 
-Qinit=1e8;
+Qinit=1e4;
 
 
 T=10;
-epsilon=0.01;
+epsilon=0.05;
 
 
 %addpath('C:\Projects\GitHub\QuadrotorModel')
@@ -69,7 +69,7 @@ for r = 1:numRuns
     %continuous variables
      meritfxn=init_meritfxn(UB,LB,Tol, Meritinit);
     [oldptsx,oldptsobj]=init_pts(UB,LB,MaxZones, Meritinit);
-    [oldptsx,oldptscon]=init_pts(UB,LB,MaxZones, Meritinit);
+    [oldptsx,oldptscon]=init_pts(UB,LB,MaxZones, 1e4);
     
     % initializing best performance obtained
     bestobj(1)= Meritinit;
@@ -120,6 +120,8 @@ for r = 1:numRuns
                        
             rewards=calc_rewards([learnedi,learnedc],[objimprovementi,objimprovementc],[conimprovementi,conimprovementc],conscale, rewardtype,rewardstruct);
             
+            %rewards=rand(1,numVars);
+            
             values=learn_values(values,actions,rewards,alpha);
             
             
@@ -169,6 +171,8 @@ for r = 1:numRuns
     end
     bestobjc(1:length(bestobj))=bestobj;
     bestobjhist(r,:)=bestobjc;
+    bestcon(1:length(bestconviol))=bestconviol;
+    bestconhist(r,:)=bestcon;
     avgobjhist(r,:)=avgobjk;
     clear bestobj
 end
