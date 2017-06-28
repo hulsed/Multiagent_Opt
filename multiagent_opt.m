@@ -9,8 +9,8 @@ numRuns = 10;
 stopEpoch=200; %If it hasn't improved after this many Epochs, stop
 maxEpochs=200;
 %agent options
-alpha = 0.01;    % Learning rate
-Meritinit= 1e5;   %Value table initialization
+alpha = 0.005;    % Learning rate
+Meritinit= 1e3;   %Value table initialization
 TMin=0.1;
 %plotting and workspace options
 saveWorkspace = 1;
@@ -23,7 +23,7 @@ rewardtype='expImprovement';    %learned, expImprovement, or DiffEst
 availabletemps=[10,0.5,0.1,0.05,0.01, 0.005];%,-0.05,-0.1]; %temperatures to explore at
 availablew1s=[1]; %weights to use for contraints in picking values
 availablew2s=[1];
-conscale=10000; %value of constraint over objective (takes place of penalty)
+conscalemax=25000; %value of constraint over objective (takes place of penalty)
 contol=0.2;
 
 pq=0
@@ -68,8 +68,8 @@ for r = 1:numRuns
     values=create_values(numactions,Qinit);
     %continuous variables
      meritfxn=init_meritfxn(UB,LB,Tol, Meritinit);
-    [oldptsx,oldptsobj]=init_pts(UB,LB,MaxZones, Meritinit);
-    [oldptsx,oldptscon]=init_pts(UB,LB,MaxZones, 1e4);
+    [oldptsx,oldptsobj]=init_pts(UB,LB,MaxZones, 0);
+    [oldptsx,oldptscon]=init_pts(UB,LB,MaxZones, 50);
     
     % initializing best performance obtained
     bestobj(1)= Meritinit;
@@ -87,6 +87,9 @@ for r = 1:numRuns
         bestobj(e)=bestobj(e-1);
         bestconviol(e)=bestconviol(e-1);
         k=0;
+        
+        conscale=conscalemax*(1-e^(-0.1*e));
+        
         for k=1:numKs
             
             %choose actions based on learned values
