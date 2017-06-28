@@ -4,7 +4,7 @@ function [obj_opt,x_opt_int,x_opt_cont]= multiagent_opt(funchandle, intchoices,U
 % OPTIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %experiment options
-numKs=5;
+numKs=100;
 numRuns = 10; 
 stopEpoch=250; %If it hasn't improved after this many Epochs, stop
 maxEpochs=200;
@@ -188,11 +188,11 @@ for r = 1:numRuns
             values=learn_values(values,actions,rewards,alpha);   
                 
             %UPDATE MERIT TO MOST PRACTICAL (based on all of the points)
-            expMerit=expMeritp;
-            meritfxn=meritfxnp;
-            oldptsx=oldptsxp;
-            oldptsobj=oldptsobjp;
-            oldptscon=oldptsconp;
+            expMerit=expMeritr;
+            meritfxn=meritfxnr;
+            oldptsx=oldptsxr;
+            oldptsobj=oldptsobjr;
+            oldptscon=oldptsconr;
             learnedi=learnedir;
             learnedc=learnedcr;
             
