@@ -23,7 +23,7 @@ rewardtype='expImprovement';    %learned, expImprovement, or DiffEst
 availabletemps=[10,0.5,0.1,0.05,0.01, 0.005];%,-0.05,-0.1]; %temperatures to explore at
 availablew1s=[1]; %weights to use for contraints in picking values
 availablew2s=[1];
-conscalemax=25000; %value of constraint over objective (takes place of penalty)
+conscalemax=35000; %value of constraint over objective (takes place of penalty)
 contol=0.2;
 
 pq=0
@@ -88,7 +88,7 @@ for r = 1:numRuns
         bestconviol(e)=bestconviol(e-1);
         k=0;
         
-        conscale=conscalemax*(1-e^(-0.1*e));
+        conscale=conscalemax*(1-e^(-0.05*e));
         
         for k=1:numKs
             
