@@ -144,7 +144,7 @@ for r = 1:numRuns
                 
               for ag=1:(length(intchoices)+length(UB))
                   tempsc=temps;
-                  tempsc(ag)=min(availabletemps);
+                  tempsc(ag)=median(availabletemps);
                     % Have agents choose the values of each given design variable
                     % integer variables
                     x_intc = choose_paramvals(expMerit, tempsc,w1s,w2s,conscale);
