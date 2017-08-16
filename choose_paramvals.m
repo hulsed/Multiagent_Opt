@@ -32,7 +32,7 @@ function x = choose_paramvals(expMerit, temps, w1s, w2s,conscale)
             %softmax normalization
             merit2=1./(1+exp(-(merit-mean(merit))/(std(merit)+0.1)));
             
-            %softmax selection (Note: a lower value in the merit function 
+                        %softmax selection (Note: a lower value in the merit function 
             %corresponds to a lower value of the objective function, makeing
             %)
             p= exp(merit2./(T));                  
@@ -49,6 +49,13 @@ function x = choose_paramvals(expMerit, temps, w1s, w2s,conscale)
                     p % in case it produces a complex number
                     ChosenValue = randsample(1:numel(merit), 1, true, p);
                 end
+            elseif T==0
+                [val,Chosen]=max(merit2);
+                
+                vals=merit2==val;
+                die=vals.*rand(1,numel(vals));
+                [num,ChosenValue]=max(die);
+                
             else
                 disp('Softmax broke due to infinite exponential!')
                 disp('Picking between three best')

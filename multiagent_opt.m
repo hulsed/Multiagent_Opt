@@ -6,8 +6,8 @@ function [obj_opt,x_opt_int,x_opt_cont]= multiagent_opt(funchandle, intchoices,U
 %experiment options
 numKs=100;
 numRuns = 10; 
-stopEpoch=200; %If it hasn't improved after this many Epochs, stop
-maxEpochs=200;
+stopEpoch=1000; %If it hasn't improved after this many Epochs, stop
+maxEpochs=1000;
 %agent options
 alpha = 0.005;    % Learning rate
 Meritinit= 1e3;   %Value table initialization
@@ -23,7 +23,7 @@ rewardtype='expImprovement';    %learned, expImprovement, or DiffEst
 availabletemps=[10,0.5,0.1,0.05,0.01, 0.005];%,-0.05,-0.1]; %temperatures to explore at
 availablew1s=[1]; %weights to use for contraints in picking values
 availablew2s=[1];
-conscalemax=35000; %value of constraint over objective (takes place of penalty)
+conscalemax=45000; %value of constraint over objective (takes place of penalty)
 contol=0.2;
 
 pq=0
@@ -88,22 +88,29 @@ for r = 1:numRuns
         bestconviol(e)=bestconviol(e-1);
         k=0;
         
-        conscale=conscalemax*(1-e^(-0.05*e));
+        conscale=conscalemax*(1-e^(-0.05*e))
         
-        for k=1:numKs
-            
-            %choose actions based on learned values
-            actions=choose_actions(values,T, epsilon);
+        
+        %choose actions based on learned values
+        actions=choose_actions(values,T, epsilon);
+        
+        for k=1:numVars
+                        
             %temperatures to explore with
-            temps=availableactions(actions,1);
+            temps_chosen=availableactions(actions,1);
             w1s=availableactions(actions,2);
             w2s=availableactions(actions,3);  
             
+            temps=zeros(numVars,1);
+            temps(k)=temps_chosen(k);
+            
             % Have agents choose the values of each given design variable
             % integer variables
-            x_int = choose_paramvals(expMerit, temps,w1s,w2s,conscale);
+            tempsi=temps(1:numel(intchoices));
+            x_int = choose_paramvals(expMerit, tempsi,w1s,w2s,conscale);
             % continuous variables
-            x_cont = choose_continuousparamvals(meritfxn, temps,w1s,w2s,conscale);
+            tempsc=temps(numel(intchoices)+1:numel(intchoices)+numel(UB));
+            x_cont = choose_continuousparamvals(meritfxn, tempsc,w1s,w2s,conscale);
 
             % Calculate the objective function of the chosen design. Assign
             % that to the found merit of each paremeter value taken.
@@ -122,11 +129,8 @@ for r = 1:numRuns
             [meritfxn,oldptsx,oldptsobj,oldptscon,learnedc,objimprovementc,conimprovementc]=update_continousmerit(oldptsx,oldptsobj,oldptscon,x_cont, contMerit_obj, contMerit_con, UB,LB,Tol,MaxZones, Meritinit);
                        
             rewards=calc_rewards([learnedi,learnedc],[objimprovementi,objimprovementc],[conimprovementi,conimprovementc],conscale, rewardtype,rewardstruct);
-            
             %rewards=rand(1,numVars);
-            
-            values=learn_values(values,actions,rewards,alpha);
-            
+            reward(k)=rewards(k);
             
             if any([learnedi,learnedc])
             learndisp=' learned';
@@ -155,12 +159,13 @@ for r = 1:numRuns
                 
                 bestobj(e)=obj1;
                     
-                end
-                
-                
+                end  
             end
             
         end
+        
+        values=learn_values(values,actions,rewards,alpha);
+        
 
        if e>stopEpoch+1
             if bestobj(e)==bestobj(e-stopEpoch)
