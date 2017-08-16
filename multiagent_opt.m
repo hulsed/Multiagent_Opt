@@ -101,9 +101,11 @@ for r = 1:numRuns
             
             % Have agents choose the values of each given design variable
             % integer variables
-            x_int = choose_paramvals(expMerit, temps,w1s,w2s,conscale);
+            tempsi=temps(1:numel(intchoices));
+            x_int = choose_paramvals(expMerit, tempsi,w1s,w2s,conscale);
             % continuous variables
-            x_cont = choose_continuousparamvals(meritfxn, temps,w1s,w2s,conscale);
+            tempsc=temps(numel(intchoices)+1:numel(intchoices)+numel(UB));
+            x_cont = choose_continuousparamvals(meritfxn, tempsc,w1s,w2s,conscale);
 
             % Calculate the objective function of the chosen design. Assign
             % that to the found merit of each paremeter value taken.
