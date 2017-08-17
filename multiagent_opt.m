@@ -37,8 +37,6 @@ for lm=1:numel(availabletemps)
     
 end
 
-
-
 Qinit=1e4;
 
 
@@ -84,6 +82,8 @@ for r = 1:numRuns
     while converged==false
         e=e+1;
         
+        temps=1-ones(1,numVars)*exp(-1/200);
+        
         bestobj(e)=bestobj(e-1);
         bestconviol(e)=bestconviol(e-1);
         k=0;
@@ -95,7 +95,7 @@ for r = 1:numRuns
             %choose actions based on learned values
             actions=choose_actions(values,T, epsilon);
             %temperatures to explore with
-            temps=availableactions(actions,1);
+            %temps=availableactions(actions,1);
             w1s=availableactions(actions,2);
             w2s=availableactions(actions,3);  
             

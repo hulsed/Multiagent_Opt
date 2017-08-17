@@ -48,9 +48,9 @@ Tol=[propTol,rodTol, skidTol,operTol];
 MaxZones=[propMaxZones,rodMaxZones, skidMaxZones,operMaxZones];
 
 %add path of model, function
-addpath('C:\Projects\GitHub\UAV_MAS_design\QuadrotorModel')
-cd('C:\Projects\GitHub\UAV_MAS_design\QuadrotorModel')
-addpath('C:\Projects\GitHub\UAV_MAS_design')
+addpath('C:\Users\Daniel\Documents\GitHub\UAV_MAS_design\QuadrotorModel')
+cd('C:\Users\Daniel\Documents\GitHub\UAV_MAS_design\QuadrotorModel')
+addpath('C:\Users\Daniel\Documents\GitHub\UAV_MAS_design')
 
 funchandle=@objcfun;
 
