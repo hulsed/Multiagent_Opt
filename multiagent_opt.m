@@ -88,7 +88,7 @@ for r = 1:numRuns
         bestconviol(e)=bestconviol(e-1);
         k=0;
         
-        conscale=conscalemax*(1-e^(-0.05*e))
+        conscale=conscalemax*(1-e^(-0.05*e));
         
         
         %choose actions based on learned values

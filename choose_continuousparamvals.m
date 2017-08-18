@@ -24,8 +24,10 @@ function x_cont = choose_continuousparamvals(meritfxn, temps, w1s, w2s,conscale)
             
             w1=w1s(ag);
             w2=w2s(ag);
+            %note: first row is location, second is objective, third is
+            %constraint.
             
-            merit = -w1*conscale*meritfxn{ag}(2,:)-w2*meritfxn{ag}(3,:);
+            merit = -w1*meritfxn{ag}(2,:)-w2*conscale*meritfxn{ag}(3,:);
 
             T=temps(ag);
             
