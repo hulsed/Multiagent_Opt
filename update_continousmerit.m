@@ -127,6 +127,9 @@ for ag=1:numel(oldptsx)
     oldptscon{ag}=[oldptscon{ag},confound(ag)];
     
     %create merit function (for use in action selection)
+    % x is location
+    % y is objective
+    % z is constraint
     meritfxn{ag}=[xx{ag};yy{ag}; zz{ag}];
 
     

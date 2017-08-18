@@ -25,7 +25,10 @@ function x_cont = choose_continuousparamvals(meritfxn, temps, w1s, w2s,conscale)
             w1=w1s(ag);
             w2=w2s(ag);
             
-            merit = -w1*conscale*meritfxn{ag}(2,:)-w2*meritfxn{ag}(3,:);
+            %note: first row is location, second is objective, third is
+            %constraint.
+            
+            merit = -w1*meritfxn{ag}(2,:)-w2*conscale*meritfxn{ag}(3,:);
 
             T=temps(ag);
             
@@ -57,17 +60,11 @@ function x_cont = choose_continuousparamvals(meritfxn, temps, w1s, w2s,conscale)
                 [num,ChosenValue]=max(die);
                 
             else
-                disp('Softmax broke due to infinite exponential!')
-                disp('Picking between three best')
-                [sorting,ranking]=sort(merit);
-                dice=randi(20,1);
-                if dice<=16
-                    ChosenValue=ranking(1);
-                elseif 16<dice<=19
-                    ChosenValue=ranking(2);
-                else 
-                    ChosenValue=ranking(3);
-                end
+                [val,Chosen]=max(merit2);
+                
+                vals=merit2==val;
+                die=vals.*rand(1,numel(vals));
+                [num,ChosenValue]=max(die);
                     
             end
 
