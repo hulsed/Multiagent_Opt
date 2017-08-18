@@ -6,8 +6,8 @@ function [obj_opt,x_opt_int,x_opt_cont]= multiagent_opt(funchandle, intchoices,U
 %experiment options
 numKs=100;
 numRuns = 10; 
-stopEpoch=1000; %If it hasn't improved after this many Epochs, stop
-maxEpochs=1000;
+stopEpoch=200; %If it hasn't improved after this many Epochs, stop
+maxEpochs=200;
 %agent options
 alpha = 0.005;    % Learning rate
 Meritinit= 1e3;   %Value table initialization
