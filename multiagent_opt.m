@@ -82,6 +82,7 @@ for r = 1:numRuns
     while converged==false
         e=e+1;
         
+        temps=0.9*ones(1,numVars)*exp(-e/30);
         
         bestobj(e)=bestobj(e-1);
         bestconviol(e)=bestconviol(e-1);
