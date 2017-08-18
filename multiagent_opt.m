@@ -80,7 +80,7 @@ for r = 1:numRuns
     converged=false;
     bestobjc=nan(1,maxEpochs);
     avgobjk=nan(1,maxEpochs);
-    
+    count=0
     while converged==false
         e=e+1;
         
@@ -91,18 +91,24 @@ for r = 1:numRuns
         conscale=conscalemax*(1-e^(-0.05*e));
         
         
-        %choose actions based on learned values
-        actions=choose_actions(values,T, epsilon);
         
-        for k=1:numVars
-                        
+        
+        for k=1:numKs
+            
+            varnum=mod(count, numVars)+1;
+            
+            if varnum==1
+                %choose actions based on learned values
+                actions=choose_actions(values,T, epsilon);
+            end
+            
             %temperatures to explore with
             temps_chosen=availableactions(actions,1);
             w1s=availableactions(actions,2);
             w2s=availableactions(actions,3);  
             
             temps=zeros(numVars,1);
-            temps(k)=temps_chosen(k);
+            temps(varnum)=temps_chosen(varnum);
             
             % Have agents choose the values of each given design variable
             % integer variables
@@ -130,7 +136,7 @@ for r = 1:numRuns
                        
             rewards=calc_rewards([learnedi,learnedc],[objimprovementi,objimprovementc],[conimprovementi,conimprovementc],conscale, rewardtype,rewardstruct);
             %rewards=rand(1,numVars);
-            reward(k)=rewards(k);
+            reward(varnum)=rewards(varnum);
             
             if any([learnedi,learnedc])
             learndisp=' learned';
@@ -162,9 +168,15 @@ for r = 1:numRuns
                 end  
             end
             
+            if varnum==numVars
+                %choose actions based on learned values
+                values=learn_values(values,actions,reward,alpha);
+            end
+            count=count+1;
+            
         end
         
-        values=learn_values(values,actions,rewards,alpha);
+        
         
 
        if e>stopEpoch+1
