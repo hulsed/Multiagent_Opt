@@ -1,4 +1,4 @@
-function [obj_opt,x_opt_int,x_opt_cont]= multiagent_opt(funchandle, intchoices,UB,LB,Tol,MaxZones)
+function [obj_opt,x_opt_int,x_opt_cont]= multiagent_opt(funchandle, intchoices,UB,LB,Tol,MaxZones,comp)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % OPTIONS
@@ -17,6 +17,10 @@ saveWorkspace = 1;
 showConstraintViolation             = 0;
 altplots                            = 1;
 verbose=1;
+
+numcomponents=numel(comp);
+
+
 
 rewardstruct='G';       %G, L, or D
 rewardtype='expImprovement';    %learned, expImprovement, or DiffEst
@@ -95,7 +99,9 @@ for r = 1:numRuns
         
         for k=1:numKs
             
+            compnum=mod(count, numcomponents)+1;
             
+            if compnum==1
                 %choose actions based on learned values
                 actions=choose_actions(values,T, epsilon);
             end
@@ -106,6 +112,7 @@ for r = 1:numRuns
             w2s=availableactions(actions,3);  
             
             temps=zeros(numVars,1);
+            temps(comp{compnum})=temps_chosen(comp{compnum});
             
             % Have agents choose the values of each given design variable
             % integer variables
@@ -133,6 +140,7 @@ for r = 1:numRuns
                        
             rewards=calc_rewards([learnedi,learnedc],[objimprovementi,objimprovementc],[conimprovementi,conimprovementc],conscale, rewardtype,rewardstruct);
             %rewards=rand(1,numVars);
+            reward(comp{compnum})=rewards(comp{compnum});
             
             if any([learnedi,learnedc])
             learndisp=' learned';
@@ -164,6 +172,7 @@ for r = 1:numRuns
                 end  
             end
             
+            if compnum==numcomponents
                 %choose actions based on learned values
                 values=learn_values(values,actions,reward,alpha);
             end
