@@ -47,14 +47,27 @@ LB=[propLB,rodLB, skidLB,operLB];
 Tol=[propTol,rodTol, skidTol,operTol];
 MaxZones=[propMaxZones,rodMaxZones, skidMaxZones,operMaxZones];
 
+
+%define components
+comp{1}=[1,2,3];
+comp{2}=[4];
+comp{3}=[5, 9, 10, 11, 12, 13];
+comp{4}=[6, 14, 15, 16];
+comp{5}=[7];
+comp{6}=[8, 17,18,19];
+comp{7}=[20,21];
+
 %add path of model, function
-addpath('C:\Users\HulseDanielE\Documents\GitHub\Multiagent_Opt\QuadrotorModel')
-cd('C:\Users\HulseDanielE\Documents\GitHub\Multiagent_Opt\QuadrotorModel')
-addpath('C:\Users\HulseDanielE\Documents\GitHub\Multiagent_Opt')
+%addpath('C:\Users\HulseDanielE\Documents\GitHub\Multiagent_Opt\QuadrotorModel')
+%cd('C:\Users\HulseDanielE\Documents\GitHub\Multiagent_Opt\QuadrotorModel')
+%addpath('C:\Users\HulseDanielE\Documents\GitHub\Multiagent_Opt')
+addpath('C:\Projects\GitHub\UAV_MAS_design\QuadrotorModel')
+cd('C:\Projects\GitHub\UAV_MAS_design\QuadrotorModel')
+addpath('C:\Projects\GitHub\UAV_MAS_design')
 
 funchandle=@objcfun;
 
-[f_opt,x_opt_int,x_opt_cont]=multiagent_opt(funchandle, Intchoices,UB,LB,Tol,MaxZones)
+[f_opt,x_opt_int,x_opt_cont]=multiagent_opt(funchandle, Intchoices,UB,LB,Tol,MaxZones, comp)
 
 toc % Return execution time
 

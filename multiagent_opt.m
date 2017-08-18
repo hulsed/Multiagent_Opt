@@ -95,9 +95,7 @@ for r = 1:numRuns
         
         for k=1:numKs
             
-            varnum=mod(count, numVars)+1;
             
-            if varnum==1
                 %choose actions based on learned values
                 actions=choose_actions(values,T, epsilon);
             end
@@ -108,7 +106,6 @@ for r = 1:numRuns
             w2s=availableactions(actions,3);  
             
             temps=zeros(numVars,1);
-            temps(varnum)=temps_chosen(varnum);
             
             % Have agents choose the values of each given design variable
             % integer variables
@@ -136,7 +133,6 @@ for r = 1:numRuns
                        
             rewards=calc_rewards([learnedi,learnedc],[objimprovementi,objimprovementc],[conimprovementi,conimprovementc],conscale, rewardtype,rewardstruct);
             %rewards=rand(1,numVars);
-            reward(varnum)=rewards(varnum);
             
             if any([learnedi,learnedc])
             learndisp=' learned';
@@ -168,7 +164,6 @@ for r = 1:numRuns
                 end  
             end
             
-            if varnum==numVars
                 %choose actions based on learned values
                 values=learn_values(values,actions,reward,alpha);
             end
