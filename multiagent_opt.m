@@ -20,7 +20,7 @@ verbose=1;
 
 rewardstruct='G';       %G, L, or D
 rewardtype='expImprovement';    %learned, expImprovement, or DiffEst
-availabletemps=[10,0.5,0.1,0.01, 0.005, 0];%,-0.05,-0.1]; %temperatures to explore at
+availabletemps=[0.5,0.1,0.01, 0.005, 0];%,-0.05,-0.1]; %temperatures to explore at
 availablew1s=[1]; %weights to use for contraints in picking values
 availablew2s=[1];
 conscalemax=35000; %value of constraint over objective (takes place of penalty)
