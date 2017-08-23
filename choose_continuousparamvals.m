@@ -25,7 +25,7 @@ function x_cont = choose_continuousparamvals(meritfxn, temps, w1s, w2s,conscale)
             w1=w1s(ag);
             w2=w2s(ag);
             
-            merit = -w1*conscale*meritfxn{ag}(2,:)-w2*meritfxn{ag}(3,:);
+            merit = -w1*meritfxn{ag}(2,:)-w2*conscale*meritfxn{ag}(3,:);
 
             T=temps(ag);
             
@@ -49,6 +49,13 @@ function x_cont = choose_continuousparamvals(meritfxn, temps, w1s, w2s,conscale)
                     p % in case it produces a complex number
                     ChosenValue = randsample(1:numel(merit), 1, true, p);
                 end
+               elseif T==0
+                [val,Chosen]=max(merit2);
+                
+                vals=merit2==val;
+                die=vals.*rand(1,numel(vals));
+                [num,ChosenValue]=max(die); 
+                
             else
                 disp('Softmax broke due to infinite exponential!')
                 disp('Picking between three best')

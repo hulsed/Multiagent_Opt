@@ -9,8 +9,8 @@ numRuns = 10;
 stopEpoch=250; %If it hasn't improved after this many Epochs, stop
 maxEpochs=200;
 %agent options
-alpha = 0.2;    % Learning rate
-Meritinit= 1e5;   %Value table initialization
+alpha = 0.05;    % Learning rate
+Meritinit= 1e3;   %Value table initialization
 TMin=0.1;
 %plotting and workspace options
 saveWorkspace = 1;
@@ -20,10 +20,10 @@ verbose=1;
 
 rewardstruct='D';       %G, L, or D
 rewardtype='expImprovement';    %learned, expImprovement, or DiffEst
-availabletemps=[10,0.5,0.1,0.05,0.01, 0.005];%,-0.05,-0.1]; %temperatures to explore at
+availabletemps=[0.5,0.1,0.05,0.01, 0.005,0];%,-0.05,-0.1]; %temperatures to explore at
 availablew1s=[1]; %weights to use for contraints in picking values
 availablew2s=[1];
-conscale=10000; %value of constraint over objective (takes place of penalty)
+conscalemax=35000; %value of constraint over objective (takes place of penalty)
 contol=0.2;
 
 pq=0
@@ -39,11 +39,12 @@ end
 
 
 
-Qinit=100;
+
+Qinit=1e4;
 
 
 T=10;
-epsilon=0.01;
+epsilon=0.05;
 
 
 %addpath('C:\Projects\GitHub\QuadrotorModel')
@@ -65,12 +66,23 @@ for r = 1:numRuns
     % Create the expectation of merit for the paremeters
     %discrete variables
     [expMerit] = create_expfuncs(intchoices,Meritinit);
+    [expMeritc] = create_expfuncs(intchoices,Meritinit);
+    [expMeritp] = create_expfuncs(intchoices,Meritinit);
+    [expMeritr] = create_expfuncs(intchoices,Meritinit);
     values=create_values(numactions,Qinit);
     %continuous variables
      meritfxn=init_meritfxn(UB,LB,Tol, Meritinit);
-    [oldptsx,oldptsobj]=init_pts(UB,LB,MaxZones, Meritinit);
-    [oldptsx,oldptscon]=init_pts(UB,LB,MaxZones, Meritinit);
-    
+     meritfxnc=init_meritfxn(UB,LB,Tol, Meritinit);
+     meritfxnp=init_meritfxn(UB,LB,Tol, Meritinit);
+     meritfxnr=init_meritfxn(UB,LB,Tol, Meritinit);
+    [oldptsx,oldptsobj]=init_pts(UB,LB,MaxZones, 0);
+    [oldptsx,oldptscon]=init_pts(UB,LB,MaxZones, 50);
+    [oldptsxr,oldptsobjr]=init_pts(UB,LB,MaxZones, 0);
+    [oldptsxr,oldptsconr]=init_pts(UB,LB,MaxZones, 50);
+    [oldptsxc,oldptsobjc]=init_pts(UB,LB,MaxZones, 0);
+    [oldptsxc,oldptsconc]=init_pts(UB,LB,MaxZones, 50);
+    [oldptsxp,oldptsobjp]=init_pts(UB,LB,MaxZones, 0);
+    [oldptsxp,oldptsconp]=init_pts(UB,LB,MaxZones, 50);
     % initializing best performance obtained
     bestobj(1)= Meritinit;
     bestconviol(1)=Meritinit;
@@ -87,6 +99,9 @@ for r = 1:numRuns
         bestobj(e)=bestobj(e-1);
         bestconviol(e)=bestconviol(e-1);
         k=0;
+        
+        conscale=conscalemax*(1-e^(-0.05*e));
+        
         for k=1:numKs
             
             %choose actions based on learned values
@@ -98,9 +113,11 @@ for r = 1:numRuns
             
             % Have agents choose the values of each given design variable
             % integer variables
-            x_int = choose_paramvals(expMerit, temps,w1s,w2s,conscale);
+             tempsi=temps(1:numel(intchoices));
+            x_int = choose_paramvals(expMerit, tempsi,w1s,w2s,conscale);
             % continuous variables
-            x_cont = choose_continuousparamvals(meritfxn, temps,w1s,w2s,conscale);
+            tempsc=temps(numel(intchoices)+1:numel(intchoices)+numel(UB));
+            x_cont = choose_continuousparamvals(meritfxn, tempsc,w1s,w2s,conscale);
 
             % Calculate the objective function of the chosen design. Assign
             % that to the found merit of each paremeter value taken.
@@ -128,13 +145,15 @@ for r = 1:numRuns
                 [meritfxnp,oldptsxp,oldptsobjp,oldptsconp,learnedcp,objimprovementcp,conimprovementcp]=update_continousmerit(oldptsx,oldptsobj,oldptscon,x_cont, contMerit_obj, contMerit_con, UB,LB,Tol,MaxZones, Meritinit);
                 
               for ag=1:(length(intchoices)+length(UB))
-                  tempsc=temps;
-                  tempsc(ag)=min(availabletemps);
+                  temps_count=temps;
+                  temps_count(ag)=median(availabletemps);
                     % Have agents choose the values of each given design variable
                     % integer variables
-                    x_intc = choose_paramvals(expMerit, tempsc,w1s,w2s,conscale);
+                    temps_counti=temps_count(numel(intchoices)+1:numel(intchoices)+numel(UB));
+                    x_intc = choose_paramvals(expMerit, temps_counti,w1s,w2s,conscale);
                      % continuous variables
-                    x_contc = choose_continuousparamvals(meritfxn, tempsc,w1s,w2s,conscale);
+                     temps_countc=temps_count(numel(intchoices)+1:numel(intchoices)+numel(UB));
+                    x_contc = choose_continuousparamvals(meritfxn, temps_countc,w1s,w2s,conscale);
                   
                  [obj,obj1c,conviolc]=funchandle(x_intc, x_contc);
                  
@@ -195,6 +214,7 @@ for r = 1:numRuns
             oldptscon=oldptsconr;
             learnedi=learnedir;
             learnedc=learnedcr;
+
             
             else
                 % discrete variables
@@ -253,6 +273,8 @@ for r = 1:numRuns
     end
     bestobjc(1:length(bestobj))=bestobj;
     bestobjhist(r,:)=bestobjc;
+    bestcon(1:length(bestconviol))=bestconviol;
+    bestconhist(r,:)=bestcon;
     avgobjhist(r,:)=avgobjk;
     clear bestobj
 end
@@ -261,8 +283,10 @@ if ~exist('Saved Workspaces', 'dir')
     mkdir('Saved Workspaces');
 end
 
+
 generate_plots
 save('DifferenceReward.mat')
+
 
 end
 
