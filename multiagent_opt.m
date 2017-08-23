@@ -4,7 +4,7 @@ function [obj_opt,x_opt_int,x_opt_cont]= multiagent_opt(funchandle, intchoices,U
 % OPTIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %experiment options
-numKs=100;
+numKs=5;
 numRuns = 10; 
 stopEpoch=250; %If it hasn't improved after this many Epochs, stop
 maxEpochs=200;
@@ -38,13 +38,11 @@ for lm=1:numel(availabletemps)
 end
 
 
-
-
-Qinit=1e4;
+Qinit=100;
 
 
 T=10;
-epsilon=0.05;
+epsilon=0.01;
 
 
 %addpath('C:\Projects\GitHub\QuadrotorModel')
@@ -146,7 +144,7 @@ for r = 1:numRuns
                 
               for ag=1:(length(intchoices)+length(UB))
                   temps_count=temps;
-                  temps_count(ag)=median(availabletemps);
+                  temps_count(ag)=0;
                     % Have agents choose the values of each given design variable
                     % integer variables
                     temps_counti=temps_count(numel(intchoices)+1:numel(intchoices)+numel(UB));

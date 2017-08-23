@@ -49,13 +49,13 @@ MaxZones=[propMaxZones,rodMaxZones, skidMaxZones,operMaxZones];
 
 %add path of model, function
 
-%addpath('C:\Users\Daniel\Documents\GitHub\UAV_MAS_design\QuadrotorModel')
-%cd('C:\Users\Daniel\Documents\GitHub\UAV_MAS_design\QuadrotorModel')
-%addpath('C:\Users\Daniel\Documents\GitHub\UAV_MAS_design')
+addpath('C:\Projects\GitHub\UAV_MAS_design\QuadrotorModel')
+cd('C:\Projects\GitHub\UAV_MAS_design\QuadrotorModel')
+addpath('C:\Projects\GitHub\UAV_MAS_design')
 
-addpath('C:\Users\HulseDanielE\Documents\GitHub\Multiagent_Opt\QuadrotorModel')
-cd('C:\Users\HulseDanielE\Documents\GitHub\Multiagent_Opt\QuadrotorModel')
-addpath('C:\Users\HulseDanielE\Documents\GitHub\Multiagent_Opt')
+%addpath('C:\Users\HulseDanielE\Documents\GitHub\Multiagent_Opt\QuadrotorModel')
+%cd('C:\Users\HulseDanielE\Documents\GitHub\Multiagent_Opt\QuadrotorModel')
+%addpath('C:\Users\HulseDanielE\Documents\GitHub\Multiagent_Opt')
 
 funchandle=@objcfun;
 
