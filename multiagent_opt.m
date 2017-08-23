@@ -20,7 +20,7 @@ verbose=1;
 
 rewardstruct='D';       %G, L, or D
 rewardtype='expImprovement';    %learned, expImprovement, or DiffEst
-availabletemps=[10,0.5,0.1,0.05,0.01, 0.005];%,-0.05,-0.1]; %temperatures to explore at
+availabletemps=[0.5,0.1,0.05,0.01, 0.005,0];%,-0.05,-0.1]; %temperatures to explore at
 availablew1s=[1]; %weights to use for contraints in picking values
 availablew2s=[1];
 conscalemax=35000; %value of constraint over objective (takes place of penalty)
@@ -113,9 +113,11 @@ for r = 1:numRuns
             
             % Have agents choose the values of each given design variable
             % integer variables
-            x_int = choose_paramvals(expMerit, temps,w1s,w2s,conscale);
+             tempsi=temps(1:numel(intchoices));
+            x_int = choose_paramvals(expMerit, tempsi,w1s,w2s,conscale);
             % continuous variables
-            x_cont = choose_continuousparamvals(meritfxn, temps,w1s,w2s,conscale);
+            tempsc=temps(numel(intchoices)+1:numel(intchoices)+numel(UB));
+            x_cont = choose_continuousparamvals(meritfxn, tempsc,w1s,w2s,conscale);
 
             % Calculate the objective function of the chosen design. Assign
             % that to the found merit of each paremeter value taken.
@@ -143,13 +145,15 @@ for r = 1:numRuns
                 [meritfxnp,oldptsxp,oldptsobjp,oldptsconp,learnedcp,objimprovementcp,conimprovementcp]=update_continousmerit(oldptsx,oldptsobj,oldptscon,x_cont, contMerit_obj, contMerit_con, UB,LB,Tol,MaxZones, Meritinit);
                 
               for ag=1:(length(intchoices)+length(UB))
-                  tempsc=temps;
-                  tempsc(ag)=median(availabletemps);
+                  temps_count=temps;
+                  temps_count(ag)=median(availabletemps);
                     % Have agents choose the values of each given design variable
                     % integer variables
-                    x_intc = choose_paramvals(expMerit, tempsc,w1s,w2s,conscale);
+                    temps_counti=temps_count(numel(intchoices)+1:numel(intchoices)+numel(UB));
+                    x_intc = choose_paramvals(expMerit, temps_counti,w1s,w2s,conscale);
                      % continuous variables
-                    x_contc = choose_continuousparamvals(meritfxn, tempsc,w1s,w2s,conscale);
+                     temps_countc=temps_count(numel(intchoices)+1:numel(intchoices)+numel(UB));
+                    x_contc = choose_continuousparamvals(meritfxn, temps_countc,w1s,w2s,conscale);
                   
                  [obj,obj1c,conviolc]=funchandle(x_intc, x_contc);
                  
