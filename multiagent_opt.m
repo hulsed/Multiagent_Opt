@@ -84,6 +84,12 @@ for r = 1:numRuns
     while converged==false
         e=e+1;
         
+%         if e<=10
+%            epsilon=1.0;
+%         else
+%             epsilon=0.05;
+%         end
+        
         bestobj(e)=bestobj(e-1);
         bestconviol(e)=bestconviol(e-1);
         k=0;
