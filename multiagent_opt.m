@@ -9,7 +9,7 @@ numRuns = 10;
 stopEpoch=250; %If it hasn't improved after this many Epochs, stop
 maxEpochs=200;
 %agent options
-alpha = 0.05;    % Learning rate
+alpha = 0.01;    % Learning rate
 Meritinit= 1e3;   %Value table initialization
 TMin=0.1;
 %plotting and workspace options
@@ -26,7 +26,7 @@ availablew2s=[1];
 conscalemax=35000; %value of constraint over objective (takes place of penalty)
 contol=0.2;
 
-pq=0
+pq=0;
 for lm=1:numel(availabletemps)
     for no=1:numel(availablew1s)
         pq=pq+1;
@@ -38,7 +38,7 @@ for lm=1:numel(availabletemps)
 end
 
 
-Qinit=1e4;
+Qinit=-1;
 
 
 T=10;
@@ -181,7 +181,7 @@ for r = 1:numRuns
                 
               for ag=1:(length(intchoices)+length(UB))
                   temps_count=temps;
-                  temps_count(ag)=0;
+                  temps_count(ag)=0; %median(availabletemps);
                     % Have agents choose the values of each given design variable
                     % integer variables
                     temps_counti=temps_count(numel(intchoices)+1:numel(intchoices)+numel(UB));
