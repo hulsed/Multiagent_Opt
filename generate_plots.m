@@ -1,4 +1,3 @@
-if altplots
     figure;
 
     if numRuns==1   
@@ -56,7 +55,5 @@ if altplots
     grid minor   
     end
 
-   
-end
 
 hold off 

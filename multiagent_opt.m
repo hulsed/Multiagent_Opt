@@ -11,13 +11,8 @@ stopEpoch=200;  % Stopping Condition: If objective hasn't improved after this ma
 maxEpochs=200;  % Stopping Condition: The max number of partitions to run.
 saveWorkspace = 1;          % Saves the workspace in file named 'MASResults'
 verbose=1;      % Displays progress in the terminal
-
-
-showConstraintViolation = 0; %
-altplots = 1;
-
-
-
+plots = 1;      % Displays plots at the end for progress and distribution of results
+                % (for testing the algorithm)
 % AGENT PARAMETERS
 alpha = 0.005;    % Learning rate for meta-agent (reactiveness)
 Meritinit= 1e3;   % Value table initialization--should a bad objective value
@@ -162,9 +157,9 @@ for r = 1:numRuns
     avgobjhist(r,:)=avgobjk;
     clear bestobj
 end
-
-    % generate_plots
-    
+    if plots==1
+        generate_plots
+    end
     % save optimization history in file
     if saveWorkspace ==1
         save('MASResults')
