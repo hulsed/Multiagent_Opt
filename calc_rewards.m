@@ -7,8 +7,6 @@ switch rewardtype
         reward=expimprovement;
     case 'learned'
         reward=learned;
-    %case 'DiffEst'
-    %    reward=DiffEst;
 end
 
 
@@ -17,8 +15,6 @@ switch rewardstruct
         rewards=reward;
     case 'G'
         rewards=sum(reward)*ones(1,numel(reward));
-    case 'D'
-        rewards=reward;
 end
 
 end
