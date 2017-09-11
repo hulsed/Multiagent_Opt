@@ -60,7 +60,13 @@ addpath('C:\Projects\GitHub\UAV_MAS_design')
 %cd('C:\Users\HulseDanielE\Documents\GitHub\Multiagent_Opt\QuadrotorModel')
 %addpath('C:\Users\HulseDanielE\Documents\GitHub\Multiagent_Opt')
 
-% funchandle is the handle for the objective function.
+% funchandle is the handle for the objective function. This objective
+% function should take integer and continuous variable vectors as arguments
+% and return a objective+penalty obj, objective obj1, and constraint
+% violation conviol. 
+% [obj,obj1,conviol]=objcfun(x_int, x_cont)
+% It is reccomended that conviol takes the form of  conviol=sum(g_i^2) to 
+% adequately combine constraints.(Note that obj is not used in the algorithm)
 funchandle=@objcfun;
 
 % multiagent_opt optimizes the function, returning the optimum f_opt at
