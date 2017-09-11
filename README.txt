@@ -1,9 +1,7 @@
-This branch of the code represents the state of the code at submission to IDETC.
+multiagent_opt is a stochastic mixed-integer constrained optimization method based on multiagent learning. 
 
-In order for the model code to work, download Qprop and add the executable (Qprop.exe) to the base directory. 
+The repository is set up for the quadrotor optimization problem at https://github.com/hulsed/QuadrotorModel. 
+* To demonstrate with the quadrotor problem, place that repository, along with Qprop.exe (http://web.mit.edu/drela/Public/web/qprop/) in a folder inside the optimizer directory. 
+* To apply to different problem, place that problem in the directory, edit main.m and set the appropriate options in multiagent_opt.m
 
-Simulated annealing and genetic algorithm comparisons use MATLAB's functions, so make sure to have MATLAB's optimization toolboxes installed.
 
-To test the multiagent-based method, open and run main. 
-
-To test the other methods, open and run GA_Experiment and SA_experiment. 
