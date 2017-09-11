@@ -1,4 +1,4 @@
-function actions=choose_actions(values,T, epsilon)
+function actions=choose_actions(values, epsilon)
 
     % initialize vector of integers corresponding to the choices for each
     % parameter
