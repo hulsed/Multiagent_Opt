@@ -1,63 +1,27 @@
-% Make agents choose an action
+function actions=choose_actions(values,T, epsilon)
 
-% INPUTS
-% agents - the cell array of agents, each cell containing a Q-table
-% exploration - struct determinint exploration
-
-% OUTPUTS
-% actions - column vector of integers, element i corresponds to action
-%   taken by ith agent
-function actions = choose_actions(agentTables, exploration)
-
-    numAgents = numel(agentTables);
-    % initialize vector of integers corresponding to agent actions
+    % initialize vector of integers corresponding to the choices for each
+    % parameter
+    numAgents = numel(values);
     actions = uint8(zeros(numAgents, 1));
-    
-    % Iterate through the agents
-    for ag = 1:numel(agentTables)
-        agent = agentTables{ag};
-        % Get number of actions that agent ag can make
-        numActions = numel(agent);
+% Iterate through the variables
+    for ag = 1:numel(values)
+        
+            % merit function for that specific variable
+            % NOTE: the sign is inverted so that the best value is chosen
+            % (since the best has the lowest objective value)
+            value = values{ag};
             
-            %calculating bias for exploration
-            nu=exploration.biasMin*log(2.0);
-            bias=nu/log(1.00001+exploration.completion);
-            
-            %softmax normalization
-            agent2=1./(1+exp(-(agent-mean(agent))/(std(agent)+0.1)));
-            %softmax selection
-            for a = 1:numel(agent)
-                        p(a)= exp(agent2(a)/(bias));                  
-            end
-            p=p/sum(p);
-            %picks action
-            actionToTake = find(isnan(p));
-            if isempty(actionToTake)
-                % Pick an action according to the probabilities in p
-                try
-                    actionToTake = randsample(1:numel(agent), 1, true, p);
-                catch
-                    p % in case it produces a complex number
-                    actionToTake = randsample(1:numel(agent), 1, true, p);
-                end
+            dice=rand;
+            if dice>epsilon
+                [val,ChosenAction]=max(value);
             else
-                disp('Softmax broke due to infinite exponential!')
-                disp('Picking between three best')
-                [sorting,ranking]=sort(agent);
-                dice=randi(20,1);
-                if dice<=16
-                    actionToTake=ranking(1);
-                elseif 16<dice<=19
-                    actionToTake=ranking(2);
-                else 
-                    actionToTake=ranking(3);
-                end
-                    
+                ChosenAction=randi(numel(value));
             end
-            if exploration.completion==1
-                [~,actionToTake]=max(p);
-            end
-            actions(ag) = actionToTake;   
+            
+            
+            actions(ag) = ChosenAction;   
             clear p
     end
+
 end
